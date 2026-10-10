@@ -34,7 +34,7 @@ export const it = {
     forgot: 'Password dimenticata?',
     forgotNoEmail: 'Scrivi prima la tua email, poi tocca "Password dimenticata?".',
     forgotSent: (email: string) =>
-      `Se ${email} ha un account, ti arriva un'email con il link per scegliere una nuova password. Aprila da questo telefono.`,
+      `Se ${email} ha un account, ti arriva un'email con il link per scegliere una nuova password.`,
     captchaFailed:
       'Non sono riuscito a verificare che sei una persona. Ricarica la pagina e riprova.',
     captchaWaiting: 'Controllo che sei una persona...',
@@ -53,8 +53,7 @@ export const it = {
   },
   checkEmail: {
     title: 'Controlla la posta',
-    body: (email: string) =>
-      `Ti ho mandato un link a ${email}. Aprilo da questo telefono e sei dentro.`,
+    body: (email: string) => `Ti ho mandato un link a ${email}. Aprilo e sei dentro.`,
     spam: 'Non la trovi? Guarda nella cartella spam o promozioni.',
     resend: 'Mandala di nuovo',
     resent: "Fatto, ti ho mandato un'altra email.",
@@ -86,7 +85,7 @@ export const it = {
   },
   firstList: {
     title: 'La tua prima lista',
-    subtitle: 'Puoi usarla per conto tuo o con chi vuoi. Altre liste le crei quando servono.',
+    subtitle: 'Puoi usarla per conto tuo o con chi vuoi. Se serve, più avanti ne crei una seconda.',
     solo: 'Per conto mio',
     soloHint: 'Una lista solo tua. Puoi invitare qualcuno anche dopo.',
     shared: 'Con altre persone',
@@ -135,16 +134,16 @@ export const it = {
   invite: {
     title: 'Invita chi fa la spesa con te',
     subtitle: (list: string) =>
-      `Chi entra in "${list}" vede la stessa lista e la aggiorna dal suo telefono.`,
+      `Chi entra in "${list}" vede la stessa lista e la aggiorna dal suo telefono. Al massimo 5 persone.`,
     sectionTitle: 'Invita qualcuno',
     share: "Manda l'invito",
     copyLink: 'Copia il link',
     linkCopied: 'Link copiato',
     messageCopied: 'Messaggio copiato: incollalo dove vuoi',
     orCode: 'Oppure dài questo codice:',
-    codeHint: 'Chi lo riceve apre Frigolo e tocca "Ho un codice".',
+    codeHint: 'Chi lo riceve apre Frigolo e tocca "Ho un codice". Vale 7 giorni.',
     newCode: 'Nuovo invito',
-    newCodeConfirm: 'Il codice e il link di prima smettono di funzionare. Vuoi crearne di nuovi?',
+    newCodeConfirm: 'Il codice e il link di prima smettono di funzionare. Vuoi un nuovo invito?',
     newCodeButton: 'Crea un nuovo invito',
     newCodeDone: 'Nuovo invito pronto',
     validUntil: (date: string) => `Codice e link valgono fino al ${date}.`,
@@ -165,14 +164,14 @@ export const it = {
     joining: 'Entro nella lista...',
     noCode: 'Non ho un codice',
     badCode: 'Questo codice non funziona. Controlla le lettere o chiedine uno nuovo.',
-    badLink: "Questo invito non vale più. Chiedi a chi te l'ha mandato un link nuovo.",
+    badLink: "Questo invito è scaduto: dura 7 giorni. Chiedine uno nuovo a chi te l'ha mandato.",
     already: 'Sei già in questa lista. Ti ci porto.',
     tooMany: 'Troppi tentativi. Aspetta qualche minuto e riprova.',
-    full: 'Questa lista è piena: ci sono già 5 persone, il massimo.',
+    full: 'Questa lista ha già 5 persone, il massimo. Per entrare deve uscire qualcuno.',
     fullInvite:
       'Questa lista ha già 5 persone, il massimo. Se qualcuno la lascia, puoi invitare qualcun altro.',
     limitInvite:
-      'Hai già 2 liste, il massimo. Per entrare in questa lasciane prima una dalle Impostazioni.',
+      'Hai già 2 liste, il massimo. Per entrare in questa lasciane una dalle Impostazioni.',
     joined: (list: string) => `Sei nella lista "${list}"`,
     memberJoined: (name: string, list: string) => `${name} ora è nella lista "${list}" 🎉`,
     inviteTitle: (list: string) => `Ti invitano in "${list}"`,
