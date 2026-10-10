@@ -9,7 +9,8 @@ Si procede per fasi; a fine fase il PM riassume, fa il commit e aspetta l'ok di 
 - [x] Squadra definita in `.claude/agents/`, quaderni in `docs/team/`
 - [x] README pubblico, `FUNDING.yml` (link PayPal.me), file per la community
 - [x] Etichette, milestone e issue della Fase 1 su GitHub
-- [ ] Vercel collegato al nuovo repo, secret del keep-alive, vecchio repo archiviato
+- [x] Vercel collegato al nuovo repo
+- [ ] Secret del keep-alive (Daniele), vecchio repo archiviato
 - [x] `node_modules` fuori da iCloud
 
 ## Fase 1 - Pronta per il pubblico
