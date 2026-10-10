@@ -17,31 +17,138 @@
 --      color e avatar_url di household_members restano (deprecate) e sono
 --      tenute allineate al profilo in entrambe le direzioni da trigger.
 --
+-- In testa (audit M5): da qui in poi le tabelle, sequenze e funzioni nuove in
+-- public non nascono più con permessi per anon (e le funzioni nemmeno per
+-- PUBLIC). Ogni RPC pubblica va concessa esplicitamente.
+--
 -- Idempotente dove possibile: rilanciarla non duplica righe né policy.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Validazione dell'URL della foto: solo file nella cartella dell'utente del
--- bucket avatars (qualunque sia l'host, così vale in locale e in produzione)
--- oppure un asset dell'app in /avatars/ (esclusi lele e avatar-b, che vanno via).
--- Niente URL esterni: una foto ospitata altrove farebbe da pixel di
--- tracciamento verso gli altri membri della lista.
+-- Permessi di default (audit M5, revisione R3)
+-- Vale per gli oggetti creati dal ruolo postgres (quello delle migration).
+-- La revoca a PUBLIC sulle funzioni si può fare solo a livello globale del
+-- ruolo, non per schema: riguarda comunque solo le funzioni create da postgres.
 -- -----------------------------------------------------------------------------
-create or replace function public.is_valid_avatar_url(p_url text, p_user uuid)
+alter default privileges for role postgres in schema public revoke all on tables from anon;
+alter default privileges for role postgres in schema public revoke all on sequences from anon;
+alter default privileges for role postgres in schema public revoke execute on functions from anon;
+alter default privileges for role postgres revoke execute on functions from public;
+
+-- -----------------------------------------------------------------------------
+-- Foto profilo (revisione R1)
+-- Nel profilo si salva solo il PERCORSO nel bucket avatars, nella cartella
+-- dell'utente: "<user_id>/<file>". L'URL lo costruisce il frontend con
+-- supabase.storage.from('avatars').getPublicUrl(path): l'host non è più un
+-- dato scritto dall'utente, quindi nessuno può far caricare agli altri membri
+-- un'immagine da un server suo (pixel di tracciamento).
+-- -----------------------------------------------------------------------------
+create or replace function public.is_valid_avatar_path(p_path text, p_user uuid)
 returns boolean
 language sql
 immutable
 set search_path = ''
 as $$
-  select p_url is null or (
-    char_length(p_url) <= 500
-    and p_url !~ '/avatars/(lele|avatar-b)\.png'
-    and (
-      p_url ~ ('^https?://[^/?#]+/storage/v1/object/public/avatars/' || p_user::text || '/[A-Za-z0-9._-]+$')
-      or p_url ~ '^/avatars/[a-z0-9-]{1,40}\.(png|webp|svg)$'
-    )
+  select p_path is null or (
+    char_length(p_path) <= 200
+    and p_path ~ ('^' || p_user::text || '/[A-Za-z0-9_-][A-Za-z0-9._-]{0,99}$')
+    and p_path !~ '\.\.'
   );
 $$;
+
+-- Host da cui il vecchio frontend può scrivere URL completi nella colonna
+-- deprecata household_members.avatar_url: solo lo Storage del progetto (e,
+-- per lo sviluppo, lo Supabase locale, che punta al dispositivo stesso e non
+-- a un server terzo). Il primo è quello usato per ricostruire l'URL.
+-- In locale si può impostare app.avatar_base_url per ricostruire URL locali.
+create or replace function public.avatar_storage_hosts()
+returns text[]
+language sql
+stable
+set search_path = ''
+as $$
+  select array_remove(array[
+    nullif(current_setting('app.avatar_base_url', true), ''),
+    'https://egvodwvnralxttxiovau.supabase.co',
+    'http://127.0.0.1:54321',
+    'http://localhost:54321'
+  ], null);
+$$;
+
+-- URL completo (colonna deprecata) -> percorso nel bucket, solo se l'host è
+-- tra quelli ammessi e il file sta nella cartella dell'utente; altrimenti null.
+create or replace function public.avatar_path_from_url(p_url text, p_user uuid)
+returns text
+language sql
+stable
+set search_path = ''
+as $$
+  select case
+    when public.is_valid_avatar_path(v.path, p_user) then v.path
+  end
+  from (
+    select substr(p_url, char_length(h) + char_length('/storage/v1/object/public/avatars/') + 1) as path
+    from unnest(public.avatar_storage_hosts()) as h
+    where p_url is not null
+      and left(p_url, char_length(h) + char_length('/storage/v1/object/public/avatars/'))
+          = h || '/storage/v1/object/public/avatars/'
+    limit 1
+  ) v;
+$$;
+
+-- percorso -> URL pubblico (solo per la colonna deprecata del vecchio frontend)
+create or replace function public.avatar_public_url(p_path text)
+returns text
+language sql
+stable
+set search_path = ''
+as $$
+  select case when p_path is not null then
+    (public.avatar_storage_hosts())[1] || '/storage/v1/object/public/avatars/' || p_path
+  end;
+$$;
+
+revoke execute on function public.is_valid_avatar_path(text, uuid) from public, anon;
+revoke execute on function public.avatar_storage_hosts() from public, anon;
+revoke execute on function public.avatar_path_from_url(text, uuid) from public, anon;
+revoke execute on function public.avatar_public_url(text) from public, anon;
+grant execute on function public.is_valid_avatar_path(text, uuid) to authenticated;
+grant execute on function public.avatar_storage_hosts() to authenticated;
+grant execute on function public.avatar_path_from_url(text, uuid) to authenticated;
+grant execute on function public.avatar_public_url(text) to authenticated;
+
+-- -----------------------------------------------------------------------------
+-- Colore del profilo: lista chiusa, la stessa tavolozza dei membri del
+-- frontend (src/lib/colors.ts, MEMBER_COLORS). Senza foto, l'avatar è la
+-- mascotte di Frigolo sullo sfondo di questo colore, quindi il colore c'è
+-- sempre: alla registrazione ne viene scelto uno a caso (l'utente lo cambia
+-- quando vuole). Per aggiungere un colore: aggiornare questa funzione e
+-- MEMBER_COLORS insieme.
+-- -----------------------------------------------------------------------------
+create or replace function public.member_colors()
+returns text[]
+language sql
+immutable
+set search_path = ''
+as $$
+  select array['c-teal', 'c-brick', 'c-olive-deep', 'c-rust', 'c-brown',
+               'c-terracotta', 'c-burnt', 'c-ochre', 'c-ink-soft']::text[];
+$$;
+
+create or replace function public.random_member_color()
+returns text
+language sql
+volatile
+set search_path = ''
+as $$
+  select c[1 + floor(random() * cardinality(c))::int]
+  from (select public.member_colors() as c) m;
+$$;
+
+revoke execute on function public.member_colors() from public, anon;
+revoke execute on function public.random_member_color() from public, anon;
+grant execute on function public.member_colors() to authenticated;
+grant execute on function public.random_member_color() to authenticated;
 
 -- -----------------------------------------------------------------------------
 -- 1. Tabella
@@ -49,18 +156,19 @@ $$;
 create table if not exists public.profiles (
   id            uuid primary key references auth.users (id) on delete cascade,
   display_name  text not null check (char_length(trim(display_name)) between 1 and 40),
-  avatar_url    text,
-  color         text check (color is null or color ~ '^c-[a-z-]{1,24}$'),
+  avatar_path   text,
+  color         text not null default public.random_member_color()
+                check (color = any (public.member_colors())),
   completed_at  timestamptz,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now(),
-  constraint profiles_avatar_url_check check (public.is_valid_avatar_url(avatar_url, id))
+  constraint profiles_avatar_path_check check (public.is_valid_avatar_path(avatar_path, id))
 );
 
 comment on table public.profiles is 'Profilo pubblico (verso chi condivide una lista) di ogni utente: uno per utente, uguale in tutte le liste.';
 comment on column public.profiles.display_name is 'Nome mostrato agli altri membri delle liste, 1-40 caratteri.';
-comment on column public.profiles.avatar_url is 'URL della foto (bucket avatars, cartella <user_id>/), null = iniziale del nome.';
-comment on column public.profiles.color is 'Token della palette (es. c-teal) per distinguere chi ha aggiunto cosa.';
+comment on column public.profiles.avatar_path is 'Percorso della foto (facoltativa) nel bucket avatars (<user_id>/<file>); l URL lo costruisce il client. Null = mascotte di Frigolo sullo sfondo di color.';
+comment on column public.profiles.color is 'Token della tavolozza dei membri (lista chiusa in member_colors()): sfondo della mascotte quando non c è foto e colore di chi ha aggiunto cosa.';
 comment on column public.profiles.completed_at is 'Null = profilo da completare nell onboarding (nome provvisorio). Valorizzato quando l utente salva il profilo.';
 
 -- -----------------------------------------------------------------------------
@@ -94,14 +202,16 @@ grant execute on function public.shares_household_with(uuid) to authenticated;
 -- Ogni utente esistente riceve un profilo. Nome, colore e foto vengono dalla
 -- sua riga più vecchia in household_members (joined_at). Chi non ha un nome
 -- riceve "Utente" e completed_at null (lo sceglierà nell'onboarding).
--- Gli avatar preimpostati /avatars/avatar-a.png e /avatars/avatar-b.png diventano null.
+-- La foto diventa il percorso nel bucket; gli avatar preimpostati
+-- /avatars/avatar-a.png e /avatars/avatar-b.png e ogni URL non dello Storage del
+-- progetto diventano null.
 -- -----------------------------------------------------------------------------
-insert into public.profiles (id, display_name, avatar_url, color, completed_at, created_at)
+insert into public.profiles (id, display_name, avatar_path, color, completed_at, created_at)
 select
   u.id,
   coalesce(left(nullif(trim(m.display_name), ''), 40), 'Utente'),
-  case when public.is_valid_avatar_url(m.avatar_url, u.id) then m.avatar_url end,
-  case when m.color ~ '^c-[a-z-]{1,24}$' then m.color end,
+  public.avatar_path_from_url(m.avatar_url, u.id),
+  case when m.color = any (public.member_colors()) then m.color else public.random_member_color() end,
   case when nullif(trim(m.display_name), '') is not null then now() end,
   u.created_at
 from auth.users u
@@ -122,8 +232,9 @@ on conflict (id) do nothing;
 -- verso profiles non devono gestire il caso "profilo mancante".
 -- Il nome arriva da raw_user_meta_data.display_name (o name / full_name, se
 -- un giorno ci saranno login social): supabase.auth.signUp({ options: { data:
--- { display_name } } }). Se manca, nome provvisorio "Utente" e completed_at
--- null: il frontend porta l'utente a completare il profilo.
+-- { display_name, color } } }); color è facoltativo (altrimenti uno a caso
+-- della tavolozza). Se manca il nome: "Utente" provvisorio e completed_at
+-- null, il frontend porta l'utente a completare il profilo.
 -- La funzione non deve mai far fallire la registrazione: input ripulito e
 -- on conflict do nothing.
 -- -----------------------------------------------------------------------------
@@ -140,8 +251,17 @@ declare
     new.raw_user_meta_data ->> 'full_name'
   )), ''), 40);
 begin
-  insert into public.profiles (id, display_name, completed_at)
-  values (new.id, coalesce(v_name, 'Utente'), case when v_name is not null then now() end)
+  insert into public.profiles (id, display_name, color, completed_at)
+  values (
+    new.id,
+    coalesce(v_name, 'Utente'),
+    case
+      when new.raw_user_meta_data ->> 'color' = any (public.member_colors())
+        then new.raw_user_meta_data ->> 'color'
+      else public.random_member_color()
+    end,
+    case when v_name is not null then now() end
+  )
   on conflict (id) do nothing;
   return new;
 end;
@@ -179,6 +299,8 @@ begin
 end;
 $$;
 
+revoke execute on function public.profiles_before_update() from public, anon, authenticated;
+
 drop trigger if exists profiles_before_update on public.profiles;
 create trigger profiles_before_update
   before update on public.profiles
@@ -206,17 +328,18 @@ create policy "profiles: ognuno modifica il proprio"
 
 revoke all on public.profiles from anon, authenticated;
 grant select on public.profiles to authenticated;
-grant update (display_name, avatar_url, color) on public.profiles to authenticated;
+grant update (display_name, avatar_path, color) on public.profiles to authenticated;
 
 -- -----------------------------------------------------------------------------
 -- RPC update_my_profile: comodità per il frontend (un solo round trip,
 -- ritorna il profilo aggiornato). Invoker: valgono RLS e grant di colonna.
--- p_avatar_url: passare '' per togliere la foto, null per non cambiarla.
+-- p_avatar_path: percorso nel bucket ('<user_id>/<file>'), '' per togliere la
+-- foto, null per non cambiarla.
 -- -----------------------------------------------------------------------------
 create or replace function public.update_my_profile(
   p_display_name  text default null,
   p_color         text default null,
-  p_avatar_url    text default null
+  p_avatar_path   text default null
 )
 returns public.profiles
 language plpgsql
@@ -235,9 +358,9 @@ begin
   update public.profiles
   set display_name = coalesce(nullif(trim(p_display_name), ''), display_name),
       color        = coalesce(p_color, color),
-      avatar_url   = case
-                       when p_avatar_url is null then avatar_url
-                       else nullif(trim(p_avatar_url), '')
+      avatar_path  = case
+                       when p_avatar_path is null then avatar_path
+                       else nullif(trim(p_avatar_path), '')
                      end
   where id = v_user
   returning * into v_profile;
@@ -263,12 +386,14 @@ grant execute on function public.update_my_profile(text, text, text) to authenti
 --   - riga membro modificata dal client (vecchio ProfileSheet) -> aggiorna il
 --     profilo, che a sua volta allinea le altre righe dell'utente.
 -- pg_trigger_depth() evita il ping-pong tra i due trigger.
+-- Nella colonna deprecata avatar_url c'è l'URL completo (il vecchio frontend
+-- lo usa come src), ricostruito dal percorso con l'host del progetto.
 -- Da rimuovere (trigger e colonne) in una migration futura, quando nessun
 -- client usa più le colonne.
 -- -----------------------------------------------------------------------------
 comment on column public.household_members.display_name is 'DEPRECATA: usare profiles.display_name. Allineata da trigger finché il vecchio frontend esiste.';
 comment on column public.household_members.color is 'DEPRECATA: usare profiles.color. Allineata da trigger finché il vecchio frontend esiste.';
-comment on column public.household_members.avatar_url is 'DEPRECATA: usare profiles.avatar_url. Allineata da trigger finché il vecchio frontend esiste.';
+comment on column public.household_members.avatar_url is 'DEPRECATA: usare profiles.avatar_path. Allineata da trigger finché il vecchio frontend esiste.';
 
 create or replace function public.sync_profile_to_members()
 returns trigger
@@ -280,10 +405,10 @@ begin
   update public.household_members
   set display_name = new.display_name,
       color        = new.color,
-      avatar_url   = new.avatar_url
+      avatar_url   = public.avatar_public_url(new.avatar_path)
   where user_id = new.id
     and (display_name, color, avatar_url)
-        is distinct from (new.display_name, new.color, new.avatar_url);
+        is distinct from (new.display_name, new.color, public.avatar_public_url(new.avatar_path));
   return null;
 end;
 $$;
@@ -292,7 +417,7 @@ revoke execute on function public.sync_profile_to_members() from public, anon, a
 
 drop trigger if exists profiles_sync_to_members on public.profiles;
 create trigger profiles_sync_to_members
-  after update of display_name, color, avatar_url on public.profiles
+  after update of display_name, color, avatar_path on public.profiles
   for each row execute function public.sync_profile_to_members();
 
 create or replace function public.members_fill_from_profile()
@@ -309,9 +434,9 @@ begin
     if found then
       new.display_name := p.display_name;
       new.color        := p.color;
-      new.avatar_url   := p.avatar_url;
+      new.avatar_url   := public.avatar_public_url(p.avatar_path);
     end if;
-  elsif not public.is_valid_avatar_url(new.avatar_url, new.user_id) then
+  elsif public.avatar_path_from_url(new.avatar_url, new.user_id) is null then
     -- anche la copia deprecata non accetta più avatar-a/avatar-b o URL esterni
     new.avatar_url := null;
   end if;
@@ -343,17 +468,14 @@ begin
 
   update public.profiles
   set display_name = coalesce(nullif(trim(new.display_name), ''), display_name),
-      color        = case when new.color ~ '^c-[a-z-]{1,24}$' then new.color else color end,
-      avatar_url   = case
-                       when public.is_valid_avatar_url(new.avatar_url, new.user_id) then new.avatar_url
-                       else null
-                     end
+      color        = case when new.color = any (public.member_colors()) then new.color else color end,
+      avatar_path  = public.avatar_path_from_url(new.avatar_url, new.user_id)
   where id = new.user_id;
   return null;
 end;
 $$;
 
-revoke execute on function public.sync_member_to_profile() from public, anon;
+revoke execute on function public.sync_member_to_profile() from public, anon, authenticated;
 
 drop trigger if exists household_members_sync_to_profile on public.household_members;
 create trigger household_members_sync_to_profile
@@ -370,11 +492,11 @@ create trigger household_members_sync_to_profile
 update public.household_members hm
 set display_name = p.display_name,
     color        = p.color,
-    avatar_url   = p.avatar_url
+    avatar_url   = public.avatar_public_url(p.avatar_path)
 from public.profiles p
 where p.id = hm.user_id
   and (hm.display_name, hm.color, hm.avatar_url)
-      is distinct from (p.display_name, p.color, p.avatar_url);
+      is distinct from (p.display_name, p.color, public.avatar_public_url(p.avatar_path));
 
 -- -----------------------------------------------------------------------------
 -- FK household_members.user_id -> profiles.id: permette a PostgREST di
