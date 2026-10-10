@@ -4,6 +4,7 @@ import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { TextField } from '@/components/TextField'
+import { describeDbError } from '@/lib/dbErrors'
 import { toast } from '@/lib/toast'
 import { formatQuantity, pluralize } from '@/lib/format'
 import type { ListEntryWithItem } from '@/types/domain'
@@ -73,7 +74,7 @@ export function CompleteTripButton({ cart, todoCount, suggestedStore }: Complete
       window.setTimeout(() => toast(message, 'success'), LEAVE_MS)
     } catch (error) {
       toast(
-        error instanceof Error ? error.message : 'Non sono riuscito a completare la spesa',
+        describeDbError(error, 'Non sono riuscito a chiudere la spesa. Riprova tra poco.'),
         'error',
       )
     }
