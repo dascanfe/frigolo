@@ -3,7 +3,6 @@ import { it as t } from '@/i18n/it'
 import { avatarPublicUrl } from '@/features/profile/profileApi'
 import { describeDbError } from '@/lib/dbErrors'
 import { supabase } from '@/lib/supabase'
-import { DEFAULT_STORES } from '@/types/domain'
 import type { Household, Profile } from '@/types/domain'
 
 /**
@@ -92,11 +91,7 @@ export async function createList(rawName: string): Promise<string> {
   const name = rawName.trim() || t.lists.nameDefault
   const { data: id, error } = await supabase.rpc('create_household', { p_name: name })
   if (error) throw error
-  // il default del database è ancora la lista veneta: qui si parte da quella generica
-  await supabase
-    .from('households')
-    .update({ stores: [...DEFAULT_STORES] })
-    .eq('id', id)
+  // i supermercati di partenza li mette il database (default di stores, 0021)
   return id
 }
 
@@ -153,25 +148,5 @@ export async function deleteList(householdId: string): Promise<void> {
 
 /** Errori delle RPC di liste e inviti in parole di tutti i giorni */
 export function describeListError(error: unknown): string {
-  const message =
-    typeof error === 'object' && error !== null && 'message' in error
-      ? String((error as { message: unknown }).message)
-      : String(error ?? '')
-  const status =
-    typeof error === 'object' && error !== null && 'status' in error
-      ? Number((error as { status: unknown }).status)
-      : undefined
-  const lower = message.toLowerCase()
-  if (lower.includes('fetch') || lower.includes('network')) return t.errors.network
-  const code =
-    typeof error === 'object' && error !== null && 'code' in error
-      ? String((error as { code: unknown }).code)
-      : ''
-  if (status === 429 || code === 'PT429' || message.includes('Troppi tentativi')) {
-    return t.join.tooMany
-  }
-  if (message.includes('Codice non valido')) return t.join.badCode
-  if (message.includes('massimo di liste')) return t.lists.limit
-  if (message.includes('massimo di membri')) return t.join.full
   return describeDbError(error, t.lists.actionFailed)
 }
