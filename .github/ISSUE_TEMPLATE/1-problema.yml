@@ -1,0 +1,56 @@
+name: Qualcosa non funziona
+description: Segnala un problema dell'app.
+title: '[Problema] '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Grazie per la segnalazione. Più dettagli ci dai, prima lo sistemiamo.
+        Non scrivere qui password, codici d'invito o dati personali: le issue sono pubbliche.
+        Se è un problema di sicurezza, non aprire una issue: segui [SECURITY.md](https://github.com/dascanfe/frigolo/blob/main/SECURITY.md).
+  - type: textarea
+    id: cosa
+    attributes:
+      label: Cosa è successo?
+      description: Racconta il problema in poche frasi.
+      placeholder: Ho toccato "Spesa finita" e la lista è rimasta piena.
+    validations:
+      required: true
+  - type: textarea
+    id: passi
+    attributes:
+      label: Come lo rifaccio?
+      description: I passaggi per far succedere di nuovo il problema, se li conosci.
+      placeholder: |
+        1. Apro la lista
+        2. Metto due prodotti nel carrello
+        3. Tocco "Spesa finita"
+  - type: textarea
+    id: atteso
+    attributes:
+      label: Cosa ti aspettavi?
+      placeholder: Che i prodotti nel carrello sparissero dalla lista.
+  - type: dropdown
+    id: dispositivo
+    attributes:
+      label: Su cosa usi Frigolo?
+      options:
+        - iPhone, app sulla schermata Home
+        - iPhone, Safari
+        - Android, app installata
+        - Android, Chrome
+        - Computer
+        - Altro
+    validations:
+      required: true
+  - type: input
+    id: versione
+    attributes:
+      label: Versione del sistema e del browser
+      description: Se la sai. Per esempio "iOS 26, Safari" oppure "Android 16, Chrome".
+  - type: textarea
+    id: immagini
+    attributes:
+      label: Screenshot
+      description: Se puoi, trascina qui uno screenshot. Copri nomi ed email se non vuoi che si vedano.
