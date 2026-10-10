@@ -245,8 +245,13 @@ si committa) con le chiavi di test di Cloudflare: secret `1x00000000000000000000
 nel file, site key `1x00000000000000000000AA` nel frontend, poi `supabase stop` e
 `supabase start`. Il token di test che accettano è `XXXX.DUMMY.TOKEN.XXXX`.
 
-"Password dimenticata" invia un'email con un link che va aperto nello stesso browser da cui
-è stato richiesto (flusso PKCE) e porta alla schermata "Nuova password".
+**Link nelle email.** Conferma, recupero password e cambio email portano a
+`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=<tipo>` (`email` per la
+conferma della registrazione, `recovery`, `email_change`). La pagina `/auth/confirm`
+dell'app chiama `supabase.auth.verifyOtp({ token_hash, type })`, quindi il link funziona da
+qualunque browser, non solo da quello che ha fatto la richiesta. Dopo `recovery` porta alla
+schermata "Nuova password". Verifica locale: `node supabase/checks/email_links.mjs`
+(istruzioni in testa al file, serve la registrazione aperta temporaneamente in locale).
 
 **Account e dati (GDPR).** `rpc('export_my_data')` restituisce un JSON con account,
 profilo e, per ogni lista, prodotti in lista, prodotti della lista e spese (senza id né nomi
