@@ -8,10 +8,10 @@ produzione.
 
 ## Verdetto
 
-| Cosa                                                                            | Verdetto      |
-| ------------------------------------------------------------------------------- | ------------- |
-| Correzione urgente `0017_security_hotfix` (PR #17)                              | **Approvata** |
-| PR #16 (migration `0018`-`0023`, edge function `delete-account`, `config.toml`) | **Approvata** |
+| Cosa                                                                            | Verdetto              |
+| ------------------------------------------------------------------------------- | --------------------- |
+| Correzione urgente `0017_security_hotfix` (PR #17)                              | **In produzione**     |
+| PR #16 (migration `0018`-`0023`, edge function `delete-account`, `config.toml`) | **Si può pubblicare** |
 
 Terzo giro (2026-10-10): le correzioni chieste nel secondo giro sono state verificate in locale.
 La `0017` è in produzione; la PR #16 segue l'ordine di "Apertura al pubblico" in
@@ -81,3 +81,26 @@ Altre verifiche passate:
 
 Il primo giro (stesso giorno) aveva trovato R0-R7: sono tutti corretti nel branch tranne R6
 (file della foto alla cancellazione dell'account), rimandato alla #9.
+
+## Verifica finale (2026-10-10)
+
+Ultimi ritocchi verificati: foto solo direttamente nella propria cartella (anche nelle
+rinomine), `delete-account` cancella prima l'account e poi le foto, origini locali solo nel
+segreto `FRIGOLO_DEV_ORIGINS` (assente in produzione), `localhost` fuori dalla configurazione di
+produzione (`[remotes.production]`), link delle email verso `/auth/confirm` con `token_hash`.
+
+**Verdetto: si può pubblicare** seguendo i passi 1-8 di "Apertura al pubblico" in
+`docs/team/basilio.md`, con le registrazioni chiuse. Il passo 9 (aprire le registrazioni)
+richiede in più che informativa privacy e termini siano pubblicati e collegati dalla schermata
+di registrazione (vedi PR #15).
+
+### Checklist di rilascio (`docs/sicurezza/rilascio.md`)
+
+| Sezione                  | Esito                                                                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| 1. Codice                | lint, typecheck, 70 test e build puliti; `pnpm audit --prod` senza vulnerabilità; nessun segreto né dato reale         |
+| 2. Database              | catena 0001-0023 in locale; RLS e grant verificati; `profili_liste.sql` passa; `db advisors --local` senza avvisi      |
+| 3. Auth, Storage, config | `config diff` verso produzione con solo le modifiche attese; bucket senza select pubblica; captcha e SMTP dal pannello |
+| 4. Vercel e header       | CSP con Turnstile nella PR #15 (Report-Only); servono `VITE_TURNSTILE_SITE_KEY` e le due variabili Supabase            |
+| 5. Privacy e legale      | bozze aggiornate nella PR #15; da pubblicare prima del passo 9                                                         |
+| 6. Dopo il deploy        | da fare dopo ogni passo: app, accesso, sincronizzazione, console senza violazioni CSP, advisor, dimensione DB          |
