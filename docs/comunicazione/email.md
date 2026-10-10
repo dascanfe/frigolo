@@ -1,12 +1,13 @@
 # Email di sistema
 
-Testi delle email che manda Supabase Auth (issue #7). Basilio li trasforma in HTML e li mette nei
-template di Supabase (`supabase/templates/` e `[auth.email.template.*]` in `config.toml`).
-Seguono [tono.md](tono.md).
+Testi delle email che manda Supabase Auth (issue #7). Seguono [tono.md](tono.md).
+I template HTML veri sono di Basilio in `supabase/templates/` (oggetti in
+`[auth.email.template.*]` e `[auth.email.notification.*]` di `supabase/config.toml`): questa pagina
+ne riporta il testo. Se si cambia un testo, si cambiano tutti e due.
 
 ## Regole comuni
 
-- **Mittente:** `Frigolo` come nome. L'indirizzo lo decide Basilio con Daniele (vedi in fondo).
+- **Mittente:** `Frigolo` come nome. L'indirizzo lo decide Basilio con Daniele.
 - **Oggetto:** corto, dice cosa fare. Niente "[Frigolo]" davanti, niente emoji, niente
   maiuscole.
 - **Anteprima** (preheader): la riga grigia che si legge nella posta dopo l'oggetto. Completa
@@ -15,23 +16,27 @@ Seguono [tono.md](tono.md).
   non vede i bottoni.
 - **Firma:** "Frigolo". In alto la mascotte piccola (con `alt="Frigolo"`).
 - **Chiusura:** sempre la riga "Se non hai chiesto tu..." per le email di sicurezza.
+- **Piede:** "Frigolo, la lista della spesa condivisa. Per domande: frigolo@dascanfe.com".
 - **Niente caffè** nelle email di sistema, niente link ai social.
 - Il testo deve leggersi bene anche nella versione solo testo.
 
 Variabili dei template Supabase usate qui:
 
-| Variabile                | Cosa contiene                                               |
-| ------------------------ | ----------------------------------------------------------- |
-| `{{ .ConfirmationURL }}` | Il link da aprire (conferma, recupero, cambio email)        |
-| `{{ .Email }}`           | L'indirizzo dell'account (nel cambio email: quello vecchio) |
-| `{{ .NewEmail }}`        | Il nuovo indirizzo, solo nel cambio email                   |
-| `{{ .SiteURL }}`         | L'indirizzo dell'app                                        |
-| `{{ .Token }}`           | Il codice di 6 cifre, se un giorno si usa al posto del link |
+| Variabile          | Cosa contiene                                               |
+| ------------------ | ----------------------------------------------------------- |
+| `{{ .TokenHash }}` | Il gettone che la pagina `/auth/confirm` dell'app verifica  |
+| `{{ .Email }}`     | L'indirizzo dell'account (nel cambio email: quello vecchio) |
+| `{{ .NewEmail }}`  | Il nuovo indirizzo, solo nel cambio email                   |
+| `{{ .SiteURL }}`   | L'indirizzo dell'app                                        |
+| `{{ .Token }}`     | Il codice di 6 cifre, se un giorno si usa al posto del link |
 
-Nota tecnica per Basilio: oggi l'app usa il flusso PKCE e il link funziona solo nel browser da
-cui è partita la richiesta. Se si passa a un link con `{{ .TokenHash }}` verso una pagina
-`/auth/confirm` dell'app, il link funziona da qualunque browser e la frase "Aprila da questo
-telefono" si può togliere dai testi. Da decidere con Fragola.
+Il link di ogni email è `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=<tipo>`,
+con `<tipo>` uguale a `email`, `recovery` o `email_change`. Funziona da qualunque telefono o
+browser, non solo da quello in cui è partita la richiesta: per questo nei testi non c'è più
+"aprilo nello stesso browser". `{{ .ConfirmationURL }}` non si usa.
+
+La durata dei link dipende da `otp_expiry` in `supabase/config.toml` (oggi 3600 secondi, cioè 1
+ora). Se cambia, si aggiornano i template e questa pagina.
 
 ---
 
@@ -49,20 +54,17 @@ Template Supabase: `confirmation` ("Confirm signup").
 >
 > Manca un passo per usare Frigolo: conferma che questa email è tua.
 >
-> **[Conferma l'email]** → `{{ .ConfirmationURL }}`
+> **[Conferma l'email]** → `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`
 >
-> Il link vale 1 ora. Aprilo dal telefono su cui usi Frigolo.
+> Il link vale 1 ora.
 >
 > Se non hai chiesto tu di creare un account su Frigolo, ignora questa email: senza conferma
 > l'account non si attiva.
 >
 > Frigolo
 
-Testo del link sotto il bottone: "Il bottone non funziona? Copia questo link nel browser:"
-seguito da `{{ .ConfirmationURL }}`.
-
-La durata del link dipende da `otp_expiry` in `supabase/config.toml` (oggi 3600 secondi, cioè 1
-ora). Se cambia, si aggiorna la frase anche qui e nel recupero password.
+Sotto il bottone, in tutte le email: "Il bottone non funziona? Copia questo link nel browser:"
+seguito dal link per intero.
 
 ---
 
@@ -81,9 +83,10 @@ Template Supabase: `recovery` ("Reset password").
 > Qualcuno, probabilmente tu, ha chiesto di cambiare la password di Frigolo per
 > {{ .Email }}.
 >
-> **[Scegli la nuova password]** → `{{ .ConfirmationURL }}`
+> **[Scegli la nuova password]** →
+> `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`
 >
-> Il link vale 1 ora. Aprilo nello stesso browser da cui l'hai chiesto.
+> Il link vale 1 ora e funziona da qualunque telefono o browser.
 >
 > Se non hai chiesto tu, ignora questa email: la password resta quella di prima.
 >
@@ -111,7 +114,8 @@ quello vecchio e quello nuovo. Il testo deve funzionare per entrambi.
 >
 > Se va bene, conferma qui sotto.
 >
-> **[Conferma il cambio]** → `{{ .ConfirmationURL }}`
+> **[Conferma il cambio]** →
+> `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email_change`
 >
 > Se non hai chiesto tu, non toccare niente e cambia la password dall'app: l'email resta quella
 > di prima finché nessuno conferma.
@@ -122,8 +126,8 @@ quello vecchio e quello nuovo. Il testo deve funzionare per entrambi.
 
 ## 4. Password cambiata (avviso)
 
-Template Supabase: `password_changed_notification`. Facoltativa ma consigliata: avvisa se
-qualcun altro è entrato nell'account. Non ha bottone di conferma.
+Template Supabase: `password_changed_notification` (attiva in `[auth.email.notification.password_changed]`).
+Avvisa se qualcun altro è entrato nell'account. Non ha bottone di conferma.
 
 **Oggetto:** La password di Frigolo è cambiata
 
@@ -166,14 +170,14 @@ una funzione dell'app. `{nome}`, `{lista}`, `{link}` li riempie quella funzione.
 >
 > **[Entra nella lista]** → `{link}`
 >
-> Se non conosci {nome} o non ti interessa, ignora questa email: senza il tuo tocco non succede
-> niente.
+> L'invito vale 7 giorni. Se non conosci {nome} o non ti interessa, ignora questa email: senza
+> il tuo tocco non succede niente.
 >
 > Frigolo
 
 ---
 
-## Riepilogo per Basilio
+## Riepilogo
 
 | Template Supabase               | Oggetto                                | Bottone                  |
 | ------------------------------- | -------------------------------------- | ------------------------ |
@@ -182,6 +186,8 @@ una funzione dell'app. `{nome}`, `{lista}`, `{link}` li riempie quella funzione.
 | `email_change`                  | Conferma la nuova email                | Conferma il cambio       |
 | `password_changed_notification` | La password di Frigolo è cambiata      | Apri Frigolo             |
 | (funzione dell'app, futura)     | {nome} ti invita nella lista "{lista}" | Entra nella lista        |
+
+I primi quattro sono in `supabase/templates/` con lo stesso nome di file.
 
 Template Supabase che non usiamo: `magic_link` (accesso senza password, non previsto),
 `invite` (inviti dall'amministrazione), `reauthentication`. Se un giorno si attivano, i testi si
