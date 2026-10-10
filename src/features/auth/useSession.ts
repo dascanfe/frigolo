@@ -1,5 +1,6 @@
 import type { Session, User } from '@supabase/supabase-js'
 import { useCallback, useEffect, useState } from 'react'
+import { clearLocalData } from '@/lib/localData'
 import { supabase } from '@/lib/supabase'
 
 export type SessionState =
@@ -39,7 +40,11 @@ export function useSession(): SessionState {
     } = supabase.auth.onAuthStateChange((event, next) => {
       setSession(next)
       if (event === 'PASSWORD_RECOVERY') setRecovery(true)
-      if (event === 'SIGNED_OUT') setRecovery(false)
+      if (event === 'SIGNED_OUT') {
+        setRecovery(false)
+        // anche quando l'uscita arriva da un'altra scheda o da una sessione scaduta
+        void clearLocalData()
+      }
     })
 
     return () => {
@@ -55,6 +60,11 @@ export function useSession(): SessionState {
   return { status: 'signed-in', session, user: session.user, recovery, endRecovery }
 }
 
+/** Esce dall'account e cancella dal dispositivo i dati in cache */
 export async function signOut(): Promise<void> {
-  await supabase.auth.signOut()
+  try {
+    await supabase.auth.signOut()
+  } finally {
+    await clearLocalData()
+  }
 }

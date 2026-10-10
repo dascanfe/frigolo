@@ -278,6 +278,9 @@ si legge tenendo premuta la tile.
 - **Service worker** (Workbox): app shell e font in precache, `NetworkFirst` per le letture
   Supabase. I font (Lato e Playfair Display) arrivano dai pacchetti `@fontsource`, serviti dall'app: nessuna richiesta a Google. Gli aggiornamenti non si installano da soli: si
   applicano dal bottone "Aggiorna" in Impostazioni.
+- **Uscita dall'account**: "Esci" (e ogni fine sessione) cancella dal dispositivo la cache
+  di TanStack Query su IndexedDB, le modifiche offline in attesa e la cache `supabase-rest`
+  del service worker (`src/lib/localData.ts`).
 - **Installazione**: manifest con icone (192, 512, maskable), icona e splash screen iOS,
   invito a installare dalla seconda sessione (su iOS spiega il gesto manuale).
 
