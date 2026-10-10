@@ -7,7 +7,7 @@ Aggiornato da Aglio alla fine di ogni incarico. Il più recente in alto.
 - Audit di ottobre: A1 e A2 **corretti in produzione** (0017, PR #17) e documentati in
   `docs/sicurezza/audit-2026-10.md`; gli altri punti sono seguiti in privato (regola del repo
   pubblico). Non si può ancora aprire al pubblico.
-- PR #16 (Basilio): **approvata con correzioni** (`docs/sicurezza/revisione-pr16.md`).
+- PR #16 (Basilio): **approvata** al terzo giro (`docs/sicurezza/revisione-pr16.md`).
 - PR #18 (Fragola): **approvata con correzioni** (`docs/sicurezza/revisione-pr18.md`).
 - PR #15 (mia): privacy, termini e registro aggiornati con le decisioni di Daniele; CSP con
   Turnstile e senza Google Fonts, sempre `Report-Only`.
@@ -25,10 +25,18 @@ Aggiornato da Aglio alla fine di ogni incarico. Il più recente in alto.
 ## Domande aperte per Daniele
 
 1. Città e provincia da pubblicare nei documenti legali (segnaposto `[CITTÀ (PROVINCIA)]`).
-2. DPA dei fornitori (Supabase, Vercel, Resend, Cloudflare): vanno accettati dai pannelli.
+2. Vercel: restare su Hobby (DPA non previsto) o passare a Pro? Copia firmata del DPA di Supabase
+   se serve (vedi riepilogo al PM).
 3. Revisione professionale di privacy e termini prima del lancio (consigliata, decisa).
 
 ## Diario
+
+### 2026-10-10 - Terzo giro sulla PR #16 e DPA
+
+- Migration 0018-0023, edge function `delete-account` e script delle foto orfane: prove in
+  transazioni annullate e chiamate non distruttive all'API e alle funzioni locali.
+- DPA: Supabase, Resend e Cloudflare vincolanti con i termini accettati; Vercel solo Pro ed
+  Enterprise (domanda aperta per Daniele e per il professionista).
 
 ### 2026-10-10 - Revisione PR #18 e aggiornamento della PR #15
 

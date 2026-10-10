@@ -122,7 +122,7 @@ loro accordi standard sul trattamento dei dati:
 | ------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
 | Supabase Inc.                                                                   | Database, accesso, file (foto profilo), sincronizzazione | Dati salvati a Francoforte (UE). Società con sede negli Stati Uniti |
 | Vercel Inc.                                                                     | Pubblicazione dell'app e consegna delle pagine           | Rete globale, società con sede negli Stati Uniti                    |
-| Resend [VERIFICARE ragione sociale]                                             | Invio delle email di servizio dal dominio dascanfe.com   | Società con sede negli Stati Uniti [VERIFICARE regione di invio]    |
+| Resend (Plus Five Five, Inc.)                                                   | Invio delle email di servizio dal dominio dascanfe.com   | Stati Uniti (trattamento principale negli USA, con DPF e SCC)       |
 | Cloudflare Inc. (Turnstile)                                                     | Controllo anti-bot alla registrazione e all'accesso      | Rete globale, società con sede negli Stati Uniti                    |
 | [QUANDO SARÀ ATTIVO] Supabase Inc. (progetto delle statistiche di dascanfe.com) | Statistiche anonime aggregate                            | Francoforte (UE)                                                    |
 | Aruba S.p.A.                                                                    | Hosting del sito dascanfe.com (pagina di presentazione)  | Italia                                                              |
@@ -204,20 +204,23 @@ vigore.
    sicurezza e statistiche anonime (serve un bilanciamento scritto?).
 3. **Età minima di 14 anni** (art. 2-quinquies del Codice privacy): corretta anche se la base è il
    contratto e non il consenso? Serve un controllo dell'età alla registrazione?
-4. **Trasferimenti negli USA**: Supabase, Vercel, Resend e Cloudflare aderiscono al Data Privacy
+4. **Vercel sul piano Hobby**: il DPA di Vercel dichiara di valere per i piani Pro ed Enterprise e il
+   piano Hobby è per uso personale non commerciale (le donazioni sono ammesse). Serve passare a Pro
+   per avere un contratto art. 28 con Vercel, o bastano i termini e l'informativa di Vercel?
+5. **Trasferimenti negli USA**: Supabase, Vercel, Resend e Cloudflare aderiscono al Data Privacy
    Framework? Verificare l'elenco aggiornato e gli accordi (DPA) da accettare su ciascun pannello.
-5. **Strumenti sul dispositivo** (localStorage, IndexedDB, service worker): confermare che sono
+6. **Strumenti sul dispositivo** (localStorage, IndexedDB, service worker): confermare che sono
    tecnici e che non serve un banner di consenso (art. 122 del Codice privacy e linee guida del
    Garante del 2021 sui cookie).
-6. **Statistiche senza cookie** nel progetto di dascanfe.com: confermare che non serve il consenso
+7. **Statistiche senza cookie** nel progetto di dascanfe.com: confermare che non serve il consenso
    e che il progetto è "lo stesso titolare".
-7. **Turnstile**: confermare la base giuridica (legittimo interesse) e se va citato anche nella
+8. **Turnstile**: confermare la base giuridica (legittimo interesse) e se va citato anche nella
    cookie policy della landing.
-8. **Donazioni PayPal a persona fisica**: trattamento fiscale (liberalità? redditi diversi?) e
+9. **Donazioni PayPal a persona fisica**: trattamento fiscale (liberalità? redditi diversi?) e
    tempi di conservazione dei dati dei donatori.
-9. **Conservazione**: confermare la cancellazione automatica degli account inattivi dopo 24 mesi e
-   i tempi di log e backup dei fornitori.
-10. **Registro dei trattamenti**: confermare che la versione sintetica in
+10. **Conservazione**: confermare la cancellazione automatica degli account inattivi dopo 24 mesi e
+    i tempi di log e backup dei fornitori.
+11. **Registro dei trattamenti**: confermare che la versione sintetica in
     `docs/legale/registro-trattamenti.md` è sufficiente.
-11. **Valutazione d'impatto (DPIA)**: secondo Aglio non serve (niente dati particolari, niente
+12. **Valutazione d'impatto (DPIA)**: secondo Aglio non serve (niente dati particolari, niente
     profilazione, niente monitoraggio sistematico); chiedere conferma.
