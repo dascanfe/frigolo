@@ -3,7 +3,7 @@
 > Versione sintetica preparata da Aglio il 2026-10-10. Da tenere aggiornata a ogni nuovo dato
 > raccolto o nuovo fornitore (vedi `docs/sicurezza/rilascio.md`, sezione 5). Uso interno.
 
-- **Titolare:** Daniele Scanferlato, persona fisica, [INDIRIZZO POSTALE], [EMAIL DI CONTATTO]
+- **Titolare:** Daniele Scanferlato, persona fisica, [CITTÀ (PROVINCIA)], frigolo@dascanfe.com
 - **DPO:** non nominato (non obbligatorio)
 - **Ultimo aggiornamento:** 2026-10-10
 
@@ -17,10 +17,10 @@
 | Base giuridica         | Contratto (art. 6.1.b); sicurezza: legittimo interesse (art. 6.1.f)                             |
 | Interessati            | Utenti registrati                                                                               |
 | Dati                   | Email, hash della password, date di registrazione e accesso, IP e user agent nei log di accesso |
-| Destinatari            | Supabase (responsabile); [PREVISTO] Resend per le email; [PREVISTO] Cloudflare Turnstile        |
+| Destinatari            | Supabase (responsabile); Resend per le email (dominio dascanfe.com); Cloudflare Turnstile       |
 | Trasferimenti extra UE | Possibili verso USA (Supabase, Resend, Cloudflare): DPF o clausole contrattuali standard        |
-| Conservazione          | Fino alla cancellazione dell'account; [DA DECIDERE] 24 mesi di inattività                       |
-| Misure di sicurezza    | HTTPS, password con hash (Supabase Auth), conferma email, captcha e rate limit [PREVISTI]       |
+| Conservazione          | Fino alla cancellazione dell'account o dopo 24 mesi di inattività (avviso a 30 giorni)          |
+| Misure di sicurezza    | HTTPS, password con hash (Supabase Auth), conferma email, captcha Turnstile, rate limit         |
 
 ### T2 - Profilo e liste condivise
 
@@ -29,7 +29,7 @@
 | Finalità               | Far funzionare liste, condivisione, storico, suggerimenti e statistiche della lista                              |
 | Base giuridica         | Contratto (art. 6.1.b)                                                                                           |
 | Interessati            | Utenti registrati e membri delle stesse liste                                                                    |
-| Dati                   | Nome e foto scelti, colore, liste, prodotti, note, supermercati, storico acquisti, chi ha aggiunto cosa          |
+| Dati                   | Nome e foto scelti, colore, liste (max 2 per utente, 5 persone), prodotti, note, supermercati, storico acquisti  |
 | Destinatari            | Altri membri della stessa lista; Supabase (responsabile)                                                         |
 | Trasferimenti extra UE | Dati a Francoforte (UE); possibile accesso tecnico da USA (Supabase): DPF o SCC                                  |
 | Conservazione          | Finché la lista ha almeno un membro; foto fino alla sostituzione o cancellazione dell'account                    |
@@ -84,11 +84,11 @@
 
 ## Fornitori (responsabili e titolari autonomi)
 
-| Fornitore       | Ruolo             | Servizio                          | Accordo da accettare      | Stato           |
-| --------------- | ----------------- | --------------------------------- | ------------------------- | --------------- |
-| Supabase Inc.   | Responsabile      | Database, Auth, Storage, Realtime | DPA dal pannello Supabase | [DA FIRMARE]    |
-| Vercel Inc.     | Responsabile      | Hosting dell'app                  | DPA di Vercel             | [DA VERIFICARE] |
-| Resend          | Responsabile      | Email di servizio                 | DPA di Resend             | Previsto        |
-| Cloudflare Inc. | Responsabile      | Turnstile                         | DPA di Cloudflare         | Previsto        |
-| Aruba S.p.A.    | Responsabile      | Hosting di dascanfe.com           | Condizioni di Aruba       | [DA VERIFICARE] |
-| PayPal (Europe) | Titolare autonomo | Donazioni                         | Nessuno                   | Attivo          |
+| Fornitore       | Ruolo             | Servizio                           | Accordo da accettare      | Stato           |
+| --------------- | ----------------- | ---------------------------------- | ------------------------- | --------------- |
+| Supabase Inc.   | Responsabile      | Database, Auth, Storage, Realtime  | DPA dal pannello Supabase | [DA FIRMARE]    |
+| Vercel Inc.     | Responsabile      | Hosting dell'app                   | DPA di Vercel             | [DA VERIFICARE] |
+| Resend          | Responsabile      | Email di servizio (dascanfe.com)   | DPA di Resend             | [DA FIRMARE]    |
+| Cloudflare Inc. | Responsabile      | Turnstile (registrazione, accesso) | DPA di Cloudflare         | [DA FIRMARE]    |
+| Aruba S.p.A.    | Responsabile      | Hosting di dascanfe.com            | Condizioni di Aruba       | [DA VERIFICARE] |
+| PayPal (Europe) | Titolare autonomo | Donazioni                          | Nessuno                   | Attivo          |

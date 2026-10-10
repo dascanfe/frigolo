@@ -1,22 +1,24 @@
 # Termini d'uso di Frigolo
 
-> **Bozza** preparata da Aglio il 2026-10-10. Non è ancora in vigore: va completata nei punti tra
-> parentesi quadre e fatta verificare (vedi "Punti da far verificare a un professionista" in fondo).
+> **Bozza** preparata da Aglio il 2026-10-10, aggiornata con le decisioni di Daniele dello stesso
+> giorno. Non è ancora in vigore: va completata nei punti tra parentesi quadre e, prima del lancio,
+> è consigliata una revisione professionale (vedi "Punti da far verificare a un professionista" in
+> fondo).
 > Le note per la squadra sono nei blocchi come questo e vanno tolte nella versione pubblicata.
 
 Ultimo aggiornamento: [DATA DI PUBBLICAZIONE]
 
 Questi termini regolano l'uso di Frigolo, la lista della spesa condivisa disponibile su
-[DOMINIO DELL'APP]. Registrandoti li accetti. Sono scritti in modo semplice: se qualcosa non è
-chiaro, scrivi a [EMAIL DI CONTATTO].
+frigolo.dascanfe.com. Registrandoti li accetti. Sono scritti in modo semplice: se qualcosa non è
+chiaro, scrivi a frigolo@dascanfe.com.
 
 ## 1. Chi offre Frigolo
 
-Frigolo è sviluppato e gestito da **Daniele Scanferlato**, persona fisica, [INDIRIZZO POSTALE],
-email [EMAIL DI CONTATTO], a titolo personale e senza scopo di lucro.
+Frigolo è sviluppato e gestito da **Daniele Scanferlato**, persona fisica, [CITTÀ (PROVINCIA)],
+email frigolo@dascanfe.com, a titolo personale e senza scopo di lucro.
 
 Il codice di Frigolo è open source con licenza AGPL-3.0 ed è su GitHub. Questi termini riguardano
-l'uso del servizio offerto su [DOMINIO DELL'APP]; la licenza AGPL-3.0 regola invece l'uso del
+l'uso del servizio offerto su frigolo.dascanfe.com; la licenza AGPL-3.0 regola invece l'uso del
 codice.
 
 ## 2. Il servizio
@@ -28,8 +30,11 @@ Frigolo è **gratuito**. Non ci sono abbonamenti, funzioni a pagamento o pubblic
 
 ## 3. Chi può usarlo
 
-- Devi avere almeno **14 anni** [VERIFICARE].
-- Ti serve un account personale con un indirizzo email che usi davvero. Un account per persona.
+- Devi avere almeno **14 anni**.
+- Ti serve un account personale con un indirizzo email che usi davvero (ti chiediamo di
+  confermarlo). Un account per persona.
+- Alla registrazione e all'accesso un controllo anti-bot (Cloudflare Turnstile) verifica che tu
+  non sia un programma automatico.
 - Sei responsabile della tua password: non condividerla. Se pensi che qualcuno l'abbia scoperta,
   cambiala subito e avvisaci.
 
@@ -38,7 +43,11 @@ Frigolo è **gratuito**. Non ci sono abbonamenti, funzioni a pagamento o pubblic
 - Chi ha il codice o il link di invito di una lista può entrarci e da quel momento vede e modifica
   tutto il contenuto della lista, compreso lo storico. Condividilo solo con persone di cui ti fidi.
 - Ogni membro può aggiungere, modificare e togliere prodotti e spese della lista.
-- Puoi uscire da una lista quando vuoi. Se esci e sei l'ultimo membro, la lista viene cancellata.
+- Puoi far parte di al massimo **2 liste**, e ogni lista può avere al massimo **5 persone**.
+- I codici e i link di invito valgono **7 giorni**; puoi annullarli in qualsiasi momento creando
+  un nuovo invito.
+- Puoi uscire da una lista quando vuoi. Se esci e sei l'ultimo membro, la lista viene cancellata
+  con tutto il suo contenuto, dopo un avviso.
 - Se vuoi escludere qualcuno, puoi generare un nuovo codice di invito [QUANDO SARÀ DISPONIBILE:
   e rimuovere il membro dalla lista].
 
@@ -69,7 +78,7 @@ Puoi caricare solo foto che hai il diritto di usare.
 
 ## 7. Segnalazioni e sospensione
 
-Se vedi in Frigolo un contenuto illegale o un abuso, scrivi a [EMAIL DI CONTATTO] spiegando cosa e
+Se vedi in Frigolo un contenuto illegale o un abuso, scrivi a frigolo@dascanfe.com spiegando cosa e
 dove: rispondiamo appena possibile. Se un account viola questi termini possiamo, in proporzione
 alla gravità, rimuovere il contenuto, sospendere o chiudere l'account, avvisando la persona
 interessata e spiegando il motivo, salvo che la legge lo impedisca o che ci sia un rischio per la
@@ -97,12 +106,13 @@ Se Frigolo ti è utile puoi offrire un caffè con una donazione volontaria su Pa
 - è del tutto facoltativa e non dà diritto a funzioni, servizi o trattamenti diversi;
 - è gestita da PayPal secondo le sue condizioni;
 - non è rimborsabile, salvo errori evidenti (per esempio un importo sbagliato): in quel caso
-  scrivi entro 14 giorni a [EMAIL DI CONTATTO].
+  scrivi entro 14 giorni a frigolo@dascanfe.com.
 
 ## 11. Cancellare l'account
 
-Puoi cancellare l'account in qualsiasi momento da Impostazioni > Elimina account. Cosa succede ai
-dati è spiegato nell'informativa sulla privacy.
+Puoi cancellare l'account in qualsiasi momento da Impostazioni > Elimina account. Se non accedi
+per **24 mesi**, l'account viene cancellato automaticamente, dopo un'email di avviso inviata 30
+giorni prima. Cosa succede ai dati è spiegato nell'informativa sulla privacy.
 
 ## 12. Modifiche a questi termini
 
@@ -119,7 +129,7 @@ delle controversie previsti dalla legge.
 
 ## 14. Contatti
 
-[EMAIL DI CONTATTO]
+[frigolo@dascanfe.com](mailto:frigolo@dascanfe.com)
 
 ---
 
