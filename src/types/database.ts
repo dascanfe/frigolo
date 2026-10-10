@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
   public: {
     Tables: {
       categories: {
@@ -87,23 +82,47 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          invite_token: string
+          invite_token_expires_at: string
           join_code: string
+          join_code_expires_at: string
           name: string
           stores: string[]
         }
         Insert: {
           created_at?: string
           id?: string
+          invite_token?: string
+          invite_token_expires_at?: string
           join_code?: string
+          join_code_expires_at?: string
           name: string
           stores?: string[]
         }
         Update: {
           created_at?: string
           id?: string
+          invite_token?: string
+          invite_token_expires_at?: string
           join_code?: string
+          join_code_expires_at?: string
           name?: string
           stores?: string[]
+        }
+        Relationships: []
+      }
+      invite_attempts: {
+        Row: {
+          attempted_at: string
+          user_id: string
+        }
+        Insert: {
+          attempted_at?: string
+          user_id: string
+        }
+        Update: {
+          attempted_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -220,8 +239,8 @@ export type Database = {
       }
       profiles: {
         Row: {
-          avatar_url: string | null
-          color: string | null
+          avatar_path: string | null
+          color: string
           completed_at: string | null
           created_at: string
           display_name: string
@@ -229,8 +248,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          avatar_url?: string | null
-          color?: string | null
+          avatar_path?: string | null
+          color?: string
           completed_at?: string | null
           created_at?: string
           display_name: string
@@ -238,8 +257,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          avatar_url?: string | null
-          color?: string | null
+          avatar_path?: string | null
+          color?: string
           completed_at?: string | null
           created_at?: string
           display_name?: string
@@ -320,6 +339,7 @@ export type Database = {
         Row: {
           completed_at: string | null
           completed_by: string | null
+          created_at: string
           household_id: string
           id: string
           started_at: string
@@ -328,6 +348,7 @@ export type Database = {
         Insert: {
           completed_at?: string | null
           completed_by?: string | null
+          created_at?: string
           household_id: string
           id?: string
           started_at?: string
@@ -336,6 +357,7 @@ export type Database = {
         Update: {
           completed_at?: string | null
           completed_by?: string | null
+          created_at?: string
           household_id?: string
           id?: string
           started_at?: string
@@ -434,10 +456,17 @@ export type Database = {
         Args: { p_color: string; p_display_name: string; p_user: string }
         Returns: undefined
       }
+      assert_invite_rate_limit: { Args: { p_user: string }; Returns: undefined }
       auto_complete_trips: {
         Args: { p_household_id?: string }
         Returns: number
       }
+      avatar_path_from_url: {
+        Args: { p_url: string; p_user: string }
+        Returns: string
+      }
+      avatar_public_url: { Args: { p_path: string }; Returns: string }
+      avatar_storage_hosts: { Args: never; Returns: string[] }
       complete_shopping_trip: {
         Args: { p_household_id: string; p_store?: string }
         Returns: string
@@ -447,11 +476,12 @@ export type Database = {
         Returns: string
       }
       delete_household: { Args: { p_household_id: string }; Returns: undefined }
+      find_household_by_invite: { Args: { p_code: string }; Returns: string }
+      generate_invite_token: { Args: never; Returns: string }
       generate_join_code: { Args: never; Returns: string }
       get_household_invite: {
         Args: { p_code: string }
         Returns: {
-          household_id: string
           is_member: boolean
           member_count: number
           name: string
@@ -461,8 +491,8 @@ export type Database = {
         Args: { p_household_id: string }
         Returns: boolean
       }
-      is_valid_avatar_url: {
-        Args: { p_url: string; p_user: string }
+      is_valid_avatar_path: {
+        Args: { p_path: string; p_user: string }
         Returns: boolean
       }
       join_household: {
@@ -472,8 +502,9 @@ export type Database = {
       leave_household: { Args: { p_household_id: string }; Returns: boolean }
       max_households_per_user: { Args: never; Returns: number }
       max_members_per_household: { Args: never; Returns: number }
-      normalize_join_code: { Args: { p_code: string }; Returns: string }
+      member_colors: { Args: never; Returns: string[] }
       ping: { Args: never; Returns: string }
+      random_member_color: { Args: never; Returns: string }
       rename_household: {
         Args: { p_household_id: string; p_name: string }
         Returns: string
@@ -484,15 +515,19 @@ export type Database = {
       }
       rotate_join_code: { Args: { p_household_id: string }; Returns: string }
       shares_household_with: { Args: { p_user: string }; Returns: boolean }
+      text_array_max_len: {
+        Args: { p_arr: string[]; p_max: number }
+        Returns: boolean
+      }
       update_my_profile: {
         Args: {
-          p_avatar_url?: string
+          p_avatar_path?: string
           p_color?: string
           p_display_name?: string
         }
         Returns: {
-          avatar_url: string | null
-          color: string | null
+          avatar_path: string | null
+          color: string
           completed_at: string | null
           created_at: string
           display_name: string
