@@ -72,10 +72,10 @@ Il captcha (Turnstile) non ha testo nostro. Se fallisce: vedi errori.
 
 ### Recupero password (dalla scheda "Accedi")
 
-| Situazione        | Testo                                                                                                                 |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Email non scritta | Scrivi prima la tua email, poi tocca "Password dimenticata?".                                                         |
-| Richiesta partita | Se {email} ha un account, ti arriva un'email con il link per scegliere una nuova password. Aprila da questo telefono. |
+| Situazione        | Testo                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| Email non scritta | Scrivi prima la tua email, poi tocca "Password dimenticata?".                              |
+| Richiesta partita | Se {email} ha un account, ti arriva un'email con il link per scegliere una nuova password. |
 
 ### Errori
 
@@ -105,7 +105,7 @@ Dopo "Crea l'account", al posto del modulo.
 | ------------ | ---------------------------------------------------------------------------------------- |
 | Mascotte     | Variante contenta, con una busta da lettere al posto di quella della spesa (per Paprika) |
 | Titolo       | Controlla la posta                                                                       |
-| Sottotitolo  | Ti ho mandato un link a **{email}**. Aprilo da questo telefono e sei dentro.             |
+| Sottotitolo  | Ti ho mandato un link a **{email}**. Aprilo e sei dentro.                                |
 | Nota piccola | Non la trovi? Guarda nella cartella spam o promozioni.                                   |
 | Secondario   | Mandala di nuovo                                                                         |
 | Secondario   | Ho sbagliato email                                                                       |
@@ -120,14 +120,15 @@ Dopo "Crea l'account", al posto del modulo.
 
 ## 3. Email confermata
 
-Si vede aprendo il link dell'email. Se la sessione parte da sola, è un messaggio breve sopra la
-schermata 4; se il link è aperto su un altro browser, è una schermata a sé.
+Si vede aprendo il link dell'email, da qualunque telefono o browser (pagina `/auth/confirm`).
+Di solito è un messaggio breve sopra la schermata 4. Se il link è aperto su un dispositivo diverso
+da quello che si usa per la spesa, la riga "Link aperto altrove" ricorda di entrare anche lì.
 
-| Caso                     | Titolo                | Sottotitolo                                                                   | Bottone          |
-| ------------------------ | --------------------- | ----------------------------------------------------------------------------- | ---------------- |
-| Tutto a posto            | Email confermata      | Ci siamo quasi: due cose e la tua lista è pronta.                             | Avanti           |
-| Link aperto altrove      | Email confermata      | Ora apri Frigolo sul telefono che usi per la spesa ed entra con la tua email. | Accedi           |
-| Link scaduto o già usato | Questo link è scaduto | Ne mando uno nuovo: scrivi la tua email e tocca "Mandala di nuovo".           | Mandala di nuovo |
+| Caso                     | Titolo                | Sottotitolo                                                              | Bottone          |
+| ------------------------ | --------------------- | ------------------------------------------------------------------------ | ---------------- |
+| Tutto a posto            | Email confermata      | Ci siamo quasi: due cose e la tua lista è pronta.                        | Avanti           |
+| Link aperto altrove      | Email confermata      | Sei dentro. Sul telefono che usi per la spesa entra con la stessa email. | Avanti           |
+| Link scaduto o già usato | Questo link è scaduto | Ne mando uno nuovo: scrivi la tua email e tocca "Mandala di nuovo".      | Mandala di nuovo |
 
 ---
 
@@ -167,7 +168,7 @@ Una schermata con tre scelte, poi il nome.
 
 **Titolo:** La tua prima lista
 
-**Sottotitolo:** Puoi usarla per conto tuo o con chi vuoi. Altre liste le crei quando servono.
+**Sottotitolo:** Puoi usarla per conto tuo o con chi vuoi. Se serve, più avanti ne crei una seconda.
 
 Tre schede (o tre righe grandi da toccare):
 
@@ -190,12 +191,13 @@ Tre schede (o tre righe grandi da toccare):
 | Bottone                 | Crea la lista                                                 |
 | Bottone in attesa       | Creo la lista...                                              |
 
-| Errore            | Testo                                                  |
-| ----------------- | ------------------------------------------------------ |
-| Nome vuoto        | Dai un nome alla lista, anche solo "Casa".             |
-| Nome troppo lungo | Massimo 60 caratteri.                                  |
-| Rete              | Nessuna connessione. Controlla la rete e riprova.      |
-| Altro             | Non sono riuscito a creare la lista. Riprova tra poco. |
+| Errore            | Testo                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| Nome vuoto        | Dai un nome alla lista, anche solo "Casa".                                         |
+| Nome troppo lungo | Massimo 60 caratteri.                                                              |
+| Hai già 2 liste   | Hai già 2 liste, il massimo. Per crearne un'altra lasciane una dalle Impostazioni. |
+| Rete              | Nessuna connessione. Controlla la rete e riprova.                                  |
+| Altro             | Non sono riuscito a creare la lista. Riprova tra poco.                             |
 
 Dopo la creazione: con "Per conto mio" si va alla schermata 8, con "Con altre persone" alla 6.
 
@@ -205,20 +207,20 @@ Dopo la creazione: con "Per conto mio" si va alla schermata 8, con "Con altre pe
 
 Si vede dopo "Con altre persone" e, uguale, in Impostazioni della lista.
 
-| Elemento                                             | Testo                                                                       |
-| ---------------------------------------------------- | --------------------------------------------------------------------------- |
-| Titolo                                               | Invita chi fa la spesa con te                                               |
-| Sottotitolo                                          | Chi entra in "{lista}" vede la stessa lista e la aggiorna dal suo telefono. |
-| Bottone                                              | Manda l'invito                                                              |
-| Secondario                                           | Copia il link                                                               |
-| Copiato                                              | Link copiato                                                                |
-| Riquadro del codice                                  | Oppure dài questo codice: **{codice}**                                      |
-| Sotto il codice                                      | Chi lo riceve apre Frigolo e tocca "Ho un codice".                          |
-| Nuovo codice                                         | Nuovo codice                                                                |
-| Conferma nuovo codice                                | Il codice di prima smette di funzionare. Vuoi crearne uno nuovo?            |
-| Bottone conferma                                     | Crea un nuovo codice                                                        |
-| Uscita                                               | Lo faccio dopo                                                              |
-| In Impostazioni, quando la lista ha una sola persona | Solo tu, per ora. Invita qualcuno quando vuoi.                              |
+| Elemento                                             | Testo                                                                                             |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Titolo                                               | Invita chi fa la spesa con te                                                                     |
+| Sottotitolo                                          | Chi entra in "{lista}" vede la stessa lista e la aggiorna dal suo telefono. Al massimo 5 persone. |
+| Bottone                                              | Manda l'invito                                                                                    |
+| Secondario                                           | Copia il link                                                                                     |
+| Copiato                                              | Link copiato                                                                                      |
+| Riquadro del codice                                  | Oppure dài questo codice: **{codice}**                                                            |
+| Sotto il codice                                      | Chi lo riceve apre Frigolo e tocca "Ho un codice". Vale 7 giorni.                                 |
+| Bottone per rinnovare                                | Nuovo invito                                                                                      |
+| Conferma nuovo invito                                | Il codice e il link di prima smettono di funzionare. Vuoi un nuovo invito?                        |
+| Bottone conferma                                     | Crea un nuovo invito                                                                              |
+| Uscita                                               | Lo faccio dopo                                                                                    |
+| In Impostazioni, quando la lista ha una sola persona | Solo tu, per ora. Invita qualcuno quando vuoi.                                                    |
 
 "Manda l'invito" apre la condivisione del telefono (Web Share) con il messaggio qui sotto. Se il
 telefono non la supporta, copia il messaggio e mostra "Messaggio copiato: incollalo dove vuoi".
@@ -276,13 +278,15 @@ Se il link arriva a chi non ha ancora un account, sopra la scheda "Registrati" a
 
 ### Errori
 
-| Caso                            | Testo                                                                   |
-| ------------------------------- | ----------------------------------------------------------------------- |
-| Codice che non esiste o vecchio | Questo codice non funziona. Controlla le lettere o chiedine uno nuovo.  |
-| Link vecchio                    | Questo invito non vale più. Chiedi a chi te l'ha mandato un link nuovo. |
-| Sei già nella lista             | Sei già in questa lista. Ti ci porto.                                   |
-| Troppi tentativi                | Troppi tentativi. Aspetta qualche minuto e riprova.                     |
-| Rete                            | Nessuna connessione. Controlla la rete e riprova.                       |
+| Caso                             | Testo                                                                               |
+| -------------------------------- | ----------------------------------------------------------------------------------- |
+| Codice che non esiste o vecchio  | Questo codice non funziona. Controlla le lettere o chiedine uno nuovo.              |
+| Invito scaduto (più di 7 giorni) | Questo invito è scaduto: dura 7 giorni. Chiedine uno nuovo a chi te l'ha mandato.   |
+| Lista piena (5 persone)          | "{lista}" ha già 5 persone, il massimo. Per entrare deve uscire qualcuno.           |
+| Hai già 2 liste                  | Hai già 2 liste, il massimo. Per entrare in questa lasciane una dalle Impostazioni. |
+| Sei già nella lista              | Sei già in questa lista. Ti ci porto.                                               |
+| Troppi tentativi                 | Troppi tentativi. Aspetta qualche minuto e riprova.                                 |
+| Rete                             | Nessuna connessione. Controlla la rete e riprova.                                   |
 
 ### Conferma
 
@@ -349,7 +353,7 @@ Testi esistenti che cambiano con questa guida (per Fragola, quando tocca i file)
 | `OnboardingScreen.tsx`             | Benvenuto · Prepariamo la casa · ...del partner                                           | Schermate 4 e 5                                                                                        |
 | `AuthGate.tsx`                     | Carico la casa... · Non riesco a caricare la casa                                         | Carico la lista... · Non riesco a caricare la lista                                                    |
 | `SettingsScreen.tsx`               | Invita il partner · Il partner accede a Frigolo e poi inserisce questo codice.            | Schermata 6                                                                                            |
-| `SettingsScreen.tsx`               | Rigenera                                                                                  | Nuovo codice                                                                                           |
+| `SettingsScreen.tsx`               | Rigenera                                                                                  | Nuovo invito                                                                                           |
 | `SettingsScreen.tsx`               | I vostri prodotti                                                                         | I prodotti di questa lista                                                                             |
 | `ProfileSheet.tsx`                 | Nome visualizzato                                                                         | Il tuo nome                                                                                            |
 | `AnalyticsScreen.tsx`, stato vuoto | Le analitiche si costruiscono a ogni "Completa spesa": qui vedrai cosa comprate di più... | Quando tocchi "Spesa finita" qui vedi cosa compri di più, le categorie e ogni quanto ricompri le cose. |
