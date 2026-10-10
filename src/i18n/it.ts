@@ -59,7 +59,7 @@ export const it = {
     resend: 'Mandala di nuovo',
     sent: (email: string) => `Fatto: se ${email} ha un account, ti arriva un'email nuova.`,
     backToLogin: "Torna all'accesso",
-    switchAccount: 'Stai per entrare con un altro account. Continuare?',
+    switchAccount: "Questo link ti fa entrare con l'account a cui è arrivata l'email. Continuare?",
   },
   checkEmail: {
     title: 'Controlla la posta',

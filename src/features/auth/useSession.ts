@@ -43,8 +43,10 @@ export function useSession(): SessionState {
     // prima l'eventuale link dell'email (/auth/confirm), poi la sessione salvata
     verifyAuthLink(async ({ tokenHash, type }) => {
       // un link aperto mentre si è già dentro (magari con un altro account):
-      // prima di cambiare sessione si chiede
+      // prima di cambiare sessione si chiede. Il cambio email riguarda per forza
+      // l'account già aperto: lì non serve chiedere
       if (
+        type !== 'email_change' &&
         readStoredSession(window.localStorage, AUTH_STORAGE_KEY) &&
         !window.confirm(t.authLink.switchAccount)
       ) {
