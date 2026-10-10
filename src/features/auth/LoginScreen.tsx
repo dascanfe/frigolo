@@ -8,13 +8,13 @@ import { Turnstile } from '@/components/Turnstile'
 import type { TurnstileHandle } from '@/components/Turnstile'
 import { readPendingInvite } from '@/features/lists/inviteCode'
 import { it as t } from '@/i18n/it'
-import { describeAuthError } from '@/lib/authErrors'
+import { MIN_PASSWORD_LENGTH, describeAuthError } from '@/lib/authErrors'
 import { supabase } from '@/lib/supabase'
 import { TURNSTILE_SITE_KEY } from '@/lib/turnstile'
 
 type Mode = 'signin' | 'signup'
 
-const MIN_PASSWORD = 8
+const MIN_PASSWORD = MIN_PASSWORD_LENGTH
 
 /**
  * Legge (e ripulisce) l'esito di un link di recupero password aperto in un
