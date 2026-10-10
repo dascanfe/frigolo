@@ -8,14 +8,14 @@ Primo audit fatto (branch `aglio/audit-legale`, issue #11, #12, requisiti per #9
 **non si può aprire al pubblico** finché non sono chiusi A1, A2 e i punti media bloccanti di
 `docs/sicurezza/audit-2026-10.md`. Con le registrazioni chiuse il rischio attuale è basso.
 
-Revisione della PR #16 e della correzione urgente fatta (`docs/sicurezza/revisione-pr16.md`):
-correzione urgente **approvata** (chiude A1 e A2, va in produzione per prima); PR #16 **approvata
-con correzioni** (R1 foto da host esterni da chiudere prima dell'unione; R2 forza bruta sui codici
-blocca l'apertura).
+PR #16, secondo giro (`docs/sicurezza/revisione-pr16.md`): correzione urgente **approvata**,
+PR #16 **approvata con correzioni**. I punti aperti sono stati dati solo al PM (regola: niente
+vulnerabilità aperte in file, PR, commenti o issue pubbliche).
 
 ## Cosa resta da fare
 
-- Verificare la correzione di R1 (e R3, R7) nella PR #16 e la rinumerazione 0018/0019.
+- Verificare le correzioni chieste a Basilio sulla PR #16 (terzo giro), poi aggiornare il file
+  di revisione con i punti chiusi.
 - Dopo il deploy della correzione urgente: ricontrollare in produzione (sola lettura) grant di
   `household_members` e policy di `storage.objects`.
 - Test RLS in locale su M1, B1 e script di regressione in `supabase/tests/` (A1, A2, M2 già provati
@@ -36,15 +36,21 @@ blocca l'apertura).
 
 ## Diario
 
+### 2026-10-10 - Secondo giro sulla PR #16
+
+- Catena 0001-0020 in locale, prove in transazioni annullate con gli utenti di `seed_dev.sql`;
+  alcune chiamate all'API locale firmando un JWT con la chiave `oct` del JWKS di
+  `PGRST_JWT_SECRET` (il segreto locale ora è un JWKS, non una stringa). Nessuna scrittura.
+- Nuova regola: i problemi aperti vanno solo al PM, nei file pubblici solo verdetto e punti
+  corretti. Il file di revisione è stato riscritto di conseguenza.
+
 ### 2026-10-10 - Revisione PR #16 e correzione urgente
 
 - Prove in locale su `supabase_db_frigolo` (migration di Basilio applicate), sempre dentro
   `begin; ... rollback;`, impersonando gli utenti con `set_config('role')` e
   `request.jwt.claims`. Correzione urgente applicata nella stessa transazione per provarne la
   compatibilità. Script di Basilio `supabase/checks/profili_liste.sql`: passa.
-- Scoperta: A1 si riproduce solo con un update **senza filtro**; con un filtro Postgres controlla
-  anche la policy di select sulla riga nuova e l'update fallisce. Corretto il passo nell'audit.
-- `is_valid_avatar_url` controlla il percorso ma non l'host: R1.
+- Precisata la riproduzione di A1 (dettagli solo al PM).
 - Lezione: nei test con psql, i file inclusi con `\i` devono lasciare il ruolo a `postgres`,
   altrimenti le migration falliscono con "must be owner".
 
