@@ -8,7 +8,13 @@ import { it as t } from '@/i18n/it'
 import { memberColor, memberColorName, onMemberColor } from '@/lib/colors'
 import { MEMBER_COLOR_TOKENS } from '@/types/domain'
 import type { MemberColorToken, Profile } from '@/types/domain'
-import { AvatarFileError, avatarPublicUrl, saveProfile, uploadAvatar } from './profileApi'
+import {
+  AvatarFileError,
+  avatarPublicUrl,
+  removeAvatarFile,
+  saveProfile,
+  uploadAvatar,
+} from './profileApi'
 
 function isMemberColor(value: string | null): value is MemberColorToken {
   return (MEMBER_COLOR_TOKENS as readonly string[]).includes(value ?? '')
@@ -54,7 +60,10 @@ export function ProfileForm({
     setError(null)
     setUploading(true)
     try {
-      setAvatarPath(await uploadAvatar(userId, file))
+      const uploaded = await uploadAvatar(userId, file)
+      // una foto caricata ora e subito sostituita non serve più
+      if (avatarPath !== initialAvatarPath) void removeAvatarFile(userId, avatarPath)
+      setAvatarPath(uploaded)
     } catch (uploadError) {
       setError(uploadError instanceof AvatarFileError ? t.profile.photoBad : t.profile.photoFailed)
     } finally {
@@ -73,6 +82,8 @@ export function ProfileForm({
     setError(null)
     try {
       const profile = await saveProfile({ displayName: name, color, avatarPath })
+      // la foto di prima (anche tornando alla mascotte) si toglie dal bucket
+      if (initialAvatarPath !== avatarPath) void removeAvatarFile(userId, initialAvatarPath)
       await onSaved(profile)
     } catch {
       setError(t.profile.saveFailed)
@@ -116,7 +127,10 @@ export function ProfileForm({
               variant="ghost"
               icon={<RotateCcw size={16} aria-hidden="true" />}
               className="h-9 text-sm"
-              onClick={() => setAvatarPath(null)}
+              onClick={() => {
+                if (avatarPath !== initialAvatarPath) void removeAvatarFile(userId, avatarPath)
+                setAvatarPath(null)
+              }}
               disabled={busy}
             >
               {t.profile.photoRemove}

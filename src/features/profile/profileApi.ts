@@ -25,12 +25,26 @@ export async function uploadAvatar(userId: string, file: File): Promise<string> 
   } catch {
     throw new AvatarFileError('immagine non leggibile')
   }
-  const path = `${userId}/avatar-${Date.now()}.webp`
+  const path = `${userId}/${crypto.randomUUID()}.webp`
   const { error } = await supabase.storage
     .from('avatars')
     .upload(path, blob, { contentType: 'image/webp', upsert: true })
   if (error) throw error
   return path
+}
+
+/**
+ * Toglie dal bucket una foto della propria cartella che non serve più (la
+ * precedente dopo un cambio, o una caricata e poi scartata). Gli errori si
+ * ignorano: al peggio resta un file orfano che il database ripulisce.
+ */
+export async function removeAvatarFile(userId: string, path: string | null): Promise<void> {
+  if (!path || !path.startsWith(`${userId}/`)) return
+  try {
+    await supabase.storage.from('avatars').remove([path])
+  } catch {
+    // niente da fare
+  }
 }
 
 export interface ProfileInput {
