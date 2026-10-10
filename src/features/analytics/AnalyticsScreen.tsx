@@ -62,7 +62,7 @@ export function AnalyticsScreen() {
       <header className="px-4 pt-6 pb-1">
         <h1 className="font-display text-4xl font-bold text-primary">Analitiche</h1>
         <p className="text-sm text-secondary">
-          Cosa comprate, quanto spesso, e chi lo mette in lista.
+          Cosa si compra, quanto spesso e chi lo mette in lista.
         </p>
       </header>
 
@@ -119,7 +119,7 @@ export function AnalyticsScreen() {
             <dl className="grid grid-cols-3 gap-2 px-4">
               <Kpi
                 icon={Package}
-                label="Articoli"
+                label="Prodotti"
                 value={summary.data ? Number(summary.data.total_items) : null}
               />
               <Kpi
@@ -166,7 +166,7 @@ export function AnalyticsScreen() {
             <Card
               icon={Repeat}
               title="Frequenza di acquisto"
-              hint="Cosa avete comprato nell'ultimo mese, e quante volte"
+              hint="Cosa è stato comprato nell'ultimo mese, e quante volte"
             >
               <PurchaseFrequencyTable now={now} categoryId={categoryId} />
             </Card>
@@ -252,8 +252,8 @@ function EmptyHistory() {
       </div>
       <h2 className="font-display text-2xl font-bold text-primary">Ancora nessuna spesa</h2>
       <p className="max-w-xs text-sm text-secondary">
-        Le analitiche si costruiscono a ogni "Completa spesa": qui vedrai cosa comprate di più, le
-        categorie, l'andamento e ogni quanto ricomprate le cose.
+        Quando tocchi "Spesa finita" qui vedi cosa compri di più, le categorie e ogni quanto
+        ricompri le cose.
       </p>
       <LinkButton
         to="/catalogo"

@@ -33,7 +33,7 @@ const STATE_LABEL: Record<TileState, string> = {
 }
 
 const HINT_LABEL: Record<TileHint, string> = {
-  habit: 'suggerito dalle vostre abitudini',
+  habit: 'suggerito dalle abitudini di acquisto',
   season: 'di stagione',
 }
 

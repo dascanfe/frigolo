@@ -163,10 +163,7 @@ function recurrenceRule(stats: ItemStats | undefined): RuleScore | null {
   return {
     score: WEIGHT_RECURRENCE * Math.min(ratio, RECURRENCE_MAX_RATIO),
     kind: 'habit',
-    reason:
-      every === 1
-        ? 'Di solito lo comprate ogni giorno'
-        : `Di solito lo comprate ogni ${every} giorni`,
+    reason: every === 1 ? 'Di solito ogni giorno' : `Di solito ogni ${every} giorni`,
   }
 }
 

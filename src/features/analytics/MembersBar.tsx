@@ -8,7 +8,7 @@ interface MembersBarProps {
   rows: MembersRow[]
 }
 
-/** Chi ha aggiunto cosa: barra comparativa con i colori dei membri */
+/** Chi ha aggiunto cosa: barra comparativa con i colori delle persone */
 export function MembersBar({ rows }: MembersBarProps) {
   const { members } = useHousehold()
   const total = rows.reduce((sum, r) => sum + Number(r.added_count), 0)
@@ -54,7 +54,7 @@ export function MembersBar({ rows }: MembersBarProps) {
             <div className="flex flex-col leading-tight">
               <span className="text-sm font-bold text-primary">{entry.name}</span>
               <span className="text-xs text-secondary">
-                {entry.count} {entry.count === 1 ? 'articolo' : 'articoli'} (
+                {entry.count} {entry.count === 1 ? 'prodotto' : 'prodotti'} (
                 {formatPercent(entry.fraction)})
               </span>
             </div>

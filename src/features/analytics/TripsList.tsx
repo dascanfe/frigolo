@@ -56,7 +56,7 @@ export function TripsList({ trips, now }: TripsListProps) {
                     <span aria-hidden="true">&middot;</span>
                   </>
                 )}
-                {count} {count === 1 ? 'articolo' : 'articoli'}
+                {count} {count === 1 ? 'prodotto' : 'prodotti'}
                 {trip.completed_by === null && (
                   <>
                     <span aria-hidden="true">&middot;</span>
@@ -103,7 +103,7 @@ export function TripsList({ trips, now }: TripsListProps) {
                         {
                           purchaseId: purchase.id,
                           tripId: trip.id,
-                          // l'ultimo articolo si porta via la spesa intera
+                          // l'ultimo prodotto si porta via la spesa intera
                           last: trip.purchases.length === 1,
                         },
                         { onError: fail },
@@ -178,7 +178,7 @@ export function TripsList({ trips, now }: TripsListProps) {
                 <span className="text-xs text-secondary">
                   {month.trips.length === 0
                     ? 'nessuna spesa'
-                    : `${month.trips.length} ${month.trips.length === 1 ? 'spesa' : 'spese'} · ${articles} ${articles === 1 ? 'articolo' : 'articoli'}`}
+                    : `${month.trips.length} ${month.trips.length === 1 ? 'spesa' : 'spese'} · ${articles} ${articles === 1 ? 'prodotto' : 'prodotti'}`}
                 </span>
                 <ChevronDown
                   size={18}
@@ -214,7 +214,7 @@ function tripDate(trip: TripRow): Date {
 
 /**
  * Spese raggruppate per mese (dal più recente). Il mese corrente c'è sempre,
- * anche vuoto, così si vede subito che questo mese non avete ancora fatto spese.
+ * anche vuoto, così si vede subito che questo mese non ci sono ancora spese.
  */
 function groupByMonth(trips: TripRow[], now: Date): MonthGroup[] {
   const keyOf = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
