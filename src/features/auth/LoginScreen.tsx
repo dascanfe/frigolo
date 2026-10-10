@@ -48,7 +48,10 @@ export function LoginScreen() {
   // captcha: con la site key serve un token nuovo per ogni invio
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const turnstile = useRef<TurnstileHandle>(null)
-  const captchaReady = !TURNSTILE_SITE_KEY || captchaToken !== null
+  const [captchaUnavailable, setCaptchaUnavailable] = useState(false)
+  // senza script (rete, blocchi) si prova lo stesso: se Supabase vuole il
+  // captcha risponde con un errore che spiega cosa fare
+  const captchaReady = !TURNSTILE_SITE_KEY || captchaToken !== null || captchaUnavailable
   const captcha = captchaToken ?? undefined
   const renewCaptcha = () => turnstile.current?.reset()
 
@@ -144,7 +147,12 @@ export function LoginScreen() {
             {error ?? notice}
           </p>
         )}
-        <Turnstile ref={turnstile} onToken={setCaptchaToken} action="resend" />
+        <Turnstile
+          ref={turnstile}
+          onToken={setCaptchaToken}
+          onUnavailable={() => setCaptchaUnavailable(true)}
+          action="resend"
+        />
         <div className="flex flex-col items-center gap-1">
           <Button
             variant="secondary"
@@ -287,7 +295,12 @@ export function LoginScreen() {
           error={error}
           hint={mode === 'signup' ? t.login.passwordHint : undefined}
         />
-        <Turnstile ref={turnstile} onToken={setCaptchaToken} action={mode} />
+        <Turnstile
+          ref={turnstile}
+          onToken={setCaptchaToken}
+          onUnavailable={() => setCaptchaUnavailable(true)}
+          action={mode}
+        />
         <Button type="submit" fullWidth disabled={!canSubmit}>
           {busy
             ? t.common.wait
