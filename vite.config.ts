@@ -22,7 +22,7 @@ export default defineConfig({
     VitePWA({
       // "prompt": l'utente decide quando aggiornare (bottone in Impostazioni)
       registerType: 'prompt',
-      includeAssets: ['favicon.png', 'mascot.png', 'icons/*.png', 'avatars/*.png'],
+      includeAssets: ['favicon.png', 'mascot.png', 'mascot-avatar.webp', 'icons/*.png'],
       manifest: {
         id: '/',
         name: 'Frigolo',
