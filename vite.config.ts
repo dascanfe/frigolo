@@ -9,7 +9,6 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
   version: string
 }
 
-const ONE_YEAR = 365 * 24 * 60 * 60
 const ONE_WEEK = 7 * 24 * 60 * 60
 
 // https://vite.dev/config/
@@ -57,23 +56,6 @@ export default defineConfig({
         // prende il controllo della pagina gia' alla prima visita
         clientsClaim: true,
         runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'google-fonts-css',
-              expiration: { maxEntries: 4, maxAgeSeconds: ONE_YEAR },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-files',
-              expiration: { maxEntries: 20, maxAgeSeconds: ONE_YEAR },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
           {
             // letture Supabase (tabelle e RPC in GET): rete prima, cache se manca
             urlPattern: /^https:\/\/[a-z0-9-]+\.supabase\.co\/rest\/v1\/.*/i,
