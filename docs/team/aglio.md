@@ -4,37 +4,39 @@ Aggiornato da Aglio alla fine di ogni incarico. Il più recente in alto.
 
 ## Stato
 
-Primo audit fatto (branch `aglio/audit-legale`, issue #11, #12, requisiti per #9). Verdetto:
-**non si può aprire al pubblico** finché non sono chiusi A1, A2 e i punti media bloccanti di
-`docs/sicurezza/audit-2026-10.md`. Con le registrazioni chiuse il rischio attuale è basso.
-
-PR #16, secondo giro (`docs/sicurezza/revisione-pr16.md`): correzione urgente **approvata**,
-PR #16 **approvata con correzioni**. I punti aperti sono stati dati solo al PM (regola: niente
-vulnerabilità aperte in file, PR, commenti o issue pubbliche).
+- Audit di ottobre: A1 e A2 **corretti in produzione** (0017, PR #17) e documentati in
+  `docs/sicurezza/audit-2026-10.md`; gli altri punti sono seguiti in privato (regola del repo
+  pubblico). Non si può ancora aprire al pubblico.
+- PR #16 (Basilio): **approvata con correzioni** (`docs/sicurezza/revisione-pr16.md`).
+- PR #18 (Fragola): **approvata con correzioni** (`docs/sicurezza/revisione-pr18.md`).
+- PR #15 (mia): privacy, termini e registro aggiornati con le decisioni di Daniele; CSP con
+  Turnstile e senza Google Fonts, sempre `Report-Only`.
 
 ## Cosa resta da fare
 
-- Verificare le correzioni chieste a Basilio sulla PR #16 (terzo giro), poi aggiornare il file
-  di revisione con i punti chiusi.
-- Dopo il deploy della correzione urgente: ricontrollare in produzione (sola lettura) grant di
-  `household_members` e policy di `storage.objects`.
-- Test RLS in locale su M1, B1 e script di regressione in `supabase/tests/` (A1, A2, M2 già provati
-  a mano nella revisione della PR #16).
-- Dopo il deploy degli header: verificare la CSP in produzione su tutte le schermate e passarla da
-  `Report-Only` a effettiva; aggiornarla per Turnstile, analitiche e font in locale.
-- Verificare le correzioni di Basilio e Fragola sui punti dell'audit.
+- Terzo giro di Basilio sulla PR #16 (limiti 2 liste e 5 persone, captcha, conferma email,
+  template, export e cancellazione account): revisione rapida quando il PM avvisa.
+- Verificare le correzioni chieste su #16 e #18, poi documentare i punti chiusi.
+- Dopo il deploy degli header: verificare la CSP in produzione su tutte le schermate (con
+  Turnstile) e passarla da `Report-Only` a effettiva.
+- Script di regressione in `supabase/tests/` eseguibili a ogni migration.
 - Revisione privacy del tracciamento di Pepe (Fase 2).
 
 ## Domande aperte per Daniele
 
-1. Dati per i documenti legali: email di contatto per la privacy e indirizzo postale da pubblicare.
-2. Cancellazione automatica degli account inattivi: va bene dopo 24 mesi, con avviso 30 giorni prima?
-3. Età minima 14 anni: va bene?
-4. Vuoi far rivedere privacy e termini da un professionista prima del lancio? I punti sono in fondo
-   ai due documenti.
-5. DPA dei fornitori: vanno accettati dal pannello di Supabase e Vercel (serve il tuo account).
+1. Città e provincia da pubblicare nei documenti legali (segnaposto `[CITTÀ (PROVINCIA)]`).
+2. DPA dei fornitori (Supabase, Vercel, Resend, Cloudflare): vanno accettati dai pannelli.
+3. Revisione professionale di privacy e termini prima del lancio (consigliata, decisa).
 
 ## Diario
+
+### 2026-10-10 - Revisione PR #18 e aggiornamento della PR #15
+
+- PR #16 senza commit nuovi rispetto al secondo giro: verdetto invariato.
+- PR #18 letta sul branch (sessione, cache, inviti, foto, service worker); verdetto pubblico solo
+  con i punti verificati.
+- Merge di `origin/main` nel mio branch; audit ridotto ai punti corretti in produzione (A1, A2);
+  privacy, termini e registro con le decisioni di Daniele; CSP aggiornata.
 
 ### 2026-10-10 - Secondo giro sulla PR #16
 
