@@ -14,12 +14,14 @@
 --    (ruolo authenticated). Le funzioni security definer e i job notturni
 --    (es. auto_complete_trips) non sono limitati, così un tetto raggiunto non
 --    blocca mai il salvataggio della spesa:
---      - 500 prodotti personalizzati per lista;
---      - 300 voci nella lista attiva;
+--      - 500 prodotti creati dalle persone della lista;
+--      - 300 prodotti nella lista attiva (da comprare + nel carrello);
 --      - 30 spese create in 24 ore per lista;
---      - 300 acquisti per spesa.
---    Il limite di liste per utente (50) e di membri per lista (20) è nelle
---    RPC del 0019.
+--      - 300 prodotti per spesa.
+--    Le quote valgono su insert e update.
+--    Ogni errore ha in HINT una chiave stabile (items_quota, entries_quota,
+--    trips_quota, purchases_quota). Il limite di liste per utente (2) e di
+--    persone per lista (5) è nelle RPC del 0019.
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -37,6 +39,9 @@ $$;
 revoke execute on function public.text_array_max_len(text[], int) from public, anon;
 grant execute on function public.text_array_max_len(text[], int) to authenticated;
 
+-- sostituito da household_members_color_palette_check
+alter table public.household_members drop constraint if exists household_members_color_len_check;
+
 do $$
 declare
   c record;
@@ -49,7 +54,8 @@ begin
       ('purchases',         'purchases_unit_len_check',           'unit is null or char_length(unit) <= 10'),
       ('purchases',         'purchases_quantity_check',           'quantity > 0 and quantity <= 9999'),
       ('items',             'items_icon_len_check',               'char_length(icon) <= 40'),
-      ('household_members', 'household_members_color_len_check',  'color is null or char_length(color) <= 20'),
+      ('items',             'items_season_months_len_check',      'cardinality(season_months) <= 12'),
+      ('household_members', 'household_members_color_palette_check', 'color is null or color = any (public.member_colors())'),
       ('household_members', 'household_members_avatar_len_check', 'avatar_url is null or char_length(avatar_url) <= 300')
     ) as t(tbl, con, expr)
   loop
@@ -84,7 +90,7 @@ set search_path = ''
 as $$
 begin
   if tg_table_name = 'shopping_trips' then
-    new.created_at := now();
+    new.created_at := case when tg_op = 'INSERT' then now() else old.created_at end;
   end if;
 
   -- solo le scritture dirette dei client; le funzioni definer girano come postgres
@@ -92,24 +98,39 @@ begin
     return new;
   end if;
 
+  -- negli update il controllo serve solo se cambia la lista o la spesa
+  if tg_op = 'UPDATE' then
+    if tg_table_name = 'purchases' then
+      if new.trip_id is not distinct from old.trip_id then
+        return new;
+      end if;
+    elsif new.household_id is not distinct from old.household_id then
+      return new;
+    end if;
+  end if;
+
   if tg_table_name = 'items' then
     if new.household_id is not null and
        (select count(*) from public.items where household_id = new.household_id) >= 500 then
-      raise exception 'Troppi prodotti personalizzati in questa lista (massimo 500)' using errcode = 'P0001';
+      raise exception 'Questa lista ha già 500 prodotti creati da voi: archiviane qualcuno.'
+        using errcode = 'P0001', hint = 'items_quota';
     end if;
   elsif tg_table_name = 'list_entries' then
     if (select count(*) from public.list_entries where household_id = new.household_id) >= 300 then
-      raise exception 'Troppe voci nella lista (massimo 300)' using errcode = 'P0001';
+      raise exception 'Ci sono già 300 prodotti in lista: è il massimo.'
+        using errcode = 'P0001', hint = 'entries_quota';
     end if;
   elsif tg_table_name = 'shopping_trips' then
     if (select count(*) from public.shopping_trips
         where household_id = new.household_id
           and created_at > now() - interval '24 hours') >= 30 then
-      raise exception 'Troppe spese registrate oggi in questa lista' using errcode = 'P0001';
+      raise exception 'Oggi in questa lista sono già state registrate 30 spese: riprova domani.'
+        using errcode = 'P0001', hint = 'trips_quota';
     end if;
   elsif tg_table_name = 'purchases' then
     if (select count(*) from public.purchases where trip_id = new.trip_id) >= 300 then
-      raise exception 'Troppi articoli in questa spesa (massimo 300)' using errcode = 'P0001';
+      raise exception 'In una spesa ci stanno al massimo 300 prodotti.'
+        using errcode = 'P0001', hint = 'purchases_quota';
     end if;
   end if;
 
@@ -121,20 +142,28 @@ revoke execute on function public.enforce_household_quotas() from public, anon, 
 
 drop trigger if exists items_quota on public.items;
 create trigger items_quota
-  before insert on public.items
+  before insert or update of household_id on public.items
   for each row execute function public.enforce_household_quotas();
 
 drop trigger if exists list_entries_quota on public.list_entries;
 create trigger list_entries_quota
-  before insert on public.list_entries
+  before insert or update of household_id on public.list_entries
   for each row execute function public.enforce_household_quotas();
 
 drop trigger if exists shopping_trips_quota on public.shopping_trips;
 create trigger shopping_trips_quota
-  before insert on public.shopping_trips
+  before insert or update on public.shopping_trips
   for each row execute function public.enforce_household_quotas();
 
 drop trigger if exists purchases_quota on public.purchases;
 create trigger purchases_quota
-  before insert on public.purchases
+  before insert or update of trip_id on public.purchases
   for each row execute function public.enforce_household_quotas();
+
+-- -----------------------------------------------------------------------------
+-- Update per colonna: i client aggiornano delle spese solo le colonne che
+-- servono a complete_shopping_trip; gli acquisti non si modificano.
+-- -----------------------------------------------------------------------------
+revoke update on public.purchases from anon, authenticated;
+revoke update on public.shopping_trips from anon, authenticated;
+grant update (store, started_at, completed_at, completed_by) on public.shopping_trips to authenticated;
