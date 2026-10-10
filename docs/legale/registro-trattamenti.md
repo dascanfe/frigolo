@@ -84,11 +84,11 @@
 
 ## Fornitori (responsabili e titolari autonomi)
 
-| Fornitore       | Ruolo             | Servizio                           | Accordo da accettare      | Stato           |
-| --------------- | ----------------- | ---------------------------------- | ------------------------- | --------------- |
-| Supabase Inc.   | Responsabile      | Database, Auth, Storage, Realtime  | DPA dal pannello Supabase | [DA FIRMARE]    |
-| Vercel Inc.     | Responsabile      | Hosting dell'app                   | DPA di Vercel             | [DA VERIFICARE] |
-| Resend          | Responsabile      | Email di servizio (dascanfe.com)   | DPA di Resend             | [DA FIRMARE]    |
-| Cloudflare Inc. | Responsabile      | Turnstile (registrazione, accesso) | DPA di Cloudflare         | [DA FIRMARE]    |
-| Aruba S.p.A.    | Responsabile      | Hosting di dascanfe.com            | Condizioni di Aruba       | [DA VERIFICARE] |
-| PayPal (Europe) | Titolare autonomo | Donazioni                          | Nessuno                   | Attivo          |
+| Fornitore                     | Ruolo             | Servizio                           | Accordo da accettare                    | Stato                      |
+| ----------------------------- | ----------------- | ---------------------------------- | --------------------------------------- | -------------------------- |
+| Supabase Inc.                 | Responsabile      | Database, Auth, Storage, Realtime  | DPA dal pannello Supabase               | [DA FIRMARE]               |
+| Vercel Inc.                   | Responsabile      | Hosting dell'app                   | DPA di Vercel (solo Pro/Enterprise)     | [DA DECIDERE: piano Hobby] |
+| Resend (Plus Five Five, Inc.) | Responsabile      | Email di servizio (dascanfe.com)   | DPA di Resend, vincolante con i termini | Attivo all'iscrizione      |
+| Cloudflare Inc.               | Responsabile      | Turnstile (registrazione, accesso) | DPA di Cloudflare                       | [DA FIRMARE]               |
+| Aruba S.p.A.                  | Responsabile      | Hosting di dascanfe.com            | Condizioni di Aruba                     | [DA VERIFICARE]            |
+| PayPal (Europe)               | Titolare autonomo | Donazioni                          | Nessuno                                 | Attivo                     |

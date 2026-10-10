@@ -8,13 +8,33 @@ produzione.
 
 ## Verdetto
 
-| Cosa                                                               | Verdetto                     |
-| ------------------------------------------------------------------ | ---------------------------- |
-| Correzione urgente `0017_security_hotfix` (PR #17)                 | **Approvata**                |
-| PR #16 (`0018_profiles`, `0019_multi_lists`, `0020_limits_quotas`) | **Approvata con correzioni** |
+| Cosa                                                                            | Verdetto      |
+| ------------------------------------------------------------------------------- | ------------- |
+| Correzione urgente `0017_security_hotfix` (PR #17)                              | **Approvata** |
+| PR #16 (migration `0018`-`0023`, edge function `delete-account`, `config.toml`) | **Approvata** |
 
-Ordine di rilascio: prima la `0017` da sola, poi `0018`-`0020`. La PR #16 si può unire dopo le
-correzioni segnalate al PM e una verifica di Aglio.
+Terzo giro (2026-10-10): le correzioni chieste nel secondo giro sono state verificate in locale.
+La `0017` è in produzione; la PR #16 segue l'ordine di "Apertura al pubblico" in
+`docs/team/basilio.md`. Alcuni suggerimenti di gravità bassa, non bloccanti, sono stati dati al
+PM.
+
+## Terzo giro: punti verificati
+
+- Limiti di 2 liste per persona e 5 persone per lista.
+- Inviti: controlli rafforzati sul limite dei tentativi, uguali per codici giusti e sbagliati;
+  contatore giornaliero globale per l'allarme.
+- Quote estese agli aggiornamenti; acquisti non modificabili dai client; mesi di stagione al
+  massimo 12.
+- Foto: al massimo 5 file per persona; `avatar_orphans()` eseguibile solo da `service_role`; lo
+  script `scripts/cleanup-avatar-orphans.mjs` di default conta soltanto, prende la chiave solo
+  dall'ambiente e non la stampa; non tocca le foto usate da un profilo o da una riga membro.
+- `export_my_data()`: solo i dati delle proprie liste, senza identificativi né nomi degli altri.
+- Edge function `delete-account`: JWT verificato dal gateway e di nuovo con `auth.getUser`, cancella
+  solo l'utente del token, conferma esplicita, metodi e origini limitati, errori senza dettagli,
+  nessun log di dati o chiavi.
+- `config.toml`: conferma email, cambio password sicuro, password di almeno 10 caratteri,
+  template in italiano, SMTP e captcha gestiti solo dal pannello, registrazioni chiuse fino
+  all'ultimo passo.
 
 ## Come è stato verificato
 
