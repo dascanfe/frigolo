@@ -75,9 +75,80 @@ idempotenti: rilanciare il seed non crea duplicati.
 | `0013_item_icons`          | Icone dedicate (lamponi, mirtilli, mozzarella, piadine)             |
 | `0014_accenti`             | Accenti veri nei nomi (Caffè, Tè, Pancarrè, Alì)                    |
 | `0015`-`0016`              | Salvataggio automatico notturno della spesa (funzione + pg_cron)    |
+| `0017_profiles`            | Profilo unico per utente (nome, foto, colore) e migrazione dei dati |
+| `0018_multi_lists`         | Liste multiple: crea, entra, rinomina, lascia, elimina, invito      |
 | `seed.sql`                 | Categorie e catalogo base italiano                                  |
 
-### Opzione A: Supabase CLI (consigliata)
+### Sviluppo in locale (consigliato)
+
+Ogni migration si prova prima qui. Serve Docker (Docker Desktop o OrbStack) acceso e la
+[Supabase CLI](https://supabase.com/docs/guides/local-development).
+
+```bash
+supabase start
+```
+
+La prima volta scarica le immagini (qualche minuto), poi avvia Postgres, Auth, Storage,
+Realtime e Studio, applica tutte le migration in ordine e il seed. `supabase status` mostra
+URL e chiavi locali: per far girare l'app contro il database locale crea `.env.local`
+(ignorato da git, ha la precedenza su `.env`) con
+
+```bash
+VITE_SUPABASE_URL=http://127.0.0.1:54321
+VITE_SUPABASE_ANON_KEY=<la "anon key" di supabase status>
+```
+
+| Cosa                      | Dove                                                      |
+| ------------------------- | --------------------------------------------------------- |
+| API (PostgREST, Auth)     | `http://127.0.0.1:54321`                                  |
+| Postgres                  | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Studio                    | `http://127.0.0.1:54323`                                  |
+| Email catturate (Mailpit) | `http://127.0.0.1:54324`                                  |
+
+Comandi utili:
+
+```bash
+supabase db reset                      # ricrea il DB da zero: tutte le migration + seed
+supabase migration new <nome>          # nuovo file in supabase/migrations (poi rinominalo NNNN_nome.sql)
+supabase migration up --local          # applica solo le migration nuove, senza perdere i dati
+supabase db reset --version 0016       # riparte fermandosi a una migration (per provare la successiva su dati finti)
+supabase db lint --local               # controlla le funzioni plpgsql
+supabase stop                          # spegne tutto (i dati restano nel volume Docker)
+```
+
+Tipi TypeScript dal database locale:
+
+```bash
+supabase gen types typescript --local --schema public > src/types/database.ts
+```
+
+Il generatore locale omette il blocco `__InternalSupabase` (`PostgrestVersion: "14.5"`) in
+cima al tipo `Database`: rimettilo a mano, così il diff resta pulito e il client tipizzato
+non cambia.
+
+In locale `enable_signup = false` vale come in produzione: gli utenti di prova si creano
+via SQL o con l'API admin (chiave `service_role` di `supabase status`, solo in locale).
+pg_cron funziona anche in locale: i job `frigolo-auto-complete-trips` e
+`frigolo-cron-cleanup` compaiono in `cron.job`.
+
+Verifiche ripetibili di profili e liste multiple (5 utenti finti, RLS, RPC, tutto in una
+transazione annullata alla fine):
+
+```bash
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/profili_liste.sql
+```
+
+Per provare la migrazione dei profili su dati simili a quelli di produzione:
+
+```bash
+supabase db reset --version 0016
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/dati_pre_0017.sql
+supabase migration up --local
+```
+
+### Produzione: Supabase CLI
+
+Solo dopo la prova in locale e la revisione di Aglio, con l'ok di Daniele.
 
 ```bash
 supabase login
@@ -98,7 +169,7 @@ rigenerare i tipi TypeScript dopo una modifica allo schema:
 supabase gen types typescript --linked --schema public > src/types/database.ts
 ```
 
-### Opzione B: SQL editor del dashboard
+### Alternativa: SQL editor del dashboard
 
 Apri il progetto su [supabase.com/dashboard](https://supabase.com/dashboard), vai in
 **SQL Editor > New query** e incolla ed esegui, nell'ordine, il contenuto di:
@@ -123,7 +194,7 @@ select
   (select count(*) from pg_policies where schemaname = 'public') as policy;
 ```
 
-Atteso: 14 categorie, 234 prodotti, 13 policy.
+Atteso: 14 categorie, 234 prodotti, 15 policy.
 
 ## Autenticazione
 
@@ -142,6 +213,41 @@ Una volta creati i due account si può chiudere la registrazione impostando
 
 Il primo accesso porta all'onboarding: si crea la casa (household) oppure si entra in
 quella del partner con il codice di 8 caratteri mostrato nelle Impostazioni.
+
+## Profili e liste (API)
+
+Nella UI una "lista" è una riga di `households`: le tabelle non cambiano nome.
+
+**Profilo** (`profiles`, uno per utente, uguale in tutte le liste). Nasce da solo alla
+registrazione: il nome arriva da `signUp({ options: { data: { display_name } } })`; se
+manca, il nome è "Utente" e `completed_at` è null, cioè il profilo è da completare
+nell'onboarding. Ognuno legge il proprio profilo e quelli di chi condivide almeno una
+lista con lui, e modifica solo il proprio (`display_name` 1-40 caratteri, `color` token
+`c-...`, `avatar_url` solo un file della propria cartella del bucket `avatars`).
+
+| Chiamata                                                                             | Cosa fa                                                                                          |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `from('profiles').select().eq('id', userId).single()`                                | Il mio profilo (`completed_at` null = da completare)                                             |
+| `rpc('update_my_profile', { p_display_name, p_color, p_avatar_url })`                | Aggiorna il profilo (null = non cambiare, `p_avatar_url: ''` = togli la foto). Lo segna completo |
+| `from('households').select('*, household_members(user_id, joined_at, profiles(*))')` | Le mie liste con membri e profili                                                                |
+| `rpc('create_household', { p_name })`                                                | Nuova lista, ritorna l'id                                                                        |
+| `rpc('get_household_invite', { p_code })`                                            | Anteprima di un invito: nome, numero di membri, se ci sei già (vuoto = codice sbagliato)         |
+| `rpc('join_household', { p_code })`                                                  | Entra con codice o link (maiuscole, spazi e trattini ignorati). Se ci sei già ritorna l'id       |
+| `rpc('rename_household', { p_household_id, p_name })`                                | Rinomina                                                                                         |
+| `rpc('rotate_join_code', { p_household_id })`                                        | Nuovo codice di invito, il vecchio smette di funzionare                                          |
+| `rpc('leave_household', { p_household_id })`                                         | Esci. Ritorna `true` se eri l'ultimo membro: la lista è stata eliminata con tutti i dati         |
+| `rpc('delete_household', { p_household_id })`                                        | Elimina con tutti i dati, solo se sei l'unico membro                                             |
+
+Regole: al massimo 50 liste per utente e 20 membri per lista. Una lista che resta senza
+membri (anche per account cancellati) viene eliminata. Il codice di invito si cambia solo
+con `rotate_join_code`. Link di invito: `https://<app>/invito/<join_code>`; non serve altro
+lato backend, il frontend conserva il codice durante registrazione e conferma email, poi
+chiama `join_household`. Realtime: `profiles` è nella pubblicazione (gli eventi rispettano
+la RLS).
+
+Le colonne `display_name`, `color` e `avatar_url` di `household_members` sono deprecate:
+restano allineate al profilo da trigger finché il frontend in produzione le usa, poi una
+migration futura le toglierà.
 
 ## Suggerimenti
 
