@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="light" />
     <title>Scegli una nuova password</title>
   </head>
-  <!-- Frigolo: recovery. Testi in docs/comunicazione/email.md. -->
+  <!-- Frigolo: recovery. Testi in docs/comunicazione/email.md. Il link porta a /auth/confirm dell app (verifyOtp con token_hash e type=recovery). -->
   <body style="margin: 0; padding: 0; background-color: #f4ece2">
     <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all">
       Hai chiesto di cambiare la password di Frigolo.
@@ -63,7 +63,7 @@
                   <tr>
                     <td align="center" style="border-radius: 999px; background-color: #a85641">
                       <a
-                        href="{{ .ConfirmationURL }}"
+                        href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery"
                         style="
                           display: inline-block;
                           padding: 14px 28px;
@@ -94,7 +94,11 @@
                 "
               >
                 Il bottone non funziona? Copia questo link nel browser:<br />
-                <a href="{{ .ConfirmationURL }}" style="color: #a85641">{{ .ConfirmationURL }}</a>
+                <a
+                  href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery"
+                  style="color: #a85641"
+                  >{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery</a
+                >
               </td>
             </tr>
             <tr>
@@ -108,7 +112,7 @@
                 "
               >
                 <p style="margin: 0 0 16px 0">
-                  Il link vale 1 ora. Aprilo nello stesso browser da cui l’hai chiesto.
+                  Il link vale 1 ora e funziona da qualunque telefono o browser.
                 </p>
                 <p style="margin: 0">
                   Se non hai chiesto tu, ignora questa email: la password resta quella di prima.
