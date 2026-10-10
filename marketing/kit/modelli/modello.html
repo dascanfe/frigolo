@@ -1,0 +1,349 @@
+<!doctype html>
+<!--
+  Modello unico per le immagini di Frigolo. Si configura con i parametri dell'indirizzo:
+
+    formato   post (1080x1080) | post45 (1080x1350) | storia (1080x1920)
+              copertina (1500x500) | og (1200x630)
+    sfondo    crema | arancio | menta | inchiostro
+    titolo    testo grande; *parola* diventa corsivo colorato, | va a capo
+    testo     frase sotto il titolo (facoltativa)
+    mascotte  classica | contenta | pensierosa | dispiaciuta | posta | nessuna
+    chip      etichetta in basso (default: frigolo.dascanfe.com), "no" per toglierla
+    schermata percorso di uno screenshot dell'app: compare in una cornice di telefono
+              al posto della mascotte grande (post45 e storia)
+
+  Esempio: modello.html?formato=post&sfondo=crema&titolo=Spesa%20*finita*&mascotte=contenta
+  Rendering in PNG: node marketing/kit/scripts/render.mjs (vedi brand.md).
+-->
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Frigolo - modello</title>
+    <link rel="stylesheet" href="kit.css" />
+    <style>
+      /* ---------- post 1:1 ---------- */
+      .f-post {
+        --w: 1080px;
+        --h: 1080px;
+      }
+      .f-post .brand {
+        position: absolute;
+        left: 72px;
+        top: 64px;
+        font-size: 44px;
+      }
+      .f-post .blob {
+        width: 760px;
+        height: 760px;
+        right: -170px;
+        bottom: -200px;
+      }
+      .f-post .mascotte {
+        width: 600px;
+        height: 600px;
+        right: 10px;
+        bottom: 40px;
+      }
+      .f-post .copy {
+        position: absolute;
+        left: 72px;
+        top: 190px;
+        width: 620px;
+      }
+      .f-post h1 {
+        font-size: 82px;
+      }
+      .f-post .testo {
+        font-size: 36px;
+        margin-top: 28px;
+        width: 520px;
+      }
+      .f-post .chip {
+        position: absolute;
+        left: 72px;
+        bottom: 72px;
+        font-size: 30px;
+      }
+
+      /* ---------- post 4:5 ---------- */
+      .f-post45 {
+        --w: 1080px;
+        --h: 1350px;
+      }
+      .f-post45 .brand {
+        position: absolute;
+        left: 80px;
+        top: 72px;
+        font-size: 46px;
+      }
+      .f-post45 .copy {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 190px;
+      }
+      .f-post45 h1 {
+        font-size: 92px;
+      }
+      .f-post45 .testo {
+        font-size: 40px;
+        margin-top: 28px;
+        max-width: 820px;
+      }
+      .f-post45 .blob {
+        width: 900px;
+        height: 900px;
+        left: 90px;
+        bottom: -420px;
+      }
+      .f-post45 .mascotte {
+        width: 640px;
+        height: 640px;
+        right: 40px;
+        bottom: 30px;
+      }
+      .f-post45 .telefono {
+        width: 430px;
+        height: 880px;
+        right: 90px;
+        bottom: -200px;
+      }
+      .f-post45 .chip {
+        position: absolute;
+        left: 80px;
+        bottom: 80px;
+        font-size: 32px;
+      }
+
+      /* ---------- storia 9:16 ----------
+         Zone sicure: niente testo nei primi 250 px (nome dell'account) e negli
+         ultimi 340 px (risposta e link) */
+      .f-storia {
+        --w: 1080px;
+        --h: 1920px;
+      }
+      .f-storia .canvas {
+        display: flex;
+        flex-direction: column;
+        padding: 260px 90px 360px;
+      }
+      .f-storia .brand,
+      .f-storia .copy,
+      .f-storia .mascotte,
+      .f-storia .telefono,
+      .f-storia .chip {
+        position: relative;
+      }
+      .f-storia .brand {
+        order: 1;
+        font-size: 50px;
+      }
+      .f-storia .copy {
+        order: 2;
+        margin-top: 40px;
+      }
+      .f-storia h1 {
+        font-size: 104px;
+      }
+      .f-storia .testo {
+        font-size: 46px;
+        margin-top: 32px;
+      }
+      .f-storia .blob {
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        bottom: -260px;
+      }
+      /* la mascotte (o il telefono) prende lo spazio che resta tra testo e chip */
+      .f-storia .mascotte {
+        order: 3;
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        margin-top: 40px;
+      }
+      .f-storia .telefono {
+        order: 3;
+        flex: 1;
+        min-height: 0;
+        align-self: center;
+        aspect-ratio: 9 / 19.5;
+        margin-top: 48px;
+      }
+      .f-storia .chip {
+        order: 4;
+        align-self: center;
+        margin-top: 36px;
+        font-size: 40px;
+      }
+
+      /* ---------- copertina 3:1 (X, YouTube, LinkedIn) ----------
+         In basso a sinistra c'è la foto del profilo: lì niente testo */
+      .f-copertina {
+        --w: 1500px;
+        --h: 500px;
+      }
+      .f-copertina .blob {
+        width: 620px;
+        height: 620px;
+        right: -10px;
+        top: -60px;
+      }
+      .f-copertina .mascotte {
+        width: 470px;
+        height: 470px;
+        right: 90px;
+        top: 20px;
+      }
+      .f-copertina .copy {
+        position: absolute;
+        left: 340px;
+        top: 90px;
+        width: 520px;
+      }
+      .f-copertina .brand {
+        font-size: 40px;
+        margin-bottom: 20px;
+      }
+      .f-copertina h1 {
+        font-size: 58px;
+      }
+      .f-copertina .testo {
+        font-size: 28px;
+        margin-top: 16px;
+      }
+      .f-copertina .chip {
+        display: none;
+      }
+
+      /* ---------- Open Graph 1200x630 ---------- */
+      .f-og {
+        --w: 1200px;
+        --h: 630px;
+      }
+      .f-og .blob {
+        width: 640px;
+        height: 640px;
+        left: -60px;
+        top: -5px;
+      }
+      .f-og .mascotte {
+        width: 560px;
+        height: 560px;
+        left: 20px;
+        top: 50px;
+      }
+      .f-og .copy {
+        position: absolute;
+        left: 590px;
+        right: 70px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .f-og .brand {
+        font-size: 104px;
+        line-height: 1;
+        margin-bottom: 22px;
+      }
+      .f-og .brand img {
+        display: none;
+      }
+      .f-og h1 {
+        font-size: 50px;
+        line-height: 1.12;
+      }
+      .f-og .testo {
+        font-size: 34px;
+        margin-top: 18px;
+      }
+      .f-og .chip {
+        margin-top: 34px;
+        font-size: 26px;
+        box-shadow: 0 0 0 3px var(--sand);
+      }
+      /* og senza nome grande (per l'invito il titolo fa da nome) */
+      .f-og.senza-nome .brand {
+        font-size: 40px;
+        margin-bottom: 20px;
+      }
+      .f-og.senza-nome .brand img {
+        display: block;
+      }
+      .f-og.senza-nome h1 {
+        font-size: 64px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="canvas" id="c">
+      <div class="blob"></div>
+      <img class="mascotte" id="m" alt="" />
+      <div class="brand" id="b"><img src="../../../public/mascot-avatar.webp" alt="" />Frigolo</div>
+      <div class="copy" id="copy">
+        <h1 id="t"></h1>
+        <p class="testo" id="x"></p>
+        <span class="chip" id="chip"></span>
+      </div>
+    </div>
+    <script>
+      const p = new URLSearchParams(location.search)
+      const formato = p.get('formato') || 'post'
+      const sfondo = p.get('sfondo') || 'crema'
+      const c = document.getElementById('c')
+      c.className = `canvas f-${formato} s-${sfondo}`
+      document.documentElement.className = `f-${formato}`
+      document.body.className = `s-${sfondo}`
+
+      const esc = (s) =>
+        s.replace(
+          /[&<>"]/g,
+          (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch],
+        )
+      const fmt = (s) =>
+        esc(s)
+          .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+          .replace(/\|/g, '<br>')
+
+      const titolo = p.get('titolo') ?? 'La lista della spesa *sempre in tasca*'
+      document.getElementById('t').innerHTML = fmt(titolo)
+      const testo = p.get('testo')
+      const x = document.getElementById('x')
+      if (testo) x.innerHTML = fmt(testo)
+      else x.remove()
+
+      const chipText = p.get('chip') ?? 'frigolo.dascanfe.com'
+      const chip = document.getElementById('chip')
+      if (chipText === 'no') chip.remove()
+      else {
+        chip.textContent = chipText
+        // nei post la chip sta fuori dal blocco del testo, in basso
+        if (formato !== 'og') c.appendChild(chip)
+      }
+
+      // og: il nome grande sta sopra il titolo; negli altri formati il marchio è in alto
+      if (formato === 'og' || formato === 'copertina')
+        document.getElementById('copy').prepend(document.getElementById('b'))
+      if (p.get('nome') === 'no') c.classList.add('senza-nome')
+
+      const MASCOTTE = {
+        classica: '../../../assets/mascot.webp',
+        contenta: '../mascotte/frigolo-contenta.png',
+        pensierosa: '../mascotte/frigolo-pensierosa.png',
+        dispiaciuta: '../mascotte/frigolo-dispiaciuta.png',
+        posta: '../mascotte/frigolo-posta.png',
+      }
+      const m = document.getElementById('m')
+      const scelta = p.get('mascotte') || 'classica'
+      const schermata = p.get('schermata')
+      if (schermata && (formato === 'post45' || formato === 'storia')) {
+        m.remove()
+        const tel = document.createElement('div')
+        tel.className = 'telefono'
+        tel.innerHTML = `<img src="${esc(schermata)}" alt="">`
+        c.insertBefore(tel, document.getElementById('b'))
+      } else if (scelta === 'nessuna') m.remove()
+      else m.src = MASCOTTE[scelta] || MASCOTTE.classica
+    </script>
+  </body>
+</html>
