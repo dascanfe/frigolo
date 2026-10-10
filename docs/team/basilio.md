@@ -20,8 +20,9 @@ Niente del resto è applicato in produzione.
   con una soglia di allarme; aggiungere la dimensione del database.
 - Se un giorno ci sarà un dominio personalizzato per Supabase: aggiungerlo in
   `avatar_storage_hosts()` (0018) e negli origin della edge function.
-- Valutare con Fragola il link di conferma con `{{ .TokenHash }}` verso `/auth/confirm`
-  (funziona da qualunque browser; nota di Zenzero in `docs/comunicazione/email.md`).
+- Quando la route `/auth/confirm` di Fragola è pronta: aprire in locale i link di conferma
+  e recupero in un browser diverso da quello della richiesta (oggi verificati con
+  `verifyOtp` da un client pulito).
 
 ## Apertura al pubblico (ordine dei passi)
 
@@ -37,7 +38,8 @@ chiuse fino al passo 9.
 4. **Dominio.** Daniele: CNAME `frigolo` su Aruba verso Vercel, dominio aggiunto al
    progetto `frigolo-app`. Controllo: `https://frigolo.dascanfe.com/mascot.png` risponde
    (serve alle email) e l'app si apre.
-5. **Frontend.** Merge della PR di Fragola (deploy su Vercel). Deve già mandare il token
+5. **Frontend.** Merge della PR di Fragola (deploy su Vercel), con la route `/auth/confirm`:
+   dal passo 7 i link delle email puntano lì. Deve già mandare il token
    Turnstile a `signUp`, `signInWithPassword` e `resetPasswordForEmail`: finché il captcha
    è spento il token viene ignorato, quindi l'ordine è sicuro.
 6. **SMTP.** Daniele nel pannello (vedi sotto). Prova: "Password dimenticata" verso una sua
@@ -117,6 +119,17 @@ rimette il file com'era e si riavvia.
   (I 4 account attuali continuano ad accedere con la password che hanno.)
 
 ## Diario
+
+### 2026-10-10 - Link delle email con TokenHash (decisione del PM)
+
+- I bottoni di conferma, recupero e cambio email puntano a
+  `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=...` (`email`, `recovery`,
+  `email_change`, i tipi di `verifyOtp`). Tolte dai template le frasi "aprilo dallo stesso
+  browser/telefono".
+- Provato in locale con la registrazione aperta temporaneamente (poi richiusa): link letti
+  da Mailpit e aperti con `verifyOtp` da un client pulito. Conferma, recupero con nuova
+  password, avviso di password cambiata, cambio email con doppia conferma: tutto ok, link non
+  riutilizzabile. Script ripetibile `supabase/checks/email_links.mjs`.
 
 ### 2026-10-10 - Terzo giro: limiti, email, captcha, account
 
