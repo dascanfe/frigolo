@@ -239,6 +239,28 @@ export const it = {
     updateHint:
       "L'app controlla da sola ogni ora e quando torna in primo piano; qui puoi forzare il controllo.",
   },
+  myData: {
+    section: 'I tuoi dati',
+    intro:
+      'Puoi scaricare tutto quello che Frigolo sa di te, in un file che si apre con qualunque programma. Le liste condivise compaiono senza i nomi delle altre persone.',
+    download: 'Scarica i tuoi dati',
+    downloading: 'Preparo il file...',
+    downloaded: 'File scaricato',
+    downloadFailed: 'Non sono riuscito a preparare il file. Riprova tra poco.',
+    deleteAccount: "Elimina l'account",
+    deleteTitle: "Elimina l'account",
+    deleteStep1:
+      "Spariscono il tuo profilo, le tue foto e le liste in cui sei l'unica persona, con tutti i prodotti e le spese. Nelle liste condivise restano i prodotti e le spese, senza il tuo nome. Non si può annullare.",
+    deleteContinue: 'Ho capito, vai avanti',
+    deleteStep2: 'Per conferma scrivi ELIMINA qui sotto.',
+    deleteWord: 'ELIMINA',
+    deleteFieldLabel: 'Scrivi ELIMINA',
+    deleteConfirm: "Elimina l'account per sempre",
+    deleting: "Elimino l'account...",
+    deleted: 'Account eliminato. Grazie per aver usato Frigolo.',
+    deleteFailed:
+      "Non sono riuscito a eliminare l'account. Riprova tra poco o scrivi a frigolo@dascanfe.com.",
+  },
   account: {
     section: 'Account',
     email: 'Email',
