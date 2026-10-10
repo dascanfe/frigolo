@@ -1,6 +1,8 @@
 import { Download, Share, X } from 'lucide-react'
 import { useState, useSyncExternalStore } from 'react'
 import { Button } from '@/components/Button'
+import { getCurrentTip, hasAddedFirstProduct, subscribeTips } from '@/features/tips/tips'
+import { it as t } from '@/i18n/it'
 import {
   dismissInstall,
   getInstallState,
@@ -10,14 +12,17 @@ import {
 } from '@/lib/pwa'
 
 /**
- * Invito a installare l'app, non invasivo: solo dalla seconda sessione, una
- * riga sopra la nav, chiudibile per sempre. Su iOS spiega il gesto manuale.
+ * Invito a installare l'app, non invasivo: solo dopo il primo prodotto
+ * aggiunto e quando non c'è un suggerimento aperto, una riga sopra la nav,
+ * chiudibile per sempre. Su iOS spiega il gesto manuale.
  */
 export function InstallBanner() {
   const state = useSyncExternalStore(subscribeInstall, getInstallState, getInstallState)
+  const tip = useSyncExternalStore(subscribeTips, getCurrentTip, getCurrentTip)
+  const firstAdd = useSyncExternalStore(subscribeTips, hasAddedFirstProduct, hasAddedFirstProduct)
   const [hidden, setHidden] = useState(false)
 
-  if (hidden || state.installed || !shouldOfferInstall()) return null
+  if (hidden || tip || state.installed || !shouldOfferInstall(firstAdd)) return null
   if (!state.canPrompt && !state.isIos) return null
 
   function close() {
@@ -44,22 +49,20 @@ export function InstallBanner() {
           )}
         </span>
         <div className="min-w-0 flex-1 text-sm">
-          <p className="font-bold text-primary">Installa Frigolo</p>
+          <p className="font-bold text-primary">{t.install.title}</p>
           <p className="text-xs text-secondary">
-            {state.isIos
-              ? 'Tocca Condividi e poi "Aggiungi alla schermata Home".'
-              : 'Aprila dalla schermata Home, anche senza rete.'}
+            {state.isIos ? t.install.ios : t.install.android}
           </p>
         </div>
         {state.canPrompt && (
           <Button onClick={install} className="h-10 px-4 text-sm">
-            Installa
+            {t.install.button}
           </Button>
         )}
         <button
           type="button"
           onClick={close}
-          aria-label="Non mostrare più"
+          aria-label={t.install.dismiss}
           className="flex size-9 shrink-0 items-center justify-center rounded-full text-secondary"
         >
           <X size={18} aria-hidden="true" />
