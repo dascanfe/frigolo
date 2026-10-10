@@ -9,6 +9,10 @@
 /** Nome della mascotte (deciso da Daniele) */
 export const MASCOT_NAME = 'Frigolo'
 
+/** Pagine legali sulla landing */
+export const TERMS_URL = 'https://www.dascanfe.com/sub/frigolo/termini.html'
+export const PRIVACY_URL = 'https://www.dascanfe.com/sub/frigolo/privacy.html'
+
 /** Email di contatto e supporto */
 export const SUPPORT_EMAIL = 'frigolo@dascanfe.com'
 
@@ -29,6 +33,11 @@ export const it = {
     namePlaceholder: 'Es. Marta',
     nameHint: 'Va bene anche un soprannome.',
     passwordHint: 'Ti servirà per entrare da altri telefoni.',
+    legalBefore: 'Registrandoti accetti i ',
+    legalTerms: 'termini',
+    legalAnd: " e l'",
+    legalPrivacy: 'informativa privacy',
+    legalAfter: '.',
     submitSignin: 'Entra',
     submitSignup: "Crea l'account",
     forgot: 'Password dimenticata?',
@@ -50,6 +59,7 @@ export const it = {
     resend: 'Mandala di nuovo',
     sent: (email: string) => `Fatto: se ${email} ha un account, ti arriva un'email nuova.`,
     backToLogin: "Torna all'accesso",
+    switchAccount: 'Stai per entrare con un altro account. Continuare?',
   },
   checkEmail: {
     title: 'Controlla la posta',
@@ -310,6 +320,10 @@ export const it = {
   donation: {
     label: 'Offrimi un caffè 💚',
     text: 'Frigolo è gratis e lo resta. Se ti è utile, puoi offrire un caffè a chi la sviluppa.',
+  },
+  legal: {
+    terms: "Termini d'uso",
+    privacy: 'Privacy',
   },
   support: {
     text: "Un dubbio, un problema o un'idea? Scrivi a",
