@@ -1,0 +1,710 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* -------------------------------------------------------------------------- */
+/* Tailwind v4: espone i token come utility (bg-burnt, text-cream, font-display) */
+/* "inline" fa riferire le utility alle variabili CSS invece di copiarne il valore */
+/* -------------------------------------------------------------------------- */
+@theme inline {
+  /* palette grezza */
+  --color-cream: var(--c-cream);
+  --color-bg: var(--c-bg);
+  --color-sand: var(--c-sand);
+  --color-amber: var(--c-amber);
+  --color-orange: var(--c-orange);
+  --color-olive: var(--c-olive);
+  --color-ochre: var(--c-ochre);
+  --color-burnt: var(--c-burnt);
+  --color-terracotta: var(--c-terracotta);
+  --color-sage: var(--c-sage);
+  --color-teal: var(--c-teal);
+  --color-gold: var(--c-gold);
+  --color-rust: var(--c-rust);
+  --color-brown: var(--c-brown);
+  --color-olive-deep: var(--c-olive-deep);
+  --color-sky: var(--c-sky);
+  --color-gold-light: var(--c-gold-light);
+  --color-peach: var(--c-peach);
+  --color-blush: var(--c-blush);
+  --color-brick: var(--c-brick);
+  --color-steel: var(--c-steel);
+  --color-ink: var(--c-ink);
+  --color-ink-soft: var(--c-ink-soft);
+
+  /* semantici */
+  --color-app: var(--bg-app);
+  --color-surface: var(--bg-surface);
+  --color-elevated: var(--bg-elevated);
+  --color-subtle: var(--border-subtle);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-info: var(--info);
+  --color-warning: var(--warning);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --radius-tile: var(--tile-radius);
+  --shadow-tile: var(--shadow-tile);
+  --shadow-sheet: var(--shadow-sheet);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Base                                                                        */
+/* -------------------------------------------------------------------------- */
+@layer base {
+  html {
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    /* niente rimbalzo "gomma" sopra l'header in PWA standalone */
+    overscroll-behavior-y: none;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  /* i fieldset per default sono larghi quanto il contenuto: così una riga di
+     chip scorrevole dentro un fieldset scorrerebbe tutto il pannello */
+  fieldset {
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /* focus visibile e coerente ovunque, mai rimosso */
+  :focus-visible {
+    outline: 3px solid var(--tile-active-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Componenti: tile prodotto                                                   */
+/* I tre stati devono essere distinguibili a colpo d'occhio in movimento:      */
+/* colore pieno + icona di stato + barratura, mai il solo colore.             */
+/* -------------------------------------------------------------------------- */
+@layer components {
+  .tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 8px;
+    border-radius: var(--tile-radius);
+    border: 1.5px solid var(--tile-idle-border);
+    background-color: var(--tile-idle-bg);
+    color: var(--text-primary);
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+    transition:
+      transform var(--dur-press) var(--ease-out),
+      background-color var(--dur-color) ease-out,
+      border-color var(--dur-color) ease-out,
+      color var(--dur-color) ease-out,
+      opacity var(--dur-color) ease-out,
+      box-shadow var(--dur-color) ease-out;
+  }
+
+  .tile:active:not(:disabled),
+  .tile[data-pressed='true'] {
+    transform: scale(0.94);
+  }
+
+  .tile:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .tile__icon {
+    flex: none;
+    color: var(--tile-idle-icon);
+    transition: color var(--dur-color) ease-out;
+  }
+
+  .tile__name {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.15;
+    max-height: calc(1.15em * 2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  /* --- in lista, da comprare --- */
+  .tile--active {
+    background-color: var(--tile-active-bg);
+    border-color: var(--tile-active-bg);
+    color: var(--tile-active-text);
+    box-shadow: var(--shadow-tile);
+  }
+
+  .tile--active .tile__icon {
+    color: var(--tile-active-text);
+  }
+
+  /* --- nel carrello, preso --- */
+  .tile--done {
+    background-color: var(--tile-done-bg);
+    border-color: var(--tile-done-bg);
+    color: var(--tile-done-text);
+    opacity: 0.85;
+  }
+
+  .tile--done .tile__icon {
+    color: var(--tile-done-text);
+  }
+
+  .tile--done .tile__name {
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+  }
+
+  /* --- badge in alto a destra: quantità, spunta o suggerimento --- */
+  .tile__badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .tile--active .tile__badge {
+    background-color: var(--tile-active-text);
+    color: var(--tile-active-bg);
+  }
+
+  .tile--done .tile__badge {
+    background-color: var(--tile-done-text);
+    color: var(--tile-done-bg);
+    padding: 0;
+    width: 20px;
+  }
+
+  .tile--idle .tile__badge {
+    background-color: var(--bg-elevated);
+    color: var(--accent);
+    border: 1px solid var(--border-subtle);
+    padding: 0;
+    width: 22px;
+    height: 22px;
+  }
+
+  /* --- nota della riga in lista, sotto il nome: una riga, poi puntini --- */
+  .tile__note {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1.2;
+    opacity: 0.9;
+  }
+
+  /* con nota e supermercato lo spazio è poco: icona e spazi si stringono */
+  .tile:has(.tile__note):has(.tile__store) {
+    gap: 3px;
+  }
+
+  .tile:has(.tile__note):has(.tile__store) .tile__icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* --- pill del supermercato, sotto il nome --- */
+  .tile__store {
+    max-width: calc(100% - 8px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    background-color: color-mix(in srgb, currentColor 14%, transparent);
+  }
+
+  .tile--active .tile__store,
+  .tile--done .tile__store {
+    background-color: color-mix(in srgb, var(--c-cream) 22%, transparent);
+  }
+
+  /* --- tile tratteggiata "Aggiungi prodotto" --- */
+  .tile--dashed {
+    background-color: transparent;
+    border-style: dashed;
+    border-width: 2px;
+    color: var(--text-secondary);
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /* Griglia prodotti: 3 colonne su mobile, 4 da 640px, 6 oltre 900px.          */
+  /* I breakpoint sono container query sulla shell (container-type: inline-size) */
+  /* così contano sulla larghezza reale della colonna di contenuto.            */
+  /* -------------------------------------------------------------------------- */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--grid-gap);
+    padding-inline: var(--page-gutter);
+  }
+
+  @container shell (min-width: 640px) {
+    .product-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @container shell (min-width: 900px) {
+    .product-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /* Chip categoria                                                              */
+  /* -------------------------------------------------------------------------- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 14px 0 7px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-subtle);
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+    transition:
+      background-color var(--dur-color) ease-out,
+      border-color var(--dur-color) ease-out,
+      color var(--dur-color) ease-out;
+  }
+
+  .chip__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background-color: var(--chip-color, var(--c-sand));
+    color: white;
+  }
+
+  .chip[aria-pressed='true'] {
+    background-color: var(--text-primary);
+    border-color: var(--text-primary);
+    color: var(--c-cream);
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /* "Spesa finita": bottone liquido sopra la barra                              */
+  /* Entrata: una goccia sale da dietro la barra, si schiaccia e si gonfia in    */
+  /* pillola (clip-path da cerchio a pillola + squash/stretch); poi la scritta  */
+  /* esce con lo stesso rimbalzo. Il filtro SVG "goo" fonde goccia e pillola.   */
+  /* -------------------------------------------------------------------------- */
+  .trip-fab {
+    --fab-h: 54px;
+    position: relative;
+    display: inline-flex;
+    height: var(--fab-h);
+    border-radius: 999px;
+    color: var(--on-accent);
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+
+  .trip-fab:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  .trip-fab__goo {
+    position: absolute;
+    inset: -12px -12px -40px;
+    filter: url(#trip-goo) drop-shadow(0 8px 16px color-mix(in srgb, var(--c-ink) 28%, transparent));
+    pointer-events: none;
+  }
+
+  .trip-fab__blob,
+  .trip-fab__drop {
+    position: absolute;
+    background-color: var(--accent);
+    border-radius: 999px;
+  }
+
+  .trip-fab__blob {
+    inset: 12px 12px 40px;
+    transform-origin: 50% 100%;
+  }
+
+  .trip-fab__drop {
+    left: 50%;
+    bottom: 40px;
+    width: 22px;
+    height: 22px;
+    margin-left: -11px;
+    opacity: 0;
+  }
+
+  .trip-fab__content {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 7px 0 22px;
+    white-space: nowrap;
+  }
+
+  .trip-fab__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background-color: var(--on-accent);
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- entrata ---
+     Curve "ease-out expo" senza rimbalzi bruschi: il carattere liquido viene
+     da piccoli squash/stretch che si smorzano, non dall'overshoot della curva.
+     Si animano solo transform, clip-path e opacity (niente blur, che a 60fps
+     sui telefoni scatta). */
+  .trip-fab__blob {
+    will-change: transform, clip-path;
+  }
+
+  .trip-fab[data-phase='enter'] .trip-fab__blob {
+    animation:
+      fab-rise 650ms cubic-bezier(0.22, 1, 0.36, 1) both,
+      fab-grow 600ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+  }
+
+  .trip-fab[data-phase='enter'] .trip-fab__drop {
+    animation: fab-drop 750ms cubic-bezier(0.45, 0, 0.55, 1) 60ms both;
+  }
+
+  .trip-fab[data-phase='enter'] .trip-fab__label,
+  .trip-fab[data-phase='enter'] .trip-fab__badge {
+    animation: fab-pop 450ms cubic-bezier(0.22, 1, 0.36, 1) 400ms both;
+  }
+
+  .trip-fab[data-phase='enter'] .trip-fab__badge {
+    animation-delay: 470ms;
+  }
+
+  /* --- uscita: parte quando la tendina si è già abbassata (220ms). La scritta
+     svanisce, la pillola si stringe in goccia, fa un piccolo salto e sprofonda
+     dietro la barra lasciando cadere una gocciolina. Keyframes diversi da
+     quelli d'entrata: con lo stesso nome il browser non ripartirebbe. --- */
+  .trip-fab[data-phase='leave'] .trip-fab__label,
+  .trip-fab[data-phase='leave'] .trip-fab__badge {
+    animation: fab-fade 160ms cubic-bezier(0.55, 0, 1, 0.45) 220ms both;
+  }
+
+  .trip-fab[data-phase='leave'] .trip-fab__blob {
+    animation:
+      fab-shrink 280ms cubic-bezier(0.65, 0, 0.35, 1) 280ms both,
+      fab-sink 360ms cubic-bezier(0.5, 0, 0.75, 0) 460ms forwards;
+  }
+
+  .trip-fab[data-phase='leave'] .trip-fab__drop {
+    animation: fab-drip 420ms cubic-bezier(0.45, 0, 0.55, 1) 480ms both;
+  }
+
+  @keyframes fab-fade {
+    to {
+      opacity: 0;
+      transform: translateY(4px) scale(0.6);
+    }
+  }
+
+  @keyframes fab-shrink {
+    from {
+      clip-path: inset(0 0 round 999px);
+    }
+    to {
+      clip-path: inset(0 calc(50% - var(--fab-h) / 2) round 999px);
+    }
+  }
+
+  @keyframes fab-sink {
+    0% {
+      clip-path: inset(0 calc(50% - var(--fab-h) / 2) round 999px);
+      transform: none;
+    }
+    30% {
+      clip-path: inset(0 calc(50% - var(--fab-h) / 2) round 999px);
+      transform: translateY(-6px) scale(0.94, 1.08);
+    }
+    100% {
+      clip-path: inset(0 calc(50% - var(--fab-h) / 2) round 999px);
+      transform: translateY(78px) scale(0.35);
+    }
+  }
+
+  @keyframes fab-drip {
+    0% {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.5);
+    }
+    35% {
+      opacity: 1;
+      transform: translateY(6px) scale(0.9);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(56px) scale(0.3);
+    }
+  }
+
+  @keyframes fab-rise {
+    0% {
+      transform: translateY(72px) scale(0.4);
+    }
+    45% {
+      transform: translateY(-4px) scale(0.93, 1.08);
+    }
+    70% {
+      transform: translateY(1px) scale(1.04, 0.97);
+    }
+    88% {
+      transform: translateY(0) scale(0.99, 1.01);
+    }
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes fab-grow {
+    0% {
+      clip-path: inset(0 calc(50% - var(--fab-h) / 2) round 999px);
+    }
+    100% {
+      clip-path: inset(0 0 round 999px);
+    }
+  }
+
+  @keyframes fab-drop {
+    0% {
+      opacity: 1;
+      transform: translateY(40px) scale(0.6);
+    }
+    40% {
+      opacity: 1;
+      transform: translateY(-2px) scale(1);
+    }
+    75% {
+      opacity: 1;
+      transform: translateY(24px) scale(0.7);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(52px) scale(0.35);
+    }
+  }
+
+  @keyframes fab-pop {
+    0% {
+      opacity: 0;
+      transform: translateY(6px) scale(0.7);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(0) scale(1.03);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /* Bottom sheet                                                                */
+  /* -------------------------------------------------------------------------- */
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background-color: color-mix(in srgb, var(--c-ink) 45%, transparent);
+    animation: sheet-fade var(--dur-sheet) ease-out both;
+  }
+
+  .sheet-backdrop[data-closing='true'] {
+    animation: sheet-fade var(--dur-sheet) ease-in reverse both;
+  }
+
+  .sheet-panel {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 50;
+    max-height: calc(100dvh - 48px);
+    margin-inline: auto;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 24px 24px 0 0;
+    background-color: var(--bg-elevated);
+    box-shadow: var(--shadow-sheet);
+    padding-bottom: max(16px, var(--safe-bottom));
+    animation: sheet-up var(--dur-sheet) var(--ease-out) both;
+  }
+
+  .sheet-panel[data-closing='true'] {
+    animation: sheet-up var(--dur-sheet) ease-in reverse both;
+  }
+
+  .sheet-grip {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .sheet-handle {
+    width: 40px;
+    height: 4px;
+    margin: 10px auto 6px;
+    border-radius: 999px;
+    background-color: var(--border-subtle);
+  }
+
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sheet-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Utility extra                                                               */
+/* -------------------------------------------------------------------------- */
+@utility pb-safe {
+  padding-bottom: var(--safe-bottom);
+}
+
+@utility pt-safe {
+  padding-top: var(--safe-top);
+}
+
+@utility pb-nav {
+  padding-bottom: calc(var(--nav-offset) + 16px);
+}
+
+/* Pannello "vetro" per la nav flottante e gli elementi sospesi */
+@utility glass {
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 color-mix(in srgb, white 70%, transparent);
+}
+
+@utility ring-app {
+  box-shadow: 0 0 0 2px var(--bg-app);
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Riga orizzontale scorrevole: lo swipe resta suo, non trascina la pagina */
+@utility chip-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

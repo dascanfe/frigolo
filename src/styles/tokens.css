@@ -1,0 +1,164 @@
+/*
+ * Design token di Frigolo.
+ * Palette autunnale: i colori grezzi (--c-*) non si usano mai direttamente nei
+ * componenti, si passa sempre dai token semantici o dai token di categoria.
+ */
+:root {
+  /* ---------------------------------------------------------------------- */
+  /* Colori grezzi                                                           */
+  /* ---------------------------------------------------------------------- */
+  --c-cream: #faf3ec;
+  --c-bg: #f4ece2;
+  --c-sand: #ebd5b3;
+  --c-amber: #eda34c;
+  --c-orange: #de8a33;
+  --c-olive: #9ba86a;
+  --c-ochre: #c2902f;
+  --c-burnt: #db6a2e;
+  --c-terracotta: #d9695c;
+  --c-sage: #86a79b;
+  --c-teal: #3e7c86;
+  --c-gold: #c9983f;
+  --c-rust: #a85641;
+  --c-brown: #7e5e29;
+  --c-olive-deep: #7e7530;
+  --c-sky: #a3bcc2;
+  --c-gold-light: #f0cb74;
+  --c-peach: #e5987a;
+  --c-blush: #dd9490;
+  --c-brick: #ce5f36;
+  --c-steel: #7d9eac;
+  --c-ink: #3a2c21;
+  --c-ink-soft: #6b5844;
+
+  /* ---------------------------------------------------------------------- */
+  /* Token semantici                                                         */
+  /* ---------------------------------------------------------------------- */
+  --bg-app: var(--c-bg);
+  --bg-surface: var(--c-cream);
+  --bg-elevated: #ffffff;
+  --border-subtle: var(--c-sand);
+  --text-primary: var(--c-ink);
+  --text-secondary: var(--c-ink-soft);
+
+  /* stati della tile prodotto */
+  --tile-idle-bg: var(--c-cream);
+  --tile-idle-border: var(--c-sand);
+  --tile-idle-icon: var(--c-ink-soft);
+
+  /* burnt e sage leggermente scuriti: il testo crema a 14px passa da 3.1:1 a
+     3.8:1 (attiva) e da 2.4:1 a 3.2:1 (presa) restando i colori del brand */
+  --tile-active-bg: color-mix(in srgb, var(--c-burnt) 85%, var(--c-ink));
+  --tile-active-text: var(--c-cream);
+  --tile-active-ring: var(--c-brick);
+
+  --tile-done-bg: color-mix(in srgb, var(--c-sage) 80%, var(--c-ink));
+  --tile-done-text: var(--c-cream);
+
+  --accent: var(--c-brick);
+  /* testo sopra l'accento: bianco o inchiostro, scelto dal tema per contrasto (theme.ts) */
+  --on-accent: #ffffff;
+  --accent-soft: var(--c-peach);
+  --success: var(--c-sage);
+  --info: var(--c-teal);
+  --warning: var(--c-amber);
+
+  /* ombre: sempre a base inchiostro, mai nero puro */
+  --shadow-tile: 0 4px 12px color-mix(in srgb, var(--c-ink) 18%, transparent);
+  --shadow-sheet: 0 -8px 32px color-mix(in srgb, var(--c-ink) 22%, transparent);
+  --shadow-nav: 0 -1px 0 var(--border-subtle);
+
+  /* ---------------------------------------------------------------------- */
+  /* Colori per categoria: fissi, non cambiano col tema (riconoscibilità)     */
+  /* ---------------------------------------------------------------------- */
+  --cat-frutta: #ce5f36;
+  --cat-verdura: #9ba86a;
+  --cat-carne-pesce: #d9695c;
+  --cat-latticini-uova: #f0cb74;
+  --cat-pane-forno: #ebd5b3;
+  --cat-dispensa: #c2902f;
+  --cat-surgelati: #a3bcc2;
+  --cat-bevande: #3e7c86;
+  --cat-snack-dolci: #dd9490;
+  --cat-colazione: #eda34c;
+  --cat-casa-pulizia: #7d9eac;
+  --cat-igiene-cura: #e5987a;
+  --cat-animali: #7e5e29;
+  --cat-altro: #7e7530;
+
+  /* Versione "testo" dei colori categoria: scurita verso l'inchiostro quanto
+     basta per avere contrasto >= 4.5:1 sul fondo app (separatori a 11px).
+     Le percentuali sono tarate per token: più chiaro il colore, più inchiostro. */
+  --cat-frutta-text: color-mix(in srgb, var(--cat-frutta) 55%, var(--c-ink));
+  --cat-verdura-text: color-mix(in srgb, var(--cat-verdura) 50%, var(--c-ink));
+  --cat-carne-pesce-text: color-mix(in srgb, var(--cat-carne-pesce) 55%, var(--c-ink));
+  --cat-latticini-uova-text: color-mix(in srgb, var(--cat-latticini-uova) 35%, var(--c-ink));
+  --cat-pane-forno-text: color-mix(in srgb, var(--cat-pane-forno) 35%, var(--c-ink));
+  --cat-dispensa-text: color-mix(in srgb, var(--cat-dispensa) 55%, var(--c-ink));
+  --cat-surgelati-text: color-mix(in srgb, var(--cat-surgelati) 40%, var(--c-ink));
+  --cat-bevande-text: color-mix(in srgb, var(--cat-bevande) 55%, var(--c-ink));
+  --cat-snack-dolci-text: color-mix(in srgb, var(--cat-snack-dolci) 50%, var(--c-ink));
+  --cat-colazione-text: color-mix(in srgb, var(--cat-colazione) 45%, var(--c-ink));
+  --cat-casa-pulizia-text: color-mix(in srgb, var(--cat-casa-pulizia) 55%, var(--c-ink));
+  --cat-igiene-cura-text: color-mix(in srgb, var(--cat-igiene-cura) 45%, var(--c-ink));
+  --cat-animali-text: color-mix(in srgb, var(--cat-animali) 55%, var(--c-ink));
+  --cat-altro-text: color-mix(in srgb, var(--cat-altro) 55%, var(--c-ink));
+
+  /* Versione "piena" per i cerchi con l'icona bianca (chip, separatori, donut):
+     i colori chiari sono scuriti quanto basta perché l'icona si legga, gli
+     altri restano identici. L'inchiostro è fisso (#3a2c21): non cambia col tema. */
+  --cat-frutta-solid: var(--cat-frutta);
+  --cat-verdura-solid: color-mix(in srgb, var(--cat-verdura) 85%, #3a2c21);
+  --cat-carne-pesce-solid: var(--cat-carne-pesce);
+  --cat-latticini-uova-solid: color-mix(in srgb, var(--cat-latticini-uova) 70%, #3a2c21);
+  --cat-pane-forno-solid: color-mix(in srgb, var(--cat-pane-forno) 65%, #3a2c21);
+  --cat-dispensa-solid: var(--cat-dispensa);
+  --cat-surgelati-solid: color-mix(in srgb, var(--cat-surgelati) 75%, #3a2c21);
+  --cat-bevande-solid: var(--cat-bevande);
+  --cat-snack-dolci-solid: color-mix(in srgb, var(--cat-snack-dolci) 85%, #3a2c21);
+  --cat-colazione-solid: color-mix(in srgb, var(--cat-colazione) 80%, #3a2c21);
+  --cat-casa-pulizia-solid: var(--cat-casa-pulizia);
+  --cat-igiene-cura-solid: color-mix(in srgb, var(--cat-igiene-cura) 85%, #3a2c21);
+  --cat-animali-solid: var(--cat-animali);
+  --cat-altro-solid: var(--cat-altro);
+
+  /* ---------------------------------------------------------------------- */
+  /* Tipografia                                                              */
+  /* ---------------------------------------------------------------------- */
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Lato', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* ---------------------------------------------------------------------- */
+  /* Layout                                                                  */
+  /* ---------------------------------------------------------------------- */
+  --tile-radius: 20px;
+  --grid-gap: 12px;
+  --page-gutter: 16px;
+  --tap-min: 44px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Bottom nav flottante: altezza, distanza dal bordo e spazio totale occupato */
+  --nav-height: 56px;
+  --nav-gap: 6px;
+  --nav-offset: calc(var(--nav-height) + var(--nav-gap) + var(--safe-bottom));
+
+  /* Vetro: sfondo semitrasparente + blur */
+  --glass-bg: color-mix(in srgb, var(--c-cream) 58%, transparent);
+  --glass-border: color-mix(in srgb, white 60%, transparent);
+  --glass-shadow: 0 10px 30px color-mix(in srgb, var(--c-ink) 18%, transparent);
+
+  /* ---------------------------------------------------------------------- */
+  /* Movimento                                                               */
+  /* ---------------------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --dur-press: 80ms;
+  --dur-color: 180ms;
+  --dur-sheet: 240ms;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Temi: le palette alternative sono in src/lib/theme.ts, che al cambio tema    */
+/* riscrive i colori grezzi (--c-bg, --c-burnt, ...) come stile inline di      */
+/* <html>. Qui resta solo il tema di default, "autunno".                       */
+/* -------------------------------------------------------------------------- */

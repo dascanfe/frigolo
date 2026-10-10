@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    /* i test girano in Node (vitest): servono anche i tipi di node:fs ecc. */
+    "types": ["node", "vite/client", "vite-plugin-pwa/client"]
+  },
+  "include": ["src"],
+  "exclude": []
+}
