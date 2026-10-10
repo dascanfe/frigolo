@@ -11,7 +11,7 @@ Si procede per fasi; a fine fase il PM riassume, fa il commit e aspetta l'ok di 
 - [x] Etichette, milestone e issue della Fase 1 su GitHub
 - [x] Vercel collegato al nuovo repo
 - [x] Secret del keep-alive (provato: ping e auth rispondono 200)
-- [ ] Vecchio repo `frigolo-app` archiviato (in attesa di conferma)
+- [x] Vecchio repo `frigolo-app` archiviato
 - [x] `node_modules` fuori da iCloud
 
 ## Fase 1 - Pronta per il pubblico
