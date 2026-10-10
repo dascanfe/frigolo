@@ -1,0 +1,29 @@
+name: Ho un'idea
+description: Proponi una funzione nuova o un miglioramento.
+title: '[Idea] '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Le idee sono benvenute. Prima di scrivere, dai un'occhiata alle [issue aperte](https://github.com/dascanfe/frigolo/issues):
+        se qualcuno l'ha già proposta, aggiungi un 👍 o un commento lì.
+  - type: textarea
+    id: bisogno
+    attributes:
+      label: Cosa ti manca?
+      description: Raccontaci la situazione, prima della soluzione.
+      placeholder: Al supermercato divido la spesa con la mia coinquilina e non so chi ha pagato cosa.
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Come te la immagini?
+      description: Anche solo a grandi linee.
+      placeholder: Alla fine della spesa potrei scrivere chi ha pagato.
+  - type: textarea
+    id: altro
+    attributes:
+      label: Altro da aggiungere
+      description: Altre app che lo fanno bene, disegni, esempi.
