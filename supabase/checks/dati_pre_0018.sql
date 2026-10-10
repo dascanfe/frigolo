@@ -1,8 +1,8 @@
 -- =============================================================================
--- Dati finti che simulano la produzione PRIMA della 0017 (solo locale).
+-- Dati finti che simulano la produzione PRIMA della 0018 (solo locale).
 -- Serve a provare la migrazione dei profili:
---   supabase db reset --local --version 0016
---   psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/dati_pre_0017.sql
+--   supabase db reset --local --version 0017
+--   psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/dati_pre_0018.sql
 --   supabase migration up --local
 -- Nomi, email e codici sono inventati.
 -- =============================================================================

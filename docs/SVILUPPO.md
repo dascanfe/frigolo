@@ -75,8 +75,9 @@ idempotenti: rilanciare il seed non crea duplicati.
 | `0013_item_icons`          | Icone dedicate (lamponi, mirtilli, mozzarella, piadine)             |
 | `0014_accenti`             | Accenti veri nei nomi (Caffè, Tè, Pancarrè, Alì)                    |
 | `0015`-`0016`              | Salvataggio automatico notturno della spesa (funzione + pg_cron)    |
-| `0017_profiles`            | Profilo unico per utente (nome, foto, colore) e migrazione dei dati |
-| `0018_multi_lists`         | Liste multiple: crea, entra, rinomina, lascia, elimina, invito      |
+| `0017_security_hotfix`     | Foto non elencabili, membri vincolati alla propria lista            |
+| `0018_profiles`            | Profilo unico per utente (nome, foto, colore) e migrazione dei dati |
+| `0019_multi_lists`         | Liste multiple: crea, entra, rinomina, lascia, elimina, invito      |
 | `seed.sql`                 | Categorie e catalogo base italiano                                  |
 
 ### Sviluppo in locale (consigliato)
@@ -141,8 +142,8 @@ psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=
 Per provare la migrazione dei profili su dati simili a quelli di produzione:
 
 ```bash
-supabase db reset --version 0016
-psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/dati_pre_0017.sql
+supabase db reset --version 0017
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/dati_pre_0018.sql
 supabase migration up --local
 ```
 
