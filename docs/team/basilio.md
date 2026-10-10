@@ -33,8 +33,17 @@ chiuse fino al passo 9.
    produzione: si può fare prima del frontend nuovo. Verifica: profili dei 4 utenti, liste
    intatte, `supabase/checks/profili_liste.sql` non si lancia in produzione (crea utenti).
 2. **Edge function.** `supabase functions deploy delete-account`.
-3. **Foto orfane.** `node scripts/cleanup-avatar-orphans.mjs` con URL e service role di
-   produzione nell'ambiente (prima senza `--apply` per contare, poi con `--apply`).
+3. **Foto orfane.** La service role key si inserisce con `read -s` (non compare a schermo
+   né nella cronologia della shell), mai scritta nel comando:
+
+   ```bash
+   read -s SUPABASE_SERVICE_ROLE_KEY && export SUPABASE_SERVICE_ROLE_KEY
+   export SUPABASE_URL=https://egvodwvnralxttxiovau.supabase.co
+   node scripts/cleanup-avatar-orphans.mjs          # conta
+   node scripts/cleanup-avatar-orphans.mjs --apply  # cancella
+   unset SUPABASE_SERVICE_ROLE_KEY
+   ```
+
 4. **Dominio.** Daniele: CNAME `frigolo` su Aruba verso Vercel, dominio aggiunto al
    progetto `frigolo-app`. Controllo: `https://frigolo.dascanfe.com/mascot.png` risponde
    (serve alle email) e l'app si apre.
@@ -58,7 +67,9 @@ chiuse fino al passo 9.
     del database, log di Auth.
 
 **Le 10 modifiche attese nel `config diff` del passo 7** (provato oggi, sola lettura):
-`site_url` e `additional_redirect_urls` (frigolo.dascanfe.com, vecchio dominio, localhost),
+`site_url` e `additional_redirect_urls` (frigolo.dascanfe.com e vecchio dominio, niente
+localhost: vengono da `[remotes.production]`, la prima riga del diff deve dire "using
+[remotes.production]"),
 `enable_confirmations` e `secure_password_change` a true, `minimum_password_length` 10,
 oggetti dei template `confirmation`, `recovery`, `email_change`, notifica
 `password_changed` attiva con il suo oggetto. Il diff mostra anche due voci "remote_only"
@@ -119,6 +130,18 @@ rimette il file com'era e si riavvia.
   (I 4 account attuali continuano ad accedere con la password che hanno.)
 
 ## Diario
+
+### 2026-10-10 - Ritocchi ai template e alla configurazione
+
+- Template: corretto `{{ .Email }}` spezzato da Prettier nel recupero, `supabase/templates`
+  in `.prettierignore`, testi di Zenzero (link valido da qualunque telefono, piede "la
+  lista della spesa sempre in tasca", virgolette dritte). Provati tutti e 4 in Mailpit:
+  variabili sostituite, link `/auth/confirm` giusti.
+- `config.toml`: valori locali in alto, produzione in `[remotes.production]` (niente
+  localhost), verificato con `config diff`. Origini locali della edge function nel segreto
+  locale `FRIGOLO_DEV_ORIGINS`.
+- `delete-account` cancella prima l'account e poi le foto. Rafforzate le regole sulle foto.
+  Messaggio della quota prodotti senza "voi".
 
 ### 2026-10-10 - Link delle email con TokenHash (decisione del PM)
 

@@ -236,8 +236,21 @@ Accesso con **email e password** (Supabase Auth). Configurazione in `supabase/co
 - **SMTP (Resend) e captcha (Cloudflare Turnstile) si gestiscono dal pannello di Supabase**,
   non dal file: le due sezioni restano commentate, così un `supabase config push` non li
   spegne e non ne cancella le chiavi. Prima di ogni push: `supabase config diff`;
-- `site_url` è `https://frigolo.dascanfe.com`; tra i redirect anche il vecchio
-  `https://frigolo-app.vercel.app` e localhost;
+- **locale e produzione separati nello stesso file**: in alto i valori per lo Supabase
+  locale (`site_url` `http://localhost:5173`, redirect verso localhost), in fondo
+  `[remotes.production]` con il project ref di produzione e solo i domini pubblici
+  (`https://frigolo.dascanfe.com` e il vecchio `https://frigolo-app.vercel.app`).
+  `supabase config diff/push --project-ref egvodwvnralxttxiovau` usa `[remotes.production]`
+  (lo dice nella prima riga: "using [remotes.production]"); in produzione localhost non
+  entra mai. Per questo in locale i link delle email puntano a `http://localhost:5173`;
+- la edge function `delete-account` accetta come origini i domini pubblici più quelle di
+  `FRIGOLO_DEV_ORIGINS`, un segreto solo locale in `[edge_runtime.secrets]` di
+  `config.toml` (porte 5173 e 4173 su localhost e 127.0.0.1; aggiungi lì le tue, poi
+  `supabase stop && supabase start`). In produzione non è impostato. In locale il gateway
+  risponde comunque `Access-Control-Allow-Origin: *`, quindi il controllo vero si vede solo
+  in produzione;
+- i template HTML sono esclusi da Prettier (`.prettierignore`): andando a capo spezzerebbe
+  le variabili `{{ .Email }}` e simili;
 - le registrazioni (`[auth] enable_signup`) restano chiuse fino all'apertura al pubblico.
 
 Il captcha si prova in locale scommentando `[auth.captcha]` solo sul proprio computer (non
@@ -390,9 +403,9 @@ mai in cache, asset immutabili).
    con gli stessi valori del tuo `.env`.
 3. Deploy. Ogni push su `main` rideploya.
 
-Dopo il primo deploy, se il dominio non è `frigolo-app.vercel.app`, aggiorna `site_url` e
-`additional_redirect_urls` in `supabase/config.toml` e lancia `supabase config push`:
-servono al link "password dimenticata".
+Il dominio dell'app sta in `[remotes.production.auth]` di `supabase/config.toml` (`site_url` e
+`additional_redirect_urls`): se cambia, aggiornalo lì e applicalo con `supabase config push`
+(dopo `config diff`, con l'ok di Daniele).
 
 Le registrazioni sono chiuse (`enable_signup = false` in `[auth]` e `[auth.email]`,
 già pushato): esistono solo i due account di casa. Per aprirle di nuovo, ad esempio per
