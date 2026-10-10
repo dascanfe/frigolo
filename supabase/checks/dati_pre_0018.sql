@@ -21,8 +21,8 @@ insert into public.households (id, name, join_code) values
 insert into public.household_members (household_id, user_id, display_name, color, avatar_url, joined_at) values
  ('bbbbbbbb-0000-0000-0000-000000000001','aaaaaaaa-0000-0000-0000-000000000001','Anna','c-teal','/avatars/lele.png', now()-interval '200 days'),
  ('bbbbbbbb-0000-0000-0000-000000000001','aaaaaaaa-0000-0000-0000-000000000002','Bruno','c-brick','/avatars/pipi.png', now()-interval '199 days'),
- ('bbbbbbbb-0000-0000-0000-000000000002','aaaaaaaa-0000-0000-0000-000000000003','Carla','c-ochre','http://127.0.0.1:54321/storage/v1/object/public/avatars/aaaaaaaa-0000-0000-0000-000000000003/avatar-1.webp', now()-interval '50 days'),
- ('bbbbbbbb-0000-0000-0000-000000000002','aaaaaaaa-0000-0000-0000-000000000004',null,null,null, now()-interval '49 days');
+ ('bbbbbbbb-0000-0000-0000-000000000002','aaaaaaaa-0000-0000-0000-000000000003','Carla','c-ochre','https://egvodwvnralxttxiovau.supabase.co/storage/v1/object/public/avatars/aaaaaaaa-0000-0000-0000-000000000003/avatar-1.webp', now()-interval '50 days'),
+ ('bbbbbbbb-0000-0000-0000-000000000002','aaaaaaaa-0000-0000-0000-000000000004',null,null,'https://evil.example.com/storage/v1/object/public/avatars/aaaaaaaa-0000-0000-0000-000000000004/x.webp', now()-interval '49 days');
 
 -- un po' di storico e di lista
 insert into public.list_entries (household_id, item_id, status, added_by, checked_at)
