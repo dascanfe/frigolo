@@ -3,7 +3,9 @@ import { useHousehold } from '@/features/auth/useHousehold'
 import { haptics } from '@/lib/haptics'
 import { LIST_MUTATION_KEY } from '@/lib/offlineQueue'
 import type { ListMutationVariables } from '@/lib/offlineQueue'
+import { describeQuotaError } from '@/lib/dbErrors'
 import { supabase } from '@/lib/supabase'
+import { toast } from '@/lib/toast'
 import type { Item, ListEntry, ListEntryStatus } from '@/types/domain'
 import { listQueryKey } from './useList'
 
@@ -62,8 +64,11 @@ export function useListMutations() {
       queryClient.setQueryData<ListEntry[]>(queryKey, applyChange(previous, variables))
       return { previous }
     },
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       if (context) queryClient.setQueryData(queryKey, context.previous)
+      // i limiti della lista (300 prodotti) vanno spiegati, il resto si riprova da solo
+      const quota = describeQuotaError(error)
+      if (quota) toast(quota, 'error')
     },
     onSettled: () => {
       if (queryClient.isMutating({ mutationKey: LIST_MUTATION_KEY }) <= 1) {
