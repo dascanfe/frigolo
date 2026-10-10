@@ -91,7 +91,7 @@ legge. La donazione non è collegata al tuo account Frigolo.
 | Creare e gestire il tuo account, far funzionare liste e condivisione                           | Esecuzione del contratto, cioè dei termini d'uso (b)          |
 | Suggerimenti e statistiche della tua lista                                                     | Esecuzione del contratto (b)                                  |
 | Email di servizio (conferma dell'indirizzo, recupero password, avvisi importanti sull'account) | Esecuzione del contratto (b)                                  |
-| Sicurezza: prevenire accessi non autorizzati, abusi e attacchi automatici                      | Legittimo interesse a proteggere il servizio e gli utenti (f) |
+| Sicurezza: prevenire accessi non autorizzati, abusi e attacchi automatici                      | Legittimo interesse a proteggere il servizio e chi lo usa (f) |
 | Statistiche d'uso anonime e aggregate per migliorare l'app                                     | Legittimo interesse (f)                                       |
 | Rispondere alle tue richieste e adempiere a obblighi di legge                                  | Obbligo di legge (c) ed esecuzione del contratto (b)          |
 
@@ -102,7 +102,7 @@ dell'art. 22 del GDPR.
 
 ## 4. Chi vede i tuoi dati
 
-- **Le persone delle tue liste.** Quando entri in una lista, gli altri membri vedono il tuo nome, la
+- **Le persone delle tue liste.** Quando entri in una lista, le altre persone della lista vedono il tuo nome, la
   tua foto, il tuo colore e cosa aggiungi o compri in quella lista. Non vedono la tua email né le
   altre liste di cui fai parte. Chi ha il codice o il link di invito di una lista può entrarci:
   condividilo solo con chi vuoi. Gli inviti valgono 7 giorni e puoi annullarli in qualsiasi
@@ -111,7 +111,7 @@ dell'art. 22 del GDPR.
 - **I fornitori tecnici** del punto 5, solo per quanto serve a far funzionare il servizio.
 - **Le autorità**, solo se lo impone la legge.
 
-Nessun altro utente di Frigolo può vedere le tue liste.
+Nessun'altra persona che usa Frigolo può vedere le tue liste.
 
 ## 5. Fornitori e dove sono i dati
 
@@ -145,8 +145,8 @@ scrivendo a frigolo@dascanfe.com.
 | Dati                                   | Per quanto                                                                                                                                         |
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Account e profilo                      | Finché non cancelli l'account. Dopo 24 mesi senza accessi l'account viene cancellato, con un'email di avviso 30 giorni prima                       |
-| Liste e storico delle spese            | Finché la lista ha almeno un membro. Quando l'ultimo membro esce o cancella l'account, la lista viene cancellata con tutto il contenuto            |
-| Le tue attività in una lista condivisa | Se cancelli l'account, le voci che hai aggiunto restano nella lista degli altri membri, ma senza il tuo nome né la tua foto                        |
+| Liste e storico delle spese            | Finché nella lista c'è almeno una persona. Quando l'ultima persona esce o cancella l'account, la lista viene cancellata con tutto il contenuto     |
+| Le tue attività in una lista condivisa | Se cancelli l'account, le voci che hai aggiunto restano nella lista delle altre persone, ma senza il tuo nome né la tua foto                       |
 | Foto profilo                           | Cancellata quando la cambi o cancelli l'account                                                                                                    |
 | Log tecnici dei fornitori              | Pochi giorni, secondo le impostazioni dei fornitori [VERIFICARE: durata dei log di Supabase e Vercel sul piano in uso]                             |
 | Copie di sicurezza (backup)            | [VERIFICARE: durata dei backup di Supabase sul piano in uso, di norma fino a 7 giorni]; i dati cancellati spariscono dai backup alla loro scadenza |
@@ -160,25 +160,25 @@ Hai diritto di:
 - **accedere** ai tuoi dati e averne una copia: "Scarica i miei dati" in Impostazioni;
 - **correggerli**: nome, foto ed email si cambiano dalle Impostazioni;
 - **cancellarli**: "Elimina account" in Impostazioni cancella l'account, il profilo, la foto e le
-  liste di cui sei l'unico membro;
+  liste in cui ci sei solo tu;
 - **portarli altrove**: il file scaricato è in un formato leggibile da altri programmi (JSON e CSV);
 - **limitare** il trattamento od **opporti** a quello basato sul legittimo interesse;
 - **proporre reclamo** al Garante per la protezione dei dati personali
   ([garanteprivacy.it](https://www.garanteprivacy.it)) o all'autorità del Paese UE in cui vivi.
 
 Per tutto quello che non puoi fare dall'app scrivi a frigolo@dascanfe.com. Rispondiamo entro un mese.
-Potremmo chiederti di scrivere dall'indirizzo email del tuo account, per essere sicuri che la
+Potremmo chiederti di scrivere dall'indirizzo email del tuo account, per verificare che la
 richiesta venga da te.
 
 ## 8. Età minima
 
 Frigolo è per persone dai **14 anni** in su. Se hai meno di 14 anni non registrarti. Se un
-genitore scopre che il figlio minore di 14 anni si è registrato, può scrivere a
+genitore scopre che sua figlia o suo figlio, con meno di 14 anni, ha creato un account, può scrivere a
 frigolo@dascanfe.com e l'account verrà cancellato.
 
 ## 9. Sicurezza
 
-I dati viaggiano sempre cifrati (HTTPS). Il database impedisce a ogni utente di leggere o
+I dati viaggiano sempre cifrati (HTTPS). Il database impedisce a chiunque di leggere o
 modificare liste di cui non fa parte, le password sono salvate solo in forma non leggibile (hash) e il codice di
 Frigolo è pubblico e verificabile su GitHub. Nessun sistema è sicuro al 100%: se scopriamo una
 violazione che mette a rischio i tuoi dati, la comunichiamo al Garante e, quando la legge lo
