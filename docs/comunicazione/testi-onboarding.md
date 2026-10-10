@@ -214,7 +214,7 @@ Si vede dopo "Con altre persone" e, uguale, in Impostazioni della lista.
 | Copiato                                              | Link copiato                                                                |
 | Riquadro del codice                                  | Oppure dài questo codice: **{codice}**                                      |
 | Sotto il codice                                      | Chi lo riceve apre Frigolo e tocca "Ho un codice".                          |
-| Nuovo codice                                         | Nuovo codice                                                                |
+| Nuovo codice                                         | Nuovo invito (rinnova codice e link)                                        |
 | Conferma nuovo codice                                | Il codice di prima smette di funzionare. Vuoi crearne uno nuovo?            |
 | Bottone conferma                                     | Crea un nuovo codice                                                        |
 | Uscita                                               | Lo faccio dopo                                                              |
@@ -349,7 +349,7 @@ Testi esistenti che cambiano con questa guida (per Fragola, quando tocca i file)
 | `OnboardingScreen.tsx`             | Benvenuto · Prepariamo la casa · ...del partner                                           | Schermate 4 e 5                                                                                        |
 | `AuthGate.tsx`                     | Carico la casa... · Non riesco a caricare la casa                                         | Carico la lista... · Non riesco a caricare la lista                                                    |
 | `SettingsScreen.tsx`               | Invita il partner · Il partner accede a Frigolo e poi inserisce questo codice.            | Schermata 6                                                                                            |
-| `SettingsScreen.tsx`               | Rigenera                                                                                  | Nuovo codice                                                                                           |
+| `SettingsScreen.tsx`               | Rigenera                                                                                  | Nuovo invito                                                                                           |
 | `SettingsScreen.tsx`               | I vostri prodotti                                                                         | I prodotti di questa lista                                                                             |
 | `ProfileSheet.tsx`                 | Nome visualizzato                                                                         | Il tuo nome                                                                                            |
 | `AnalyticsScreen.tsx`, stato vuoto | Le analitiche si costruiscono a ogni "Completa spesa": qui vedrai cosa comprate di più... | Quando tocchi "Spesa finita" qui vedi cosa compri di più, le categorie e ogni quanto ricompri le cose. |

@@ -1,5 +1,5 @@
 import { Check, KeyRound, Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
@@ -8,6 +8,7 @@ import { it as t } from '@/i18n/it'
 import { toast } from '@/lib/toast'
 import { CreateListForm } from './CreateListForm'
 import { JoinForm } from './JoinForm'
+import { canAddList } from './limits'
 import { useInvalidateLists } from './useLists'
 
 type Mode = 'pick' | 'create' | 'join'
@@ -33,7 +34,9 @@ export function ListSwitcherSheet({ open, onClose, initialMode = 'pick' }: ListS
 function SwitcherContent({ initialMode, onClose }: { initialMode: Mode; onClose: () => void }) {
   const { lists, household, userId, selectList } = useHousehold()
   const invalidate = useInvalidateLists()
-  const [mode, setMode] = useState<Mode>(initialMode)
+  const canAdd = canAddList(lists.length)
+  const [mode, setMode] = useState<Mode>(canAdd ? initialMode : 'pick')
+  const limitId = useId()
 
   const sorted = [...lists].sort((a, b) => collator.compare(a.household.name, b.household.name))
 
@@ -123,6 +126,8 @@ function SwitcherContent({ initialMode, onClose }: { initialMode: Mode; onClose:
           variant="secondary"
           icon={<Plus size={18} aria-hidden="true" />}
           onClick={() => setMode('create')}
+          disabled={!canAdd}
+          aria-describedby={canAdd ? undefined : limitId}
         >
           {t.lists.newList}
         </Button>
@@ -130,10 +135,17 @@ function SwitcherContent({ initialMode, onClose }: { initialMode: Mode; onClose:
           variant="secondary"
           icon={<KeyRound size={18} aria-hidden="true" />}
           onClick={() => setMode('join')}
+          disabled={!canAdd}
+          aria-describedby={canAdd ? undefined : limitId}
         >
           {t.firstList.code}
         </Button>
       </div>
+      {!canAdd && (
+        <p id={limitId} className="text-center text-xs text-secondary">
+          {t.lists.limitHint}
+        </p>
+      )}
     </div>
   )
 }

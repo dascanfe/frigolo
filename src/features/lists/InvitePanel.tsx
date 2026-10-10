@@ -5,6 +5,7 @@ import { appHost, it as t } from '@/i18n/it'
 import { toast } from '@/lib/toast'
 import type { Household } from '@/types/domain'
 import { inviteLink } from './inviteCode'
+import { hasRoomForPeople } from './limits'
 import { describeListError, rotateInviteCode } from './useLists'
 
 interface InvitePanelProps {
@@ -17,7 +18,9 @@ interface InvitePanelProps {
     | 'invite_token'
     | 'invite_token_expires_at'
   >
-  /** Dopo "Nuovo codice": ricaricare la lista per vedere il codice nuovo */
+  /** Persone già nella lista: a 5 la lista è piena e non si invita più */
+  peopleCount: number
+  /** Dopo "Nuovo invito": ricaricare la lista per vedere il codice nuovo */
   onRotated: () => void | Promise<void>
 }
 
@@ -35,7 +38,7 @@ async function copyText(text: string): Promise<boolean> {
  * il messaggio di Zenzero; dove non c'è, il messaggio va negli appunti.
  * Sotto, il codice da dettare e "Nuovo codice" (con conferma).
  */
-export function InvitePanel({ household, onRotated }: InvitePanelProps) {
+export function InvitePanel({ household, peopleCount, onRotated }: InvitePanelProps) {
   const [linkCopied, setLinkCopied] = useState(false)
   const [confirmRotate, setConfirmRotate] = useState(false)
   const [rotating, setRotating] = useState(false)
@@ -85,6 +88,14 @@ export function InvitePanel({ household, onRotated }: InvitePanelProps) {
     } finally {
       setRotating(false)
     }
+  }
+
+  if (!hasRoomForPeople(peopleCount)) {
+    return (
+      <p className="rounded-2xl bg-sand/50 px-4 py-3 text-sm text-primary" role="status">
+        {t.join.fullInvite}
+      </p>
+    )
   }
 
   return (

@@ -247,7 +247,11 @@ export function SettingsScreen() {
       <SectionHeader title={t.invite.sectionTitle} />
       <div className="mx-4 flex flex-col gap-3 rounded-3xl bg-surface p-4 ring-1 ring-subtle">
         <p className="text-sm text-secondary">{t.invite.subtitle(household.name)}</p>
-        <InvitePanel household={household} onRotated={() => invalidateLists(userId)} />
+        <InvitePanel
+          household={household}
+          peopleCount={members.length}
+          onRotated={() => invalidateLists(userId)}
+        />
       </div>
 
       {/* ---------------- Le tue liste ---------------- */}

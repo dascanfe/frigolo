@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/Button'
+import { canAddList, hasRoomForPeople } from '@/features/lists/limits'
 import { describeListError, getInvite, joinList } from '@/features/lists/useLists'
 import { it as t } from '@/i18n/it'
 import { toast } from '@/lib/toast'
@@ -8,12 +9,14 @@ import { OnboardingLayout } from './OnboardingLayout'
 
 interface InviteScreenProps {
   code: string
+  /** Quante liste ha già l'utente: al massimo 2 */
+  listCount: number
   /** Fine: id della lista in cui si è entrati, o null se si rinuncia */
   onDone: (householdId: string | null) => void | Promise<void>
 }
 
 /** "Ti invitano in {lista}": si vede aprendo un link d'invito */
-export function InviteScreen({ code, onDone }: InviteScreenProps) {
+export function InviteScreen({ code, listCount, onDone }: InviteScreenProps) {
   const preview = useQuery({
     queryKey: ['invite', code],
     queryFn: () => getInvite(code),
@@ -84,6 +87,27 @@ export function InviteScreen({ code, onDone }: InviteScreenProps) {
       >
         <Button fullWidth onClick={() => void accept()} disabled={busy}>
           {t.profile.next}
+        </Button>
+      </OnboardingLayout>
+    )
+  }
+
+  // limiti spiegati prima di provare: 2 liste a testa, 5 persone per lista
+  const blocked = !canAddList(listCount)
+    ? t.join.limitInvite
+    : !hasRoomForPeople(invite.memberCount)
+      ? t.join.full
+      : null
+  if (blocked) {
+    return (
+      <OnboardingLayout
+        title={t.join.inviteTitle(invite.name)}
+        subtitle={blocked}
+        mascot
+        showSignOut={false}
+      >
+        <Button variant="secondary" fullWidth onClick={() => void onDone(null)}>
+          {t.common.close}
         </Button>
       </OnboardingLayout>
     )
