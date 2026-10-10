@@ -110,6 +110,7 @@ export const MEMBER_COLOR_TOKENS = [
   'c-terracotta',
   'c-burnt',
   'c-ochre',
+  'c-ink-soft',
 ] as const satisfies readonly ColorToken[]
 export type MemberColorToken = (typeof MEMBER_COLOR_TOKENS)[number]
 

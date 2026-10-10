@@ -28,7 +28,7 @@ function ProfileSheetForm({ onClose }: { onClose: () => void }) {
         userId={userId}
         initialName={profile.display_name}
         initialColor={profile.color}
-        initialAvatarUrl={profile.avatar_url}
+        initialAvatarPath={profile.avatar_path}
         submitLabel={t.profile.save}
         onSaved={async () => {
           await invalidate(userId)

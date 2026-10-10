@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { Button } from '@/components/Button'
 import { TextField } from '@/components/TextField'
 import { it as t } from '@/i18n/it'
-import { isCompleteInviteCode, normalizeInviteCode } from './inviteCode'
+import { isCompleteInviteCode, isInviteToken, normalizeInviteCode, parseInvite } from './inviteCode'
 import { describeListError, getInvite, joinList } from './useLists'
 
 export interface JoinResult {
@@ -26,24 +26,29 @@ export function JoinForm({ onJoined, onCancel, cancelLabel = t.join.noCode }: Jo
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    if (!isCompleteInviteCode(code) || busy) return
+  /** invite: codice corto o token di un link incollato */
+  async function join(invite: string) {
+    if (busy) return
     setBusy(true)
     setError(null)
     try {
-      const preview = await getInvite(code)
-      if (!preview) {
-        setError(t.join.badCode)
+      const preview = await getInvite(invite)
+      const householdId = preview ? await joinList(invite) : null
+      if (!preview || !householdId) {
+        setError(isInviteToken(invite) ? t.join.badLink : t.join.badCode)
         return
       }
-      const householdId = await joinList(code)
       await onJoined({ householdId, name: preview.name, already: preview.isMember })
     } catch (joinError) {
       setError(describeListError(joinError))
     } finally {
       setBusy(false)
     }
+  }
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+    if (isCompleteInviteCode(code)) void join(code)
   }
 
   return (
@@ -56,12 +61,13 @@ export function JoinForm({ onJoined, onCancel, cancelLabel = t.join.noCode }: Jo
           setError(null)
         }}
         onPaste={(e) => {
-          // incollando il link intero si tiene solo il codice
+          // incollando il link intero: il token del link si usa subito
           const pasted = e.clipboardData.getData('text')
-          if (pasted.includes('/invito/')) {
-            e.preventDefault()
-            setCode(normalizeInviteCode(pasted))
-          }
+          if (!pasted.includes('/invito/')) return
+          e.preventDefault()
+          const invite = parseInvite(pasted)
+          if (invite && isInviteToken(invite)) void join(invite)
+          else setCode(normalizeInviteCode(invite ?? ''))
         }}
         placeholder={t.join.codePlaceholder}
         hint={t.join.codeHint}

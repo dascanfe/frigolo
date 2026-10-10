@@ -8,7 +8,7 @@ import { it as t } from '@/i18n/it'
 import { memberColor, memberColorName, onMemberColor } from '@/lib/colors'
 import { MEMBER_COLOR_TOKENS } from '@/types/domain'
 import type { MemberColorToken, Profile } from '@/types/domain'
-import { AvatarFileError, saveProfile, uploadAvatar } from './profileApi'
+import { AvatarFileError, avatarPublicUrl, saveProfile, uploadAvatar } from './profileApi'
 
 function isMemberColor(value: string | null): value is MemberColorToken {
   return (MEMBER_COLOR_TOKENS as readonly string[]).includes(value ?? '')
@@ -18,7 +18,7 @@ interface ProfileFormProps {
   userId: string
   initialName: string
   initialColor: string | null
-  initialAvatarUrl: string | null
+  initialAvatarPath: string | null
   submitLabel: string
   onSaved: (profile: Profile) => void | Promise<void>
 }
@@ -31,7 +31,7 @@ export function ProfileForm({
   userId,
   initialName,
   initialColor,
-  initialAvatarUrl,
+  initialAvatarPath,
   submitLabel,
   onSaved,
 }: ProfileFormProps) {
@@ -40,7 +40,8 @@ export function ProfileForm({
   const [color, setColor] = useState<MemberColorToken>(
     isMemberColor(initialColor) ? initialColor : 'c-teal',
   )
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(initialAvatarUrl)
+  const [avatarPath, setAvatarPath] = useState<string | null>(initialAvatarPath)
+  const avatarUrl = avatarPublicUrl(avatarPath)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -53,7 +54,7 @@ export function ProfileForm({
     setError(null)
     setUploading(true)
     try {
-      setAvatarUrl(await uploadAvatar(userId, file))
+      setAvatarPath(await uploadAvatar(userId, file))
     } catch (uploadError) {
       setError(uploadError instanceof AvatarFileError ? t.profile.photoBad : t.profile.photoFailed)
     } finally {
@@ -71,7 +72,7 @@ export function ProfileForm({
     setSaving(true)
     setError(null)
     try {
-      const profile = await saveProfile({ displayName: name, color, avatarUrl })
+      const profile = await saveProfile({ displayName: name, color, avatarPath })
       await onSaved(profile)
     } catch {
       setError(t.profile.saveFailed)
@@ -115,7 +116,7 @@ export function ProfileForm({
               variant="ghost"
               icon={<RotateCcw size={16} aria-hidden="true" />}
               className="h-9 text-sm"
-              onClick={() => setAvatarUrl(null)}
+              onClick={() => setAvatarPath(null)}
               disabled={busy}
             >
               {t.profile.photoRemove}

@@ -1,5 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { it as t } from '@/i18n/it'
+import { avatarPublicUrl } from '@/features/profile/profileApi'
+import { describeDbError } from '@/lib/dbErrors'
 import { supabase } from '@/lib/supabase'
 import { DEFAULT_STORES } from '@/types/domain'
 import type { Household, Profile } from '@/types/domain'
@@ -45,7 +47,7 @@ export function useListsQuery(userId: string) {
       const { data, error } = await supabase
         .from('households')
         .select(
-          '*, household_members(user_id, joined_at, profiles(display_name, color, avatar_url))',
+          '*, household_members(user_id, joined_at, profiles(display_name, color, avatar_path))',
         )
       if (error) throw error
       return data.map(({ household_members: rows, ...household }) => ({
@@ -56,7 +58,7 @@ export function useListsQuery(userId: string) {
             joined_at: row.joined_at,
             display_name: row.profiles?.display_name ?? '',
             color: row.profiles?.color ?? null,
-            avatar_url: row.profiles?.avatar_url ?? null,
+            avatar_url: avatarPublicUrl(row.profiles?.avatar_path),
           }))
           .sort((a, b) => a.joined_at.localeCompare(b.joined_at)),
       }))
@@ -98,14 +100,14 @@ export async function createList(rawName: string): Promise<string> {
   return id
 }
 
-export async function joinList(code: string): Promise<string> {
+/** Entra con il codice corto o il token del link; null = codice sbagliato o scaduto */
+export async function joinList(code: string): Promise<string | null> {
   const { data, error } = await supabase.rpc('join_household', { p_code: code })
   if (error) throw error
-  return data
+  return data ?? null
 }
 
 export interface InvitePreview {
-  householdId: string
   name: string
   memberCount: number
   isMember: boolean
@@ -118,7 +120,6 @@ export async function getInvite(code: string): Promise<InvitePreview | null> {
   const row = data[0]
   if (!row) return null
   return {
-    householdId: row.household_id,
     name: row.name,
     memberCount: row.member_count,
     isMember: row.is_member,
@@ -162,9 +163,15 @@ export function describeListError(error: unknown): string {
       : undefined
   const lower = message.toLowerCase()
   if (lower.includes('fetch') || lower.includes('network')) return t.errors.network
-  if (status === 429) return t.join.tooMany
+  const code =
+    typeof error === 'object' && error !== null && 'code' in error
+      ? String((error as { code: unknown }).code)
+      : ''
+  if (status === 429 || code === 'PT429' || message.includes('Troppi tentativi')) {
+    return t.join.tooMany
+  }
   if (message.includes('Codice non valido')) return t.join.badCode
   if (message.includes('massimo di liste')) return t.lists.limit
   if (message.includes('massimo di membri')) return t.join.full
-  return t.lists.actionFailed
+  return describeDbError(error, t.lists.actionFailed)
 }

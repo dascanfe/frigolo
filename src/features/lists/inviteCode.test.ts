@@ -4,19 +4,15 @@ import {
   inviteLink,
   isCompleteInviteCode,
   normalizeInviteCode,
+  parseInvite,
 } from './inviteCode'
+
+const TOKEN = 'aB3_x-Yz09QwErTyUiOpAs'
 
 describe('normalizeInviteCode', () => {
   it('mette in maiuscolo e toglie spazi e trattini', () => {
     expect(normalizeInviteCode(' abcd-2345 ')).toBe('ABCD2345')
     expect(normalizeInviteCode('ab cd 23 45')).toBe('ABCD2345')
-  })
-
-  it('prende il codice da un link incollato', () => {
-    expect(normalizeInviteCode('https://frigolo.dascanfe.com/invito/abcd2345')).toBe('ABCD2345')
-    expect(normalizeInviteCode('Entra qui: https://x.it/invito/WXYZ9876?utm=1 grazie')).toBe(
-      'WXYZ9876',
-    )
   })
 
   it('taglia a 8 caratteri e scarta i simboli', () => {
@@ -27,10 +23,29 @@ describe('normalizeInviteCode', () => {
   })
 })
 
+describe('parseInvite', () => {
+  it('dal link prende il token senza toccare maiuscole e minuscole', () => {
+    expect(parseInvite(`https://frigolo.dascanfe.com/invito/${TOKEN}`)).toBe(TOKEN)
+    expect(parseInvite(`Entra qui: https://x.it/invito/${TOKEN}?utm=1 grazie`)).toBe(TOKEN)
+    expect(parseInvite(TOKEN)).toBe(TOKEN)
+  })
+
+  it('un codice corto si normalizza, anche dentro un link', () => {
+    expect(parseInvite('abcd-2345')).toBe('ABCD2345')
+    expect(parseInvite('https://x.it/invito/abcd2345')).toBe('ABCD2345')
+  })
+
+  it('niente di utilizzabile: null', () => {
+    expect(parseInvite('  ')).toBeNull()
+    expect(parseInvite('???')).toBeNull()
+  })
+})
+
 describe('inviteCodeFromPath', () => {
-  it('riconosce /invito/:code', () => {
-    expect(inviteCodeFromPath('/invito/abcd2345')).toBe('ABCD2345')
-    expect(inviteCodeFromPath('/invito/ABCD-2345/')).toBe('ABCD2345')
+  it('riconosce /invito/<token> e /invito/<codice>', () => {
+    expect(inviteCodeFromPath(`/invito/${TOKEN}`)).toBe(TOKEN)
+    expect(inviteCodeFromPath(`/invito/${TOKEN}/`)).toBe(TOKEN)
+    expect(inviteCodeFromPath('/invito/abcd-2345')).toBe('ABCD2345')
     expect(inviteCodeFromPath('/Invito/abcd2345')).toBe('ABCD2345')
   })
 
@@ -44,8 +59,8 @@ describe('inviteCodeFromPath', () => {
 
 describe('inviteLink', () => {
   it('costruisce il link senza doppie barre', () => {
-    expect(inviteLink('https://frigolo.dascanfe.com/', 'ABCD2345')).toBe(
-      'https://frigolo.dascanfe.com/invito/ABCD2345',
+    expect(inviteLink('https://frigolo.dascanfe.com/', TOKEN)).toBe(
+      `https://frigolo.dascanfe.com/invito/${TOKEN}`,
     )
   })
 })
