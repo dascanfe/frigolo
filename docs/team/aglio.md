@@ -7,8 +7,8 @@ Aggiornato da Aglio alla fine di ogni incarico. Il più recente in alto.
 - Audit di ottobre: A1 e A2 **corretti in produzione** (0017, PR #17) e documentati in
   `docs/sicurezza/audit-2026-10.md`; gli altri punti sono seguiti in privato (regola del repo
   pubblico). Non si può ancora aprire al pubblico.
-- PR #16 (Basilio): **approvata** al terzo giro (`docs/sicurezza/revisione-pr16.md`).
-- PR #18 (Fragola): **approvata con correzioni** (`docs/sicurezza/revisione-pr18.md`).
+- PR #16 e PR #18: **si possono pubblicare** (verifica finale), con le registrazioni chiuse fino a
+  quando informativa e termini sono pubblicati e collegati dalla registrazione.
 - PR #15 (mia): privacy, termini e registro aggiornati con le decisioni di Daniele; CSP con
   Turnstile e senza Google Fonts, sempre `Report-Only`.
 
@@ -30,6 +30,12 @@ Aggiornato da Aglio alla fine di ogni incarico. Il più recente in alto.
 3. Revisione professionale di privacy e termini prima del lancio (consigliata, decisa).
 
 ## Diario
+
+### 2026-10-10 - Verifica finale della Fase 1
+
+- Ultimi ritocchi di #16 e #18 verificati in locale (transazioni annullate, chiamate non
+  distruttive); build, test e `pnpm audit --prod` in un worktree temporaneo.
+- Checklist di rilascio applicata alle due PR (nei file di revisione).
 
 ### 2026-10-10 - Terzo giro sulla PR #16 e DPA
 

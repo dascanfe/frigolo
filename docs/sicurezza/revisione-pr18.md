@@ -7,9 +7,8 @@ segnalati al PM a parte e saranno descritti qui solo dopo la correzione in produ
 
 ## Verdetto
 
-**Approvata con correzioni.** Dipende dalla PR #16, che va unita e rilasciata prima. Le
-correzioni richieste sono state comunicate al PM; serve un ultimo passaggio di Aglio prima
-dell'unione.
+**Si può pubblicare** (verifica finale del 2026-10-10), dopo la PR #16 e con le registrazioni
+chiuse finché informativa e termini non sono pubblicati e collegati dalla registrazione.
 
 ## Cosa è stato verificato
 
@@ -28,3 +27,19 @@ upload della foto, service worker, `index.html`).
 
 Non provato da Aglio: lo svuotamento della cache del service worker su una build di produzione
 (in sviluppo il service worker è spento). Da controllare nella checklist di rilascio, punto 6.
+
+## Verifica finale (2026-10-10)
+
+- Foto: nome con uuid casuale, la foto precedente viene cancellata.
+- Logout: oltre alle cache si tolgono invito in sospeso e lista aperta salvata.
+- `/auth/confirm`: legge solo `token_hash` e `type` (da un elenco chiuso), pulisce subito
+  l'indirizzo, porta sempre a `/` (nessun parametro di destinazione) e non mostra nella pagina
+  nessun valore preso dall'URL.
+- Turnstile: script caricato solo nelle schermate di accesso; se il widget non si carica il modulo
+  parte senza token e decide il server (con il captcha attivo nel pannello la richiesta senza
+  token viene rifiutata da Supabase Auth).
+- Avvio senza rete: con una sessione salvata l'app si apre sulla cache del dispositivo; appena il
+  server risponde una sessione revocata o scaduta porta al logout e alla pulizia dei dati locali.
+- Checklist di rilascio: lint, typecheck, 70 test, build, `pnpm audit --prod` puliti; nessun
+  segreto né dato reale nel diff; niente Google Fonts né codice di debug nella build; avatar
+  `lele` e `avatar-b` rimossi.
