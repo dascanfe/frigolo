@@ -12,6 +12,8 @@ export interface TurnstileHandle {
 interface TurnstileProps {
   /** Token pronto, oppure null quando scade o va richiesto di nuovo */
   onToken: (token: string | null) => void
+  /** Lo script non si carica (rete, blocchi): il modulo prova senza token */
+  onUnavailable?: () => void
   action?: string
   ref?: Ref<TurnstileHandle>
 }
@@ -21,12 +23,13 @@ interface TurnstileProps {
  * "interaction-only"): compare solo se Cloudflare vuole un tocco in più.
  * Senza site key non mostra niente.
  */
-export function Turnstile({ onToken, action, ref }: TurnstileProps) {
+export function Turnstile({ onToken, onUnavailable, action, ref }: TurnstileProps) {
   const container = useRef<HTMLDivElement>(null)
   const widget = useRef<{ api: TurnstileApi; id: string } | null>(null)
   const [failed, setFailed] = useState(false)
   // il genitore passa spesso una arrow inline: l'effetto non deve rimontarsi
   const emit = useEffectEvent((token: string | null) => onToken(token))
+  const unavailable = useEffectEvent(() => onUnavailable?.())
 
   useImperativeHandle(ref, () => ({
     reset: () => {
@@ -55,7 +58,9 @@ export function Turnstile({ onToken, action, ref }: TurnstileProps) {
         widget.current = { api, id }
       })
       .catch(() => {
-        if (!cancelled) setFailed(true)
+        if (cancelled) return
+        setFailed(true)
+        unavailable()
       })
     return () => {
       cancelled = true
