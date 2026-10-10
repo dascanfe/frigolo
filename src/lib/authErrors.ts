@@ -1,5 +1,8 @@
 import type { AuthError } from '@supabase/supabase-js'
 
+/** Lunghezza minima della password, come minimum_password_length in supabase/config.toml */
+export const MIN_PASSWORD_LENGTH = 10
+
 /** Traduce gli errori di Supabase Auth in messaggi leggibili in italiano */
 export function describeAuthError(error: AuthError | Error | null | undefined): string {
   if (!error) return 'Non sono riuscito a entrare. Riprova tra poco.'
@@ -17,7 +20,10 @@ export function describeAuthError(error: AuthError | Error | null | undefined): 
     return 'Questa email ha già un account. Prova ad accedere.'
   }
   if (code === 'weak_password' || message.includes('password should be')) {
-    return 'La password deve avere almeno 8 caratteri.'
+    return `La password deve avere almeno ${MIN_PASSWORD_LENGTH} caratteri.`
+  }
+  if (code === 'reauthentication_needed' || message.includes('reauthentication')) {
+    return 'Per sicurezza esci e rientra con la password attuale, poi cambiala.'
   }
   if (code === 'same_password') {
     return 'La nuova password deve essere diversa da quella attuale.'
