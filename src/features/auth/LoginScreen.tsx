@@ -1,3 +1,4 @@
+import type { EmailOtpType } from '@supabase/supabase-js'
 import { LogIn, MailCheck, UserPlus } from 'lucide-react'
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
@@ -34,7 +35,13 @@ function readUrlOutcome(): string | null {
   return null
 }
 
-export function LoginScreen() {
+interface LoginScreenProps {
+  /** Link di un'email scaduto o già usato: si offre di mandarne uno nuovo */
+  linkError?: { type: EmailOtpType | null } | null
+  onLinkErrorDone?: () => void
+}
+
+export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenProps = {}) {
   const [mode, setMode] = useState<Mode>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -171,6 +178,99 @@ export function LoginScreen() {
             }}
           >
             {t.checkEmail.wrongEmail}
+          </Button>
+        </div>
+      </main>
+    )
+  }
+
+  async function handleLinkResend(event: FormEvent) {
+    event.preventDefault()
+    if (!cleanEmail || !captchaReady || busy) return
+    setBusy(true)
+    setError(null)
+    setNotice(null)
+    const { error: sendError } =
+      linkError?.type === 'recovery'
+        ? await supabase.auth.resetPasswordForEmail(cleanEmail, {
+            redirectTo: window.location.origin,
+            captchaToken: captcha,
+          })
+        : await supabase.auth.resend({
+            type: 'signup',
+            email: cleanEmail,
+            options: { emailRedirectTo: window.location.origin, captchaToken: captcha },
+          })
+    setBusy(false)
+    renewCaptcha()
+    if (sendError) {
+      setError(describeAuthError(sendError))
+      return
+    }
+    setNotice(t.authLink.sent(cleanEmail))
+  }
+
+  if (linkError) {
+    const emailChange = linkError.type === 'email_change'
+    return (
+      <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6 pb-safe pt-safe">
+        <header className="flex flex-col items-center gap-3 text-center">
+          <img
+            src="/mascot.png"
+            alt=""
+            width={112}
+            height={112}
+            className="size-28 drop-shadow-[0_8px_16px_rgb(58_44_33/0.15)]"
+            draggable={false}
+          />
+          <h1 className="font-display text-3xl font-bold text-primary">
+            {t.authLink.expiredTitle}
+          </h1>
+          <p className="text-secondary">
+            {emailChange ? t.authLink.expiredEmailChange : t.authLink.expiredBody}
+          </p>
+        </header>
+        {notice && (
+          <p className="rounded-2xl bg-sand/50 px-4 py-3 text-sm text-primary" role="status">
+            {notice}
+          </p>
+        )}
+        {!emailChange && (
+          <form onSubmit={handleLinkResend} className="flex flex-col gap-4">
+            <TextField
+              label="Email"
+              type="email"
+              name="email"
+              inputMode="email"
+              autoComplete="username"
+              autoCapitalize="none"
+              required
+              placeholder="nome@esempio.it"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              error={error}
+            />
+            <Turnstile
+              ref={turnstile}
+              onToken={setCaptchaToken}
+              onUnavailable={() => setCaptchaUnavailable(true)}
+              action="resend"
+            />
+            <Button type="submit" fullWidth disabled={busy || !cleanEmail || !captchaReady}>
+              {busy ? t.common.wait : t.authLink.resend}
+            </Button>
+          </form>
+        )}
+        <div className="flex justify-center">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setNotice(null)
+              setError(null)
+              onLinkErrorDone?.()
+            }}
+          >
+            {t.authLink.backToLogin}
           </Button>
         </div>
       </main>

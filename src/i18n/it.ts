@@ -40,6 +40,17 @@ export const it = {
     captchaWaiting: 'Controllo che sei una persona...',
     pendingInvite: "Ti hanno invitato in una lista: crea l'account o accedi e poi ci entri.",
   },
+  authLink: {
+    confirmed: 'Email confermata',
+    emailChanged: 'Email cambiata',
+    expiredTitle: 'Questo link è scaduto',
+    expiredBody: 'Ne mando uno nuovo: scrivi la tua email e tocca "Mandala di nuovo".',
+    expiredEmailChange:
+      'Il link per cambiare email non vale più. Accedi e chiedi di nuovo il cambio dalle Impostazioni.',
+    resend: 'Mandala di nuovo',
+    sent: (email: string) => `Fatto: se ${email} ha un account, ti arriva un'email nuova.`,
+    backToLogin: "Torna all'accesso",
+  },
   checkEmail: {
     title: 'Controlla la posta',
     body: (email: string) =>

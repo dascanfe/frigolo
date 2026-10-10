@@ -39,7 +39,9 @@ export function AuthGate({ children }: AuthGateProps) {
   const session = useSession()
 
   if (session.status === 'loading') return <Splash />
-  if (session.status === 'signed-out') return <LoginScreen />
+  if (session.status === 'signed-out') {
+    return <LoginScreen linkError={session.linkError} onLinkErrorDone={session.clearLinkError} />
+  }
   if (session.recovery) return <UpdatePasswordScreen onDone={session.endRecovery} />
 
   return (
