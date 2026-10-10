@@ -8,10 +8,12 @@
 -- Nella UI si chiamano "liste", le tabelle restano households.
 --
 -- Regole scelte:
---   - al massimo 50 liste per utente e 20 membri per lista (argine agli abusi
---     con le registrazioni aperte; si cambiano nelle funzioni qui sotto);
+--   - al massimo 2 liste per utente e 5 persone per lista (decisione di
+--     Daniele; si cambiano nelle due funzioni qui sotto);
 --   - join_household è idempotente: se sei già nella lista ritorna il suo id
 --     (riaprire un link di invito non dà errore);
+--   - ogni errore ha in HINT una chiave stabile (es. lists_limit) da usare nel
+--     frontend al posto del testo, che può cambiare;
 --   - lasciare: sempre possibile. Una lista che resta senza membri viene
 --     eliminata con tutti i suoi dati (trigger), anche quando a sparire è
 --     l'account. Il frontend deve avvisare chi lascia per ultimo;
@@ -25,6 +27,7 @@
 --   - si rinnovano insieme con rotate_join_code (il vecchio smette subito di
 --     funzionare: è anche il modo per revocare un invito);
 --   - i client non possono scriverli: update diretto solo su name e stores;
+--   - le RPC dell'invito si chiamano solo in POST (supabase.rpc lo fa già);
 --   - limite ai tentativi falliti per utente, condiviso da join_household e
 --     get_household_invite: 10 all'ora e 30 al giorno, poi errore 429 per
 --     qualunque codice, giusto o sbagliato (risposta uniforme);
@@ -43,10 +46,10 @@
 -- Limiti
 -- -----------------------------------------------------------------------------
 create or replace function public.max_households_per_user()
-returns int language sql immutable set search_path = '' as $$ select 50 $$;
+returns int language sql immutable set search_path = '' as $$ select 2 $$;
 
 create or replace function public.max_members_per_household()
-returns int language sql immutable set search_path = '' as $$ select 20 $$;
+returns int language sql immutable set search_path = '' as $$ select 5 $$;
 
 revoke execute on function public.max_households_per_user() from public, anon;
 revoke execute on function public.max_members_per_household() from public, anon;
@@ -128,20 +131,59 @@ revoke all on public.invite_attempts from anon, authenticated;
 
 comment on table public.invite_attempts is 'Tentativi falliti di usare un codice o link di invito (limite anti forza bruta). Svuotata ogni notte.';
 
--- Errore 429 (PostgREST traduce PT429 nello stato HTTP) se l'utente ha
--- superato i tentativi falliti. Vale per qualunque codice.
+-- Contatore globale per giorno dei tentativi falliti: serve da allarme (un
+-- picco vuol dire che qualcuno prova codici a caso) e al cruscotto di Pepe.
+-- Nessun dato personale, nessun accesso dai client.
+create table if not exists public.invite_attempts_daily (
+  day     date primary key,
+  failed  integer not null default 0
+);
+
+alter table public.invite_attempts_daily enable row level security;
+revoke all on public.invite_attempts_daily from anon, authenticated;
+
+comment on table public.invite_attempts_daily is 'Numero di tentativi falliti di usare un invito, per giorno (UTC). Per l allarme e il cruscotto.';
+
+-- Registra un tentativo fallito (per utente e nel contatore globale).
+create or replace function public.record_failed_invite(p_user uuid)
+returns void
+language sql
+volatile
+set search_path = ''
+as $$
+  insert into public.invite_attempts (user_id) values (p_user);
+  insert into public.invite_attempts_daily as d (day, failed)
+  values ((now() at time zone 'UTC')::date, 1)
+  on conflict (day) do update set failed = d.failed + 1;
+$$;
+
+revoke execute on function public.record_failed_invite(uuid) from public, anon, authenticated;
+
+-- Controlli prima di cercare un codice, uguali per codici giusti e sbagliati:
+--   - solo richieste POST (errore 405 altrimenti);
+--   - un controllo alla volta per utente;
+--   - errore 429 (PostgREST traduce PT429 nello stato HTTP) se l'utente ha
+--     superato i tentativi falliti.
 create or replace function public.assert_invite_rate_limit(p_user uuid)
 returns void
 language plpgsql
-stable
+volatile
 set search_path = ''
 as $$
 begin
+  if current_setting('transaction_read_only') = 'on' then
+    raise exception 'Questa richiesta va fatta con POST.'
+      using errcode = 'PT405', hint = 'use_post';
+  end if;
+
+  perform pg_advisory_xact_lock(hashtextextended('frigolo-invite:' || p_user::text, 0));
+
   if (select count(*) from public.invite_attempts
       where user_id = p_user and attempted_at > now() - interval '1 hour') >= 10
      or (select count(*) from public.invite_attempts
          where user_id = p_user and attempted_at > now() - interval '1 day') >= 30 then
-    raise exception 'Troppi tentativi, riprova più tardi' using errcode = 'PT429';
+    raise exception 'Troppi tentativi. Aspetta qualche minuto e riprova.'
+      using errcode = 'PT429', hint = 'rate_limited';
   end if;
 end;
 $$;
@@ -233,14 +275,15 @@ declare
   v_id    uuid;
 begin
   if v_user is null then
-    raise exception 'Non autenticato' using errcode = '42501';
+    raise exception 'Non autenticato.' using errcode = '42501', hint = 'not_authenticated';
   end if;
 
   perform 1 from public.profiles where id = v_user for update;
 
   if (select count(*) from public.household_members where user_id = v_user)
      >= public.max_households_per_user() then
-    raise exception 'Hai raggiunto il numero massimo di liste' using errcode = 'P0001';
+    raise exception 'Hai già il numero massimo di liste (%).', public.max_households_per_user()
+      using errcode = 'P0001', hint = 'lists_limit';
   end if;
 
   perform public.apply_legacy_profile_args(v_user, p_display_name, p_color);
@@ -282,7 +325,7 @@ declare
   v_id    uuid;
 begin
   if v_user is null then
-    raise exception 'Non autenticato' using errcode = '42501';
+    raise exception 'Non autenticato.' using errcode = '42501', hint = 'not_authenticated';
   end if;
 
   perform public.assert_invite_rate_limit(v_user);
@@ -290,7 +333,7 @@ begin
   v_id := public.find_household_by_invite(p_code);
 
   if v_id is null then
-    insert into public.invite_attempts (user_id) values (v_user);
+    perform public.record_failed_invite(v_user);
     return null;
   end if;
 
@@ -308,12 +351,14 @@ begin
 
   if (select count(*) from public.household_members where user_id = v_user)
      >= public.max_households_per_user() then
-    raise exception 'Hai raggiunto il numero massimo di liste' using errcode = 'P0001';
+    raise exception 'Hai già il numero massimo di liste (%).', public.max_households_per_user()
+      using errcode = 'P0001', hint = 'lists_limit';
   end if;
 
   if (select count(*) from public.household_members where household_id = v_id)
      >= public.max_members_per_household() then
-    raise exception 'La lista ha raggiunto il numero massimo di membri' using errcode = 'P0001';
+    raise exception 'Questa lista ha già il numero massimo di persone (%).', public.max_members_per_household()
+      using errcode = 'P0001', hint = 'members_limit';
   end if;
 
   perform public.apply_legacy_profile_args(v_user, p_display_name, p_color);
@@ -353,7 +398,7 @@ declare
   v_id    uuid;
 begin
   if v_user is null then
-    raise exception 'Non autenticato' using errcode = '42501';
+    raise exception 'Non autenticato.' using errcode = '42501', hint = 'not_authenticated';
   end if;
 
   perform public.assert_invite_rate_limit(v_user);
@@ -361,7 +406,7 @@ begin
   v_id := public.find_household_by_invite(p_code);
 
   if v_id is null then
-    insert into public.invite_attempts (user_id) values (v_user);
+    perform public.record_failed_invite(v_user);
     return;
   end if;
 
@@ -395,7 +440,7 @@ declare
   v_name text;
 begin
   if not public.is_household_member(p_household_id) then
-    raise exception 'Non fai parte di questa lista' using errcode = '42501';
+    raise exception 'Non fai parte di questa lista.' using errcode = '42501', hint = 'not_member';
   end if;
 
   update public.households
@@ -429,7 +474,7 @@ declare
   v_attempt  int := 0;
 begin
   if not public.is_household_member(p_household_id) then
-    raise exception 'Non fai parte di questa lista' using errcode = '42501';
+    raise exception 'Non fai parte di questa lista.' using errcode = '42501', hint = 'not_member';
   end if;
 
   loop
@@ -451,7 +496,7 @@ begin
   end loop;
 
   if v_code is null then
-    raise exception 'Lista non trovata' using errcode = 'P0002';
+    raise exception 'Lista non trovata.' using errcode = 'P0002', hint = 'not_found';
   end if;
 
   return v_code;
@@ -514,11 +559,11 @@ declare
   v_user uuid := auth.uid();
 begin
   if v_user is null then
-    raise exception 'Non autenticato' using errcode = '42501';
+    raise exception 'Non autenticato.' using errcode = '42501', hint = 'not_authenticated';
   end if;
 
   if not public.is_household_member(p_household_id) then
-    raise exception 'Non fai parte di questa lista' using errcode = '42501';
+    raise exception 'Non fai parte di questa lista.' using errcode = '42501', hint = 'not_member';
   end if;
 
   -- blocca la lista: due uscite contemporanee vedono lo stesso conteggio
@@ -551,11 +596,11 @@ declare
   v_user uuid := auth.uid();
 begin
   if v_user is null then
-    raise exception 'Non autenticato' using errcode = '42501';
+    raise exception 'Non autenticato.' using errcode = '42501', hint = 'not_authenticated';
   end if;
 
   if not public.is_household_member(p_household_id) then
-    raise exception 'Non fai parte di questa lista' using errcode = '42501';
+    raise exception 'Non fai parte di questa lista.' using errcode = '42501', hint = 'not_member';
   end if;
 
   -- blocca la lista: nessuno può entrare mentre la si elimina
@@ -565,7 +610,8 @@ begin
     select 1 from public.household_members
     where household_id = p_household_id and user_id <> v_user
   ) then
-    raise exception 'La lista ha altri membri: puoi solo lasciarla' using errcode = 'P0001';
+    raise exception 'Nella lista ci sono altre persone: puoi solo lasciarla.'
+      using errcode = 'P0001', hint = 'has_other_people';
   end if;
 
   delete from public.households where id = p_household_id;
