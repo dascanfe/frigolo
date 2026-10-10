@@ -17,6 +17,7 @@ export type FunctionReturns<F extends keyof PublicSchema['Functions']> =
   PublicSchema['Functions'][F]['Returns']
 
 export type Household = Tables<'households'>
+export type Profile = Tables<'profiles'>
 export type HouseholdMember = Tables<'household_members'>
 export type Category = Tables<'categories'>
 export type Item = Tables<'items'>

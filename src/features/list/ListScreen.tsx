@@ -1,4 +1,4 @@
-import { History, LayoutGrid, SearchX, ShoppingBasket, Store } from 'lucide-react'
+import { ChevronDown, History, LayoutGrid, SearchX, ShoppingBasket, Store } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { LinkButton } from '@/components/Button'
@@ -12,8 +12,10 @@ import { memberName, useHousehold } from '@/features/auth/useHousehold'
 import { CreateItemSheet } from '@/features/catalog/CreateItemSheet'
 import type { CreateItemRequest } from '@/features/catalog/CreateItemSheet'
 import { useCatalog } from '@/features/catalog/useCatalog'
+import { ListSwitcherSheet } from '@/features/lists/ListSwitcherSheet'
 import { useSearch } from '@/features/search/useSearch'
 import { usePurchaseHistoryQuery, useSuggestions } from '@/features/suggestions/useSuggestions'
+import { it as t } from '@/i18n/it'
 import { badgeQuantity, capitalizeFirst, pluralize } from '@/lib/format'
 import type { Item, ListEntryWithItem } from '@/types/domain'
 import { CompleteTripButton } from './CompleteTripButton'
@@ -30,7 +32,8 @@ function tileState(entry: ListEntryWithItem | undefined): TileState {
 const RECENT_LIMIT = 9
 
 export function ListScreen() {
-  const { household, members } = useHousehold()
+  const { household, members, lists } = useHousehold()
+  const [switcherOpen, setSwitcherOpen] = useState(false)
   const catalog = useCatalog()
   const list = useList()
   const mutations = useListMutations()
@@ -43,7 +46,7 @@ export function ListScreen() {
   const history = usePurchaseHistoryQuery(household.id)
   const [storeFilter, setStoreFilter] = useState<string | null>(null)
 
-  /** Supermercati presenti tra gli articoli in lista, per i filtri */
+  /** Supermercati presenti tra i prodotti in lista, per i filtri */
   const storesInList = useMemo(() => {
     const set = new Set<string>()
     for (const entry of list.entries) if (entry.store) set.add(entry.store)
@@ -110,17 +113,34 @@ export function ListScreen() {
   return (
     <main className="flex flex-col pb-24">
       <header className="flex items-start justify-between gap-3 px-4 pt-6 pb-2">
-        <div className="flex flex-col gap-1">
-          <h1 className="font-display text-4xl font-bold text-primary">La spesa</h1>
+        <div className="flex min-w-0 flex-col gap-1">
+          <button
+            type="button"
+            onClick={() => setSwitcherOpen(true)}
+            className="-ml-1 flex min-w-0 items-center gap-1 rounded-2xl px-1 text-left active:bg-sand/40"
+            aria-haspopup="dialog"
+            aria-label={`${t.lists.switch}. Lista aperta: ${household.name}`}
+          >
+            <h1 className="truncate font-display text-4xl font-bold text-primary">
+              {household.name}
+            </h1>
+            <ChevronDown
+              size={26}
+              strokeWidth={2.5}
+              className="mt-1 shrink-0 text-secondary"
+              aria-hidden="true"
+            />
+          </button>
           <p className="text-sm text-secondary">
             {list.isPending
               ? 'Carico la lista...'
               : list.todoCount === 0
                 ? 'Niente da comprare'
-                : pluralize(list.todoCount, 'articolo da comprare', 'articoli da comprare')}
+                : pluralize(list.todoCount, 'prodotto da comprare', 'prodotti da comprare')}
+            {lists.length > 1 && ` · ${pluralize(lists.length, 'lista', 'liste')}`}
           </p>
         </div>
-        <ul className="flex -space-x-2 pt-1" aria-label="Membri della casa">
+        <ul className="flex shrink-0 -space-x-2 pt-1" aria-label={t.lists.people}>
           {members.map((member) => (
             <li key={member.user_id}>
               <Avatar
@@ -283,7 +303,7 @@ export function ListScreen() {
               />
               <p className="-mt-2 px-4 pb-3 text-sm text-secondary">
                 Se non premete &quot;Spesa finita&quot;, il carrello si salva da solo stanotte. Fino
-                ad allora un tocco rimette l&apos;articolo in lista.
+                ad allora un tocco rimette il prodotto in lista.
               </p>
               {cartOpen && (
                 <div id="cart-grid">
@@ -341,7 +361,8 @@ export function ListScreen() {
         <section className="mt-8 border-t border-subtle pt-4">
           <SectionHeader title="Suggeriti per te" count={visibleSuggestions.length} />
           <p className="-mt-2 px-4 pb-3 text-sm text-secondary">
-            In base a quando ricomprate le cose e a cosa è di stagione. Tieni premuto per il motivo.
+            In base a ogni quanto si ricompra una cosa e a cosa è di stagione. Tieni premuto per il
+            motivo.
           </p>
           <ProductGrid label="Suggeriti per te">
             {visibleSuggestions.map((suggestion) => (
@@ -378,6 +399,7 @@ export function ListScreen() {
         todoCount={list.todoCount}
         suggestedStore={activeStore}
       />
+      <ListSwitcherSheet open={switcherOpen} onClose={() => setSwitcherOpen(false)} />
     </main>
   )
 }
