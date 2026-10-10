@@ -20,8 +20,9 @@ Niente del resto è applicato in produzione.
   con una soglia di allarme; aggiungere la dimensione del database.
 - Se un giorno ci sarà un dominio personalizzato per Supabase: aggiungerlo in
   `avatar_storage_hosts()` (0018) e negli origin della edge function.
-- Valutare con Fragola il link di conferma con `{{ .TokenHash }}` verso `/auth/confirm`
-  (funziona da qualunque browser; nota di Zenzero in `docs/comunicazione/email.md`).
+- Quando la route `/auth/confirm` di Fragola è pronta: aprire in locale i link di conferma
+  e recupero in un browser diverso da quello della richiesta (oggi verificati con
+  `verifyOtp` da un client pulito).
 
 ## Apertura al pubblico (ordine dei passi)
 
@@ -32,12 +33,22 @@ chiuse fino al passo 9.
    produzione: si può fare prima del frontend nuovo. Verifica: profili dei 4 utenti, liste
    intatte, `supabase/checks/profili_liste.sql` non si lancia in produzione (crea utenti).
 2. **Edge function.** `supabase functions deploy delete-account`.
-3. **Foto orfane.** `node scripts/cleanup-avatar-orphans.mjs` con URL e service role di
-   produzione nell'ambiente (prima senza `--apply` per contare, poi con `--apply`).
+3. **Foto orfane.** La service role key si inserisce con `read -s` (non compare a schermo
+   né nella cronologia della shell), mai scritta nel comando:
+
+   ```bash
+   read -s SUPABASE_SERVICE_ROLE_KEY && export SUPABASE_SERVICE_ROLE_KEY
+   export SUPABASE_URL=https://egvodwvnralxttxiovau.supabase.co
+   node scripts/cleanup-avatar-orphans.mjs          # conta
+   node scripts/cleanup-avatar-orphans.mjs --apply  # cancella
+   unset SUPABASE_SERVICE_ROLE_KEY
+   ```
+
 4. **Dominio.** Daniele: CNAME `frigolo` su Aruba verso Vercel, dominio aggiunto al
    progetto `frigolo-app`. Controllo: `https://frigolo.dascanfe.com/mascot.png` risponde
    (serve alle email) e l'app si apre.
-5. **Frontend.** Merge della PR di Fragola (deploy su Vercel). Deve già mandare il token
+5. **Frontend.** Merge della PR di Fragola (deploy su Vercel), con la route `/auth/confirm`:
+   dal passo 7 i link delle email puntano lì. Deve già mandare il token
    Turnstile a `signUp`, `signInWithPassword` e `resetPasswordForEmail`: finché il captcha
    è spento il token viene ignorato, quindi l'ordine è sicuro.
 6. **SMTP.** Daniele nel pannello (vedi sotto). Prova: "Password dimenticata" verso una sua
@@ -56,7 +67,9 @@ chiuse fino al passo 9.
     del database, log di Auth.
 
 **Le 10 modifiche attese nel `config diff` del passo 7** (provato oggi, sola lettura):
-`site_url` e `additional_redirect_urls` (frigolo.dascanfe.com, vecchio dominio, localhost),
+`site_url` e `additional_redirect_urls` (frigolo.dascanfe.com e vecchio dominio, niente
+localhost: vengono da `[remotes.production]`, la prima riga del diff deve dire "using
+[remotes.production]"),
 `enable_confirmations` e `secure_password_change` a true, `minimum_password_length` 10,
 oggetti dei template `confirmation`, `recovery`, `email_change`, notifica
 `password_changed` attiva con il suo oggetto. Il diff mostra anche due voci "remote_only"
@@ -117,6 +130,29 @@ rimette il file com'era e si riavvia.
   (I 4 account attuali continuano ad accedere con la password che hanno.)
 
 ## Diario
+
+### 2026-10-10 - Ritocchi ai template e alla configurazione
+
+- Template: corretto `{{ .Email }}` spezzato da Prettier nel recupero, `supabase/templates`
+  in `.prettierignore`, testi di Zenzero (link valido da qualunque telefono, piede "la
+  lista della spesa sempre in tasca", virgolette dritte). Provati tutti e 4 in Mailpit:
+  variabili sostituite, link `/auth/confirm` giusti.
+- `config.toml`: valori locali in alto, produzione in `[remotes.production]` (niente
+  localhost), verificato con `config diff`. Origini locali della edge function nel segreto
+  locale `FRIGOLO_DEV_ORIGINS`.
+- `delete-account` cancella prima l'account e poi le foto. Rafforzate le regole sulle foto.
+  Messaggio della quota prodotti senza "voi".
+
+### 2026-10-10 - Link delle email con TokenHash (decisione del PM)
+
+- I bottoni di conferma, recupero e cambio email puntano a
+  `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=...` (`email`, `recovery`,
+  `email_change`, i tipi di `verifyOtp`). Tolte dai template le frasi "aprilo dallo stesso
+  browser/telefono".
+- Provato in locale con la registrazione aperta temporaneamente (poi richiusa): link letti
+  da Mailpit e aperti con `verifyOtp` da un client pulito. Conferma, recupero con nuova
+  password, avviso di password cambiata, cambio email con doppia conferma: tutto ok, link non
+  riutilizzabile. Script ripetibile `supabase/checks/email_links.mjs`.
 
 ### 2026-10-10 - Terzo giro: limiti, email, captcha, account
 

@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="light" />
     <title>Conferma la nuova email</title>
   </head>
-  <!-- Frigolo: email_change. Testi in docs/comunicazione/email.md. -->
+  <!-- Frigolo: email_change. Testi in docs/comunicazione/email.md. Il link porta a /auth/confirm dell app (verifyOtp con token_hash e type=email_change). -->
   <body style="margin: 0; padding: 0; background-color: #f4ece2">
     <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all">
       Da {{ .Email }} a {{ .NewEmail }}: manca solo la conferma.
@@ -52,7 +52,7 @@
               >
                 <p style="margin: 0 0 16px 0">Ciao!</p>
                 <p style="margin: 0 0 16px 0">
-                  È stato chiesto di cambiare l’email dell’account Frigolo da
+                  È stato chiesto di cambiare l'email dell'account Frigolo da
                   <strong>{{ .Email }}</strong> a <strong>{{ .NewEmail }}</strong>.
                 </p>
                 <p style="margin: 0 0 16px 0">Se va bene, conferma qui sotto.</p>
@@ -64,7 +64,7 @@
                   <tr>
                     <td align="center" style="border-radius: 999px; background-color: #a85641">
                       <a
-                        href="{{ .ConfirmationURL }}"
+                        href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email_change"
                         style="
                           display: inline-block;
                           padding: 14px 28px;
@@ -95,7 +95,11 @@
                 "
               >
                 Il bottone non funziona? Copia questo link nel browser:<br />
-                <a href="{{ .ConfirmationURL }}" style="color: #a85641">{{ .ConfirmationURL }}</a>
+                <a
+                  href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email_change"
+                  style="color: #a85641"
+                  >{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email_change</a
+                >
               </td>
             </tr>
             <tr>
@@ -109,7 +113,7 @@
                 "
               >
                 <p style="margin: 0">
-                  Se non hai chiesto tu, non toccare niente e cambia la password dall’app: l’email
+                  Se non hai chiesto tu, non toccare niente e cambia la password dall'app: l'email
                   resta quella di prima finché nessuno conferma.
                 </p>
                 <p style="margin: 16px 0 0 0">Frigolo</p>
@@ -135,7 +139,7 @@
                   color: #6b5844;
                 "
               >
-                Frigolo, la lista della spesa condivisa.<br />
+                Frigolo, la lista della spesa sempre in tasca.<br />
                 Per domande:
                 <a href="mailto:frigolo@dascanfe.com" style="color: #6b5844"
                   >frigolo@dascanfe.com</a
