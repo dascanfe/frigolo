@@ -78,6 +78,7 @@ idempotenti: rilanciare il seed non crea duplicati.
 | `0017_security_hotfix`     | Foto non elencabili, membri vincolati alla propria lista            |
 | `0018_profiles`            | Profilo unico per utente (nome, foto, colore) e migrazione dei dati |
 | `0019_multi_lists`         | Liste multiple: crea, entra, rinomina, lascia, elimina, invito      |
+| `0020_limits_quotas`       | Lunghezze massime dei testi e quote per lista                       |
 | `seed.sql`                 | Categorie e catalogo base italiano                                  |
 
 ### Sviluppo in locale (consigliato)
@@ -128,12 +129,26 @@ cima al tipo `Database`: rimettilo a mano, così il diff resta pulito e il clien
 non cambia.
 
 In locale `enable_signup = false` vale come in produzione: gli utenti di prova si creano
-via SQL o con l'API admin (chiave `service_role` di `supabase status`, solo in locale).
-pg_cron funziona anche in locale: i job `frigolo-auto-complete-trips` e
-`frigolo-cron-cleanup` compaiono in `cron.job`.
+via SQL. Dopo ogni `supabase db reset` lancia
 
-Verifiche ripetibili di profili e liste multiple (5 utenti finti, RLS, RPC, tutto in una
-transazione annullata alla fine):
+```bash
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/seed_dev.sql
+```
+
+che crea tre account con cui accedere all'app in locale (password valide solo nel database
+locale; lo script si ferma se trova account veri):
+
+| Email                | Password           | Situazione                                        |
+| -------------------- | ------------------ | ------------------------------------------------- |
+| `alice@frigolo.test` | `frigolo-locale-1` | liste "Casa prova" (con Bruno) e "Ufficio prova"  |
+| `bruno@frigolo.test` | `frigolo-locale-2` | lista "Casa prova"                                |
+| `carla@frigolo.test` | `frigolo-locale-3` | nessuna lista, profilo da completare (onboarding) |
+
+pg_cron funziona anche in locale: i job `frigolo-auto-complete-trips` e
+`frigolo-cron-cleanup` (e dalla 0019 `frigolo-invite-attempts-cleanup`) compaiono in `cron.job`.
+
+Verifiche ripetibili di profili, liste, inviti e limiti (utenti finti, RLS, RPC, regressioni
+della revisione di sicurezza, tutto in una transazione annullata alla fine):
 
 ```bash
 psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/profili_liste.sql
@@ -220,35 +235,60 @@ quella del partner con il codice di 8 caratteri mostrato nelle Impostazioni.
 Nella UI una "lista" è una riga di `households`: le tabelle non cambiano nome.
 
 **Profilo** (`profiles`, uno per utente, uguale in tutte le liste). Nasce da solo alla
-registrazione: il nome arriva da `signUp({ options: { data: { display_name } } })`; se
-manca, il nome è "Utente" e `completed_at` è null, cioè il profilo è da completare
-nell'onboarding. Ognuno legge il proprio profilo e quelli di chi condivide almeno una
-lista con lui, e modifica solo il proprio (`display_name` 1-40 caratteri, `color` token
-`c-...`, `avatar_url` solo un file della propria cartella del bucket `avatars`).
+registrazione: nome e colore arrivano da
+`signUp({ options: { data: { display_name, color } } })`. Senza nome il profilo ha
+"Utente" e `completed_at` null, cioè è da completare nell'onboarding; senza colore ne
+riceve uno a caso. Ognuno legge il proprio profilo e quelli di chi condivide almeno una
+lista con lui, e modifica solo il proprio.
 
-| Chiamata                                                                             | Cosa fa                                                                                          |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `from('profiles').select().eq('id', userId).single()`                                | Il mio profilo (`completed_at` null = da completare)                                             |
-| `rpc('update_my_profile', { p_display_name, p_color, p_avatar_url })`                | Aggiorna il profilo (null = non cambiare, `p_avatar_url: ''` = togli la foto). Lo segna completo |
-| `from('households').select('*, household_members(user_id, joined_at, profiles(*))')` | Le mie liste con membri e profili                                                                |
-| `rpc('create_household', { p_name })`                                                | Nuova lista, ritorna l'id                                                                        |
-| `rpc('get_household_invite', { p_code })`                                            | Anteprima di un invito: nome, numero di membri, se ci sei già (vuoto = codice sbagliato)         |
-| `rpc('join_household', { p_code })`                                                  | Entra con codice o link (maiuscole, spazi e trattini ignorati). Se ci sei già ritorna l'id       |
-| `rpc('rename_household', { p_household_id, p_name })`                                | Rinomina                                                                                         |
-| `rpc('rotate_join_code', { p_household_id })`                                        | Nuovo codice di invito, il vecchio smette di funzionare                                          |
-| `rpc('leave_household', { p_household_id })`                                         | Esci. Ritorna `true` se eri l'ultimo membro: la lista è stata eliminata con tutti i dati         |
-| `rpc('delete_household', { p_household_id })`                                        | Elimina con tutti i dati, solo se sei l'unico membro                                             |
+- `display_name`: 1-40 caratteri.
+- `color`: sempre valorizzato, solo uno dei token di `MEMBER_COLORS` (`src/lib/colors.ts`):
+  `c-teal`, `c-brick`, `c-olive-deep`, `c-rust`, `c-brown`, `c-terracotta`, `c-burnt`,
+  `c-ochre`, `c-ink-soft`. La lista chiusa sta anche nel DB (`member_colors()`): se cambia la
+  tavolozza vanno aggiornati tutti e due.
+- `avatar_path`: facoltativo. È il **percorso** nel bucket `avatars`, nella propria cartella
+  (`<user_id>/<file>`), non un URL. L'URL lo costruisce il client con
+  `supabase.storage.from('avatars').getPublicUrl(avatar_path)`, così nessuno può far
+  caricare agli altri un'immagine da un server suo. Null = mascotte di Frigolo sullo sfondo
+  di `color`.
 
-Regole: al massimo 50 liste per utente e 20 membri per lista. Una lista che resta senza
-membri (anche per account cancellati) viene eliminata. Il codice di invito si cambia solo
-con `rotate_join_code`. Link di invito: `https://<app>/invito/<join_code>`; non serve altro
-lato backend, il frontend conserva il codice durante registrazione e conferma email, poi
-chiama `join_household`. Realtime: `profiles` è nella pubblicazione (gli eventi rispettano
-la RLS).
+| Chiamata                                                                             | Cosa fa                                                                                                    |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `from('profiles').select().eq('id', userId).single()`                                | Il mio profilo (`completed_at` null = da completare)                                                       |
+| `rpc('update_my_profile', { p_display_name, p_color, p_avatar_path })`               | Aggiorna il profilo (null = non cambiare, `p_avatar_path: ''` = togli la foto). Lo segna completo          |
+| `from('households').select('*, household_members(user_id, joined_at, profiles(*))')` | Le mie liste con membri e profili (con `join_code`, `invite_token` e le loro scadenze)                     |
+| `rpc('create_household', { p_name })`                                                | Nuova lista, ritorna l'id                                                                                  |
+| `rpc('get_household_invite', { p_code })`                                            | Anteprima di un invito: `name`, `member_count`, `is_member`. Nessuna riga = codice sbagliato o scaduto     |
+| `rpc('join_household', { p_code })`                                                  | Entra con il codice corto o il token del link. Ritorna l'id, o `null` se il codice è sbagliato o scaduto   |
+| `rpc('rename_household', { p_household_id, p_name })`                                | Rinomina                                                                                                   |
+| `rpc('rotate_join_code', { p_household_id })`                                        | Nuovo codice corto e nuovo token (7 giorni); i vecchi smettono subito di funzionare (= revoca dell'invito) |
+| `rpc('leave_household', { p_household_id })`                                         | Esci. Ritorna `true` se eri l'ultimo membro: la lista è stata eliminata con tutti i dati                   |
+| `rpc('delete_household', { p_household_id })`                                        | Elimina con tutti i dati, solo se sei l'unico membro                                                       |
+
+**Inviti.** Ogni lista ha due segreti, generati con `gen_random_bytes` e validi 7 giorni:
+il codice corto `join_code` (8 caratteri, da dettare o scrivere a mano; maiuscole, spazi e
+trattini ignorati) e il token del link `invite_token` (22 caratteri, distingue maiuscole e
+minuscole): `https://<app>/invito/<invite_token>`. Il frontend conserva il token durante
+registrazione e conferma email, poi chiama `join_household`. Dopo 10 tentativi falliti in
+un'ora (o 30 in un giorno) `join_household` e `get_household_invite` rispondono con
+errore HTTP 429 (codice `PT429`, "Troppi tentativi, riprova più tardi") per qualunque
+codice. L'anteprima non restituisce l'id della lista.
+
+**Limiti.** 50 liste per utente, 20 membri per lista, 500 prodotti personalizzati e 300
+voci in lista per lista, 30 spese al giorno per lista, 300 articoli per spesa; testi con
+lunghezza massima (`unit` 10, supermercati 40, `quantity` fino a 9999). Una lista che resta
+senza membri (anche per account cancellati) viene eliminata. Realtime: `profiles` è nella
+pubblicazione (gli eventi rispettano la RLS).
+
+Messaggi d'errore da mostrare: "Hai raggiunto il numero massimo di liste", "La lista ha
+raggiunto il numero massimo di membri", "La lista ha altri membri: puoi solo lasciarla",
+"Non fai parte di questa lista", "Troppi tentativi, riprova più tardi", e quelli delle
+quote ("Troppe voci nella lista (massimo 300)", ...).
 
 Le colonne `display_name`, `color` e `avatar_url` di `household_members` sono deprecate:
-restano allineate al profilo da trigger finché il frontend in produzione le usa, poi una
-migration futura le toglierà.
+restano allineate al profilo da trigger finché il frontend in produzione le usa (in
+`avatar_url` c'è l'URL completo ricostruito dal percorso), poi una migration futura le
+toglierà.
 
 ## Suggerimenti
 
