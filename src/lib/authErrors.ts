@@ -7,6 +7,9 @@ export function describeAuthError(error: AuthError | Error | null | undefined): 
   const status = 'status' in error ? (error as AuthError).status : undefined
   const message = error.message.toLowerCase()
 
+  if (code === 'captcha_failed' || message.includes('captcha')) {
+    return 'Non sono riuscito a verificare che sei una persona. Ricarica la pagina e riprova.'
+  }
   if (code === 'invalid_credentials' || message.includes('invalid login credentials')) {
     return 'Email o password sbagliate.'
   }

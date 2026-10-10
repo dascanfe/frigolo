@@ -35,6 +35,9 @@ export const it = {
     forgotNoEmail: 'Scrivi prima la tua email, poi tocca "Password dimenticata?".',
     forgotSent: (email: string) =>
       `Se ${email} ha un account, ti arriva un'email con il link per scegliere una nuova password. Aprila da questo telefono.`,
+    captchaFailed:
+      'Non sono riuscito a verificare che sei una persona. Ricarica la pagina e riprova.',
+    captchaWaiting: 'Controllo che sei una persona...',
     pendingInvite: "Ti hanno invitato in una lista: crea l'account o accedi e poi ci entri.",
   },
   checkEmail: {

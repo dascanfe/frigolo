@@ -1,13 +1,16 @@
 import { LogIn, MailCheck, UserPlus } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Button } from '@/components/Button'
 import { PasswordField } from '@/components/PasswordField'
 import { TextField } from '@/components/TextField'
+import { Turnstile } from '@/components/Turnstile'
+import type { TurnstileHandle } from '@/components/Turnstile'
 import { readPendingInvite } from '@/features/lists/inviteCode'
 import { it as t } from '@/i18n/it'
 import { describeAuthError } from '@/lib/authErrors'
 import { supabase } from '@/lib/supabase'
+import { TURNSTILE_SITE_KEY } from '@/lib/turnstile'
 
 type Mode = 'signin' | 'signup'
 
@@ -42,13 +45,20 @@ export function LoginScreen() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(() => readUrlOutcome())
+  // captcha: con la site key serve un token nuovo per ogni invio
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const turnstile = useRef<TurnstileHandle>(null)
+  const captchaReady = !TURNSTILE_SITE_KEY || captchaToken !== null
+  const captcha = captchaToken ?? undefined
+  const renewCaptcha = () => turnstile.current?.reset()
 
   const cleanEmail = email.trim().toLowerCase()
   const canSubmit =
     !busy &&
     cleanEmail.length > 3 &&
     password.length >= (mode === 'signup' ? MIN_PASSWORD : 1) &&
-    (mode === 'signin' || displayName.trim().length > 0)
+    (mode === 'signin' || displayName.trim().length > 0) &&
+    captchaReady
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -59,7 +69,11 @@ export function LoginScreen() {
 
     const result =
       mode === 'signin'
-        ? await supabase.auth.signInWithPassword({ email: cleanEmail, password })
+        ? await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password,
+            options: { captchaToken: captcha },
+          })
         : await supabase.auth.signUp({
             email: cleanEmail,
             password,
@@ -67,10 +81,12 @@ export function LoginScreen() {
               // il profilo nasce già con il nome (trigger su auth.users)
               data: { display_name: displayName.trim().slice(0, 40) },
               emailRedirectTo: window.location.origin,
+              captchaToken: captcha,
             },
           })
 
     setBusy(false)
+    renewCaptcha()
     if (result.error) {
       setError(describeAuthError(result.error))
       return
@@ -89,9 +105,10 @@ export function LoginScreen() {
     const { error: resendError } = await supabase.auth.resend({
       type: 'signup',
       email: sentTo,
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: window.location.origin, captchaToken: captcha },
     })
     setBusy(false)
+    renewCaptcha()
     if (resendError) {
       setError(describeAuthError(resendError))
       return
@@ -127,8 +144,13 @@ export function LoginScreen() {
             {error ?? notice}
           </p>
         )}
+        <Turnstile ref={turnstile} onToken={setCaptchaToken} action="resend" />
         <div className="flex flex-col items-center gap-1">
-          <Button variant="secondary" onClick={() => void handleResend()} disabled={busy}>
+          <Button
+            variant="secondary"
+            onClick={() => void handleResend()}
+            disabled={busy || !captchaReady}
+          >
             {busy ? t.common.wait : t.checkEmail.resend}
           </Button>
           <Button
@@ -152,12 +174,15 @@ export function LoginScreen() {
       setError(t.login.forgotNoEmail)
       return
     }
+    if (!captchaReady) return
     setBusy(true)
     setError(null)
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
       redirectTo: window.location.origin,
+      captchaToken: captcha,
     })
     setBusy(false)
+    renewCaptcha()
     if (resetError) {
       setError(describeAuthError(resetError))
       return
@@ -262,12 +287,19 @@ export function LoginScreen() {
           error={error}
           hint={mode === 'signup' ? t.login.passwordHint : undefined}
         />
+        <Turnstile ref={turnstile} onToken={setCaptchaToken} action={mode} />
         <Button type="submit" fullWidth disabled={!canSubmit}>
-          {busy ? t.common.wait : mode === 'signin' ? t.login.submitSignin : t.login.submitSignup}
+          {busy
+            ? t.common.wait
+            : !captchaReady
+              ? t.login.captchaWaiting
+              : mode === 'signin'
+                ? t.login.submitSignin
+                : t.login.submitSignup}
         </Button>
         {mode === 'signin' && (
           <div className="flex justify-center">
-            <Button variant="ghost" onClick={handleForgotPassword} disabled={busy}>
+            <Button variant="ghost" onClick={handleForgotPassword} disabled={busy || !captchaReady}>
               {t.login.forgot}
             </Button>
           </div>
