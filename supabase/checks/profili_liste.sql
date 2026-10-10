@@ -573,6 +573,12 @@ end $$;
 do $$
 declare i int;
 begin
+  begin
+    insert into storage.objects (bucket_id, name, owner_id)
+    values ('avatars', auth.uid()::text || '/sotto/x.webp', auth.uid()::text);
+    assert false, 'file in una sottocartella accettato';
+  exception when insufficient_privilege then null;
+  end;
   for i in 1 .. 5 loop
     insert into storage.objects (bucket_id, name, owner_id)
     values ('avatars', auth.uid()::text || '/q' || i || '.webp', auth.uid()::text);
