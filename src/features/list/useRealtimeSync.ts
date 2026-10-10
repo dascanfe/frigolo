@@ -1,10 +1,13 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { useHousehold } from '@/features/auth/useHousehold'
+import { memberName, useHousehold } from '@/features/auth/useHousehold'
 import { listsQueryKey, profileQueryKey } from '@/features/lists/useLists'
+import type { ListData } from '@/features/lists/useLists'
+import { it as t } from '@/i18n/it'
 import { itemsQueryKey } from '@/features/catalog/useCatalog'
 import { supabase } from '@/lib/supabase'
-import type { ListEntry } from '@/types/domain'
+import { toast } from '@/lib/toast'
+import type { HouseholdMember, ListEntry } from '@/types/domain'
 import { listQueryKey } from './useList'
 
 /**
@@ -84,7 +87,22 @@ export function useRealtimeSync() {
           table: 'household_members',
           filter: `household_id=eq.${householdId}`,
         },
-        invalidateLists,
+        (payload: { eventType: string; new: Partial<HouseholdMember> }) => {
+          const joined = payload.eventType === 'INSERT' ? payload.new.user_id : undefined
+          if (!joined || joined === userId) {
+            invalidateLists()
+            return
+          }
+          // qualcuno è appena entrato con un invito: lo si dice a chi c'era già
+          void queryClient.invalidateQueries({ queryKey: listsQueryKey(userId) }).then(() => {
+            const lists = queryClient.getQueryData<ListData[]>(listsQueryKey(userId))
+            const list = lists?.find((l) => l.household.id === householdId)
+            const person = list?.members.find((m) => m.user_id === joined)
+            if (list && person) {
+              toast(t.join.memberJoined(memberName(person), list.household.name), 'success')
+            }
+          })
+        },
       )
       .on(
         'postgres_changes',
