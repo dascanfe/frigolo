@@ -7,22 +7,26 @@ Si procede per fasi; a fine fase il PM riassume, fa il commit e aspetta l'ok di 
 
 - [x] Cartella `Frigolo published`, repo pubblico `dascanfe/frigolo` con storia nuova, licenza AGPL-3.0
 - [x] Squadra definita in `.claude/agents/`, quaderni in `docs/team/`
-- [ ] README pubblico, `FUNDING.yml` (link PayPal.me), file per la community
-- [ ] Etichette, milestone e issue della Fase 1 su GitHub
+- [x] README pubblico, `FUNDING.yml` (link PayPal.me), file per la community
+- [x] Etichette, milestone e issue della Fase 1 su GitHub
 - [ ] Vercel collegato al nuovo repo, secret del keep-alive, vecchio repo archiviato
-- [ ] `node_modules` fuori da iCloud
+- [x] `node_modules` fuori da iCloud
 
 ## Fase 1 - Pronta per il pubblico
 
 - Basilio: Supabase in locale con Docker; SMTP (Resend) per le email; conferma email; captcha
   (Cloudflare Turnstile); rate limit; cancellazione account ed export dati; registrazioni aperte;
   dominio `frigolo.dascanfe.com` su Vercel con redirect dal vecchio; `site_url` e redirect di auth.
-- Fragola: onboarding per nuovi utenti; supermercati non più legati al Veneto; avatar preimpostati
-  senza foto personali; schermate legali; base per i18n.
+- Basilio + Fragola: **liste multiple** (creare, rinominare, lasciare, eliminare liste; passare da
+  una all'altra; invitare con codice o link); **profilo utente** con nome e foto scelti da ciascuno
+  (unici per utente, non per lista); uso da soli senza dover invitare nessuno.
+- Fragola: onboarding per nuovi utenti; supermercati non più legati al Veneto; via gli avatar
+  `lele` e `avatar-b` e ogni riferimento a nomi reali; schermate legali; base per i18n.
 - Aglio: audit RLS e auth, advisor, header di sicurezza, privacy policy e termini, checklist di rilascio.
 - Zenzero: tono di voce, testi dell'onboarding e delle email di sistema.
-- Uscita: un estraneo si registra, conferma l'email, crea la casa, invita qualcuno e usa l'app,
-  senza poter vedere nulla delle altre case.
+- Uscita: un estraneo si registra, conferma l'email, sceglie nome e foto, crea una o più liste,
+  invita qualcuno e usa l'app, senza poter vedere nulla delle liste altrui. I 4 utenti attuali
+  ritrovano tutto (migrazione dei dati esistenti).
 
 ## Fase 2 - Landing e analitiche
 

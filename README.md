@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://frigolo-app.vercel.app"><b>Apri Frigolo</b></a>
   ·
-  <a href="#sostieni-il-progetto"><b>Offrimi un caffè 💚</b></a>
+  <a href="https://paypal.me/DanieleScanferlato"><b>Offrimi un caffè 💚</b></a>
 </p>
 
 ---
@@ -36,7 +36,7 @@ Frigolo è una web app installabile (PWA): niente store, basta un link.
 ## Sostieni il progetto
 
 Frigolo è gratis e lo resterà. Se ti è utile e vuoi dare una mano a coprire i costi,
-puoi offrirmi un caffè 💚 (il link arriva a breve).
+puoi [offrirmi un caffè 💚](https://paypal.me/DanieleScanferlato).
 
 ## Contribuire
 
