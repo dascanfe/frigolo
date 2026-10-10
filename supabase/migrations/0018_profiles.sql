@@ -60,19 +60,18 @@ $$;
 -- deprecata household_members.avatar_url: solo lo Storage del progetto (e,
 -- per lo sviluppo, lo Supabase locale, che punta al dispositivo stesso e non
 -- a un server terzo). Il primo è quello usato per ricostruire l'URL.
--- In locale si può impostare app.avatar_base_url per ricostruire URL locali.
+-- Elenco fisso: nessuna impostazione esterna può cambiarlo.
 create or replace function public.avatar_storage_hosts()
 returns text[]
 language sql
-stable
+immutable
 set search_path = ''
 as $$
-  select array_remove(array[
-    nullif(current_setting('app.avatar_base_url', true), ''),
+  select array[
     'https://egvodwvnralxttxiovau.supabase.co',
     'http://127.0.0.1:54321',
     'http://localhost:54321'
-  ], null);
+  ];
 $$;
 
 -- URL completo (colonna deprecata) -> percorso nel bucket, solo se l'host è
@@ -352,7 +351,7 @@ declare
   v_profile  public.profiles;
 begin
   if v_user is null then
-    raise exception 'Non autenticato' using errcode = '42501';
+    raise exception 'Non autenticato.' using errcode = '42501', hint = 'not_authenticated';
   end if;
 
   update public.profiles
@@ -366,7 +365,7 @@ begin
   returning * into v_profile;
 
   if v_profile.id is null then
-    raise exception 'Profilo non trovato' using errcode = 'P0002';
+    raise exception 'Profilo non trovato.' using errcode = 'P0002', hint = 'not_found';
   end if;
 
   return v_profile;

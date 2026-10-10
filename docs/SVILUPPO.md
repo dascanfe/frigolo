@@ -79,6 +79,9 @@ idempotenti: rilanciare il seed non crea duplicati.
 | `0018_profiles`            | Profilo unico per utente (nome, foto, colore) e migrazione dei dati |
 | `0019_multi_lists`         | Liste multiple: crea, entra, rinomina, lascia, elimina, invito      |
 | `0020_limits_quotas`       | Lunghezze massime dei testi e quote per lista                       |
+| `0021_default_stores`      | Supermercati di partenza generici per le liste nuove                |
+| `0022_export_my_data`      | Export dei dati dell'utente (`export_my_data`)                      |
+| `0023_avatar_storage`      | Massimo 5 foto per utente, elenco dei file orfani                   |
 | `seed.sql`                 | Categorie e catalogo base italiano                                  |
 
 ### Sviluppo in locale (consigliato)
@@ -154,6 +157,13 @@ della revisione di sicurezza, tutto in una transazione annullata alla fine):
 psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/profili_liste.sql
 ```
 
+Verifiche sull'API locale (PostgREST, Auth, Storage, edge function `delete-account`, export),
+con gli account di `seed_dev.sql`:
+
+```bash
+node supabase/checks/api_e2e.mjs
+```
+
 Per provare la migrazione dei profili su dati simili a quelli di produzione:
 
 ```bash
@@ -214,18 +224,38 @@ Atteso: 14 categorie, 234 prodotti, 15 policy.
 
 ## Autenticazione
 
-Accesso con **email e password** (Supabase Auth). L'app è pensata per due persone, quindi
-la registrazione non richiede la conferma dell'email: ci si registra dall'app e si entra
-subito. La protezione vera è il codice di invito della casa: senza quello un account non
-vede nulla.
+Accesso con **email e password** (Supabase Auth). Configurazione in `supabase/config.toml`:
 
-"Password dimenticata" invia un'email con un link (template standard di Supabase, in
-inglese); il link va aperto nello stesso browser da cui è stato richiesto e porta alla
-schermata "Nuova password". Il mailer integrato del piano Free consente al massimo 2 email
-all'ora, più che sufficienti per questo uso.
+- conferma dell'email obbligatoria (`enable_confirmations`), cambio password solo con
+  sessione recente (`secure_password_change`), password di almeno 10 caratteri (la
+  protezione dalle password compromesse non c'è sul piano Free);
+- email in italiano: template HTML in `supabase/templates/` (testi di Zenzero in
+  `docs/comunicazione/email.md`), collegati in `[auth.email.template.*]` e
+  `[auth.email.notification.password_changed]`. In locale si leggono in Mailpit
+  (`http://127.0.0.1:54324`);
+- **SMTP (Resend) e captcha (Cloudflare Turnstile) si gestiscono dal pannello di Supabase**,
+  non dal file: le due sezioni restano commentate, così un `supabase config push` non li
+  spegne e non ne cancella le chiavi. Prima di ogni push: `supabase config diff`;
+- `site_url` è `https://frigolo.dascanfe.com`; tra i redirect anche il vecchio
+  `https://frigolo-app.vercel.app` e localhost;
+- le registrazioni (`[auth] enable_signup`) restano chiuse fino all'apertura al pubblico.
 
-Una volta creati i due account si può chiudere la registrazione impostando
-`enable_signup = false` in `supabase/config.toml` e lanciando `supabase config push`.
+Il captcha si prova in locale scommentando `[auth.captcha]` solo sul proprio computer (non
+si committa) con le chiavi di test di Cloudflare: secret `1x0000000000000000000000000000000AA`
+nel file, site key `1x00000000000000000000AA` nel frontend, poi `supabase stop` e
+`supabase start`. Il token di test che accettano è `XXXX.DUMMY.TOKEN.XXXX`.
+
+"Password dimenticata" invia un'email con un link che va aperto nello stesso browser da cui
+è stato richiesto (flusso PKCE) e porta alla schermata "Nuova password".
+
+**Account e dati (GDPR).** `rpc('export_my_data')` restituisce un JSON con account,
+profilo e, per ogni lista, prodotti in lista, prodotti della lista e spese (senza id né nomi
+delle altre persone: per ogni riga solo `da_me`). La cancellazione dell'account passa dalla
+edge function `delete-account` (`supabase/functions/delete-account/`):
+`supabase.functions.invoke('delete-account', { body: { confirm: 'ELIMINA' } })`. Cancella
+le foto e l'account; le liste in cui l'utente era solo spariscono, in quelle condivise
+restano prodotti e spese senza riferimenti a lui. Dopo, il frontend fa `signOut` e pulisce
+la cache. In produzione si pubblica con `supabase functions deploy delete-account`.
 
 Il primo accesso porta all'onboarding (`src/features/onboarding/`, testi in
 `src/i18n/it.ts`): "Come ti chiami?" se il profilo è da completare, poi "La tua prima
@@ -285,16 +315,39 @@ un'ora (o 30 in un giorno) `join_household` e `get_household_invite` rispondono 
 errore HTTP 429 (codice `PT429`, "Troppi tentativi, riprova più tardi") per qualunque
 codice. L'anteprima non restituisce l'id della lista.
 
-**Limiti.** 50 liste per utente, 20 membri per lista, 500 prodotti personalizzati e 300
-voci in lista per lista, 30 spese al giorno per lista, 300 articoli per spesa; testi con
+**Limiti.** 2 liste per utente, 5 persone per lista, 500 prodotti creati e 300 prodotti in
+lista per lista, 30 spese al giorno per lista, 300 prodotti per spesa, 5 foto per utente; testi con
 lunghezza massima (`unit` 10, supermercati 40, `quantity` fino a 9999). Una lista che resta
 senza membri (anche per account cancellati) viene eliminata. Realtime: `profiles` è nella
 pubblicazione (gli eventi rispettano la RLS).
 
-Messaggi d'errore da mostrare: "Hai raggiunto il numero massimo di liste", "La lista ha
-raggiunto il numero massimo di membri", "La lista ha altri membri: puoi solo lasciarla",
-"Non fai parte di questa lista", "Troppi tentativi, riprova più tardi", e quelli delle
-quote ("Troppe voci nella lista (massimo 300)", ...).
+**Errori.** Ogni errore delle RPC e delle quote ha in `hint` una chiave stabile: il
+frontend deve riconoscere gli errori da quella, non dal testo (che può cambiare).
+
+| `hint`              | Quando                                                       | HTTP |
+| ------------------- | ------------------------------------------------------------ | ---- |
+| `lists_limit`       | Hai già 2 liste (crea o entra)                               | 400  |
+| `members_limit`     | La lista ha già 5 persone                                    | 400  |
+| `rate_limited`      | Troppi codici sbagliati (10 in un'ora o 30 in un giorno)     | 429  |
+| `use_post`          | Richiesta non in POST (`supabase.rpc` usa già POST)          | 405  |
+| `not_member`        | Non fai parte della lista                                    | 403  |
+| `has_other_people`  | Eliminare una lista con altre persone (si può solo lasciare) | 400  |
+| `not_found`         | Lista o profilo non trovati                                  | 400  |
+| `not_authenticated` | Sessione mancante                                            | 403  |
+| `items_quota`       | 500 prodotti creati nella lista                              | 400  |
+| `entries_quota`     | 300 prodotti in lista                                        | 400  |
+| `trips_quota`       | 30 spese in un giorno                                        | 400  |
+| `purchases_quota`   | 300 prodotti in una spesa                                    | 400  |
+
+**Supermercati.** Le liste nuove partono con Lidl, Eurospin, Conad, Coop, Carrefour, MD e
+Mercato (default di `households.stores`, uguale a `DEFAULT_STORES` del frontend); le liste
+esistenti tengono i loro.
+
+**Foto.** Al massimo 5 file nella propria cartella: il frontend usa nomi con uuid e
+cancella la foto precedente. I file non più usati da nessuno si elencano con
+`avatar_orphans()` e si cancellano con `node scripts/cleanup-avatar-orphans.mjs`
+(`SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` nell'ambiente; senza `--apply` conta e
+basta).
 
 Le colonne `display_name`, `color` e `avatar_url` di `household_members` sono deprecate:
 restano allineate al profilo da trigger finché il frontend in produzione le usa (in

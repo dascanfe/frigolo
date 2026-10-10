@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Conferma la tua email</title>
+  </head>
+  <!-- Frigolo: confirmation. Testi in docs/comunicazione/email.md. -->
+  <body style="margin: 0; padding: 0; background-color: #f4ece2">
+    <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all">
+      Un tocco e la tua lista della spesa è pronta.
+    </div>
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="background-color: #f4ece2"
+    >
+      <tr>
+        <td align="center" style="padding: 24px 12px">
+          <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="max-width: 520px; background-color: #ffffff; border-radius: 16px"
+          >
+            <tr>
+              <td align="center" style="padding: 28px 28px 8px 28px">
+                <img
+                  src="{{ .SiteURL }}/mascot.png"
+                  width="72"
+                  height="72"
+                  alt="Frigolo"
+                  style="display: block; width: 72px; height: 72px; border: 0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 8px 28px 0 28px;
+                  font-family: Helvetica, Arial, sans-serif;
+                  font-size: 16px;
+                  line-height: 24px;
+                  color: #3a2c21;
+                "
+              >
+                <p style="margin: 0 0 16px 0">Ciao!</p>
+                <p style="margin: 0 0 16px 0">
+                  Manca un passo per usare Frigolo: conferma che questa email è tua.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding: 8px 28px 8px 28px">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" style="border-radius: 999px; background-color: #a85641">
+                      <a
+                        href="{{ .ConfirmationURL }}"
+                        style="
+                          display: inline-block;
+                          padding: 14px 28px;
+                          font-family: Helvetica, Arial, sans-serif;
+                          font-size: 16px;
+                          font-weight: bold;
+                          line-height: 20px;
+                          color: #ffffff;
+                          text-decoration: none;
+                          border-radius: 999px;
+                        "
+                        >Conferma l’email</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 8px 28px 16px 28px;
+                  font-family: Helvetica, Arial, sans-serif;
+                  font-size: 13px;
+                  line-height: 20px;
+                  color: #6b5844;
+                  word-break: break-all;
+                "
+              >
+                Il bottone non funziona? Copia questo link nel browser:<br />
+                <a href="{{ .ConfirmationURL }}" style="color: #a85641">{{ .ConfirmationURL }}</a>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 0 28px 28px 28px;
+                  font-family: Helvetica, Arial, sans-serif;
+                  font-size: 16px;
+                  line-height: 24px;
+                  color: #3a2c21;
+                "
+              >
+                <p style="margin: 0 0 16px 0">
+                  Il link vale 1 ora. Aprilo dal telefono su cui usi Frigolo.
+                </p>
+                <p style="margin: 0">
+                  Se non hai chiesto tu di creare un account su Frigolo, ignora questa email: senza
+                  conferma l’account non si attiva.
+                </p>
+                <p style="margin: 16px 0 0 0">Frigolo</p>
+              </td>
+            </tr>
+          </table>
+          <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="max-width: 520px"
+          >
+            <tr>
+              <td
+                align="center"
+                style="
+                  padding: 16px 28px;
+                  font-family: Helvetica, Arial, sans-serif;
+                  font-size: 13px;
+                  line-height: 20px;
+                  color: #6b5844;
+                "
+              >
+                Frigolo, la lista della spesa condivisa.<br />
+                Per domande:
+                <a href="mailto:frigolo@dascanfe.com" style="color: #6b5844"
+                  >frigolo@dascanfe.com</a
+                >
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
