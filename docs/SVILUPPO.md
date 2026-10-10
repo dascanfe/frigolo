@@ -227,8 +227,19 @@ all'ora, più che sufficienti per questo uso.
 Una volta creati i due account si può chiudere la registrazione impostando
 `enable_signup = false` in `supabase/config.toml` e lanciando `supabase config push`.
 
-Il primo accesso porta all'onboarding: si crea la casa (household) oppure si entra in
-quella del partner con il codice di 8 caratteri mostrato nelle Impostazioni.
+Il primo accesso porta all'onboarding (`src/features/onboarding/`, testi in
+`src/i18n/it.ts`): "Come ti chiami?" se il profilo è da completare, poi "La tua prima
+lista" (per conto mio, con altre persone, ho un codice) ed eventualmente l'invito. Chi
+apre un link `/invito/<token>` senza essere dentro l'app passa prima da registrazione o
+accesso: il token resta in `localStorage` (`frigolo:pending-invite`) e alla fine compare
+"Ti invitano in {lista}". La schermata "Controlla la posta" è già pronta per quando la
+conferma email sarà attiva.
+
+**Lista aperta.** La lista mostrata si sceglie dal titolo della schermata principale
+("Cambia lista") e resta sul dispositivo (`frigolo:current-list:<user_id>`); se non
+esiste più si apre la più vecchia. Analitiche, spesa e supermercati seguono la lista
+aperta. Senza foto l'avatar è la mascotte (`public/mascot-avatar.webp`, generata da
+`scripts/generate-mascot-avatar.mjs`) sul colore del profilo.
 
 ## Profili e liste (API)
 
@@ -303,14 +314,16 @@ La sezione "Suggeriti per te" della home è calcolata nel client da
 
 Mai suggeriti: prodotti già in lista o nel carrello, archiviati, o comprati troppo di
 recente rispetto al proprio ritmo. Al massimo 9 suggerimenti e non più di 3 per
-categoria. Il motivo ("Di solito lo comprate ogni 7 giorni", "Di stagione a ottobre")
+categoria. Il motivo ("Di solito ogni 7 giorni", "Di stagione a ottobre")
 si legge tenendo premuta la tile.
 
 ## Offline e sincronizzazione
 
-- **Realtime**: ogni telefono è iscritto ai cambiamenti di `list_entries`, `items` e
-  `household_members` del proprio household (Supabase Realtime): se una persona
-  aggiunge il latte, sull'altro telefono compare entro un secondo.
+- **Realtime**: ogni telefono è iscritto ai cambiamenti di `list_entries`, `items`,
+  `household_members` e `households` della lista aperta (il canale cambia con la lista),
+  più `profiles` (nome, foto, colore) e le proprie righe di `household_members` (entrate
+  e uscite da un altro telefono): se una persona aggiunge il latte, sugli altri telefoni
+  compare entro un secondo.
 - **Cache persistente**: la cache di TanStack Query vive anche su IndexedDB (7 giorni),
   quindi catalogo e lista si leggono anche senza rete.
 - **Coda offline**: le modifiche alla lista fatte senza rete restano visibili
@@ -375,9 +388,10 @@ ogni tema sono verificati da `theme.test.ts`. La scelta è salvata sul dispositi
 
 ## Qualità
 
-- `pnpm lint`, `pnpm typecheck` e `pnpm test` (41 test: ricerca fuzzy, motore dei
+- `pnpm lint`, `pnpm typecheck` e `pnpm test` (58 test: ricerca fuzzy, motore dei
   suggerimenti, serie temporali, contrasti dei temi, icone del catalogo, campi di testo
-  a 16px per evitare lo zoom automatico di iOS) girano puliti.
+  a 16px per evitare lo zoom automatico di iOS, codici d'invito, lista aperta, errori
+  delle quote) girano puliti.
 - Lighthouse 13 sulla build di produzione (mobile simulato): accessibilità 100, best
   practices 100, performance 83 (bundle iniziale ~215 kB gzip: React, Supabase Auth,
   Router; dal secondo avvio il service worker serve tutto dalla cache). La categoria PWA
