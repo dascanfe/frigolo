@@ -30,6 +30,9 @@ export const profileQueryKey = (userId: string) => ['profile', userId] as const
 export function useProfileQuery(userId: string) {
   return useQuery({
     queryKey: profileQueryKey(userId),
+    // all'avvio il server può non essere pronto (token appena rinnovato, rete
+    // che torna): qualche tentativo in più prima di mostrare l'errore
+    retry: 3,
     queryFn: async (): Promise<Profile> => {
       const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
       if (error) throw error
@@ -42,6 +45,7 @@ export function useProfileQuery(userId: string) {
 export function useListsQuery(userId: string) {
   return useQuery({
     queryKey: listsQueryKey(userId),
+    retry: 3,
     queryFn: async (): Promise<ListData[]> => {
       const { data, error } = await supabase
         .from('households')
