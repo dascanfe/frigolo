@@ -29,6 +29,11 @@ export function InviteScreen({ code, onDone }: InviteScreenProps) {
     setError(null)
     try {
       const id = await joinList(code)
+      if (!id) {
+        setError(t.join.badLink)
+        setBusy(false)
+        return
+      }
       await onDone(id)
       toast(t.join.joined(preview.data?.name ?? ''), 'success')
     } catch (joinError) {
@@ -77,7 +82,7 @@ export function InviteScreen({ code, onDone }: InviteScreenProps) {
         mascot
         showSignOut={false}
       >
-        <Button fullWidth onClick={() => void onDone(invite.householdId)}>
+        <Button fullWidth onClick={() => void accept()} disabled={busy}>
           {t.profile.next}
         </Button>
       </OnboardingLayout>

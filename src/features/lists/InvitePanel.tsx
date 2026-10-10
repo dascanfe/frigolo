@@ -8,7 +8,15 @@ import { inviteLink } from './inviteCode'
 import { describeListError, rotateInviteCode } from './useLists'
 
 interface InvitePanelProps {
-  household: Pick<Household, 'id' | 'name' | 'join_code'>
+  household: Pick<
+    Household,
+    | 'id'
+    | 'name'
+    | 'join_code'
+    | 'join_code_expires_at'
+    | 'invite_token'
+    | 'invite_token_expires_at'
+  >
   /** Dopo "Nuovo codice": ricaricare la lista per vedere il codice nuovo */
   onRotated: () => void | Promise<void>
 }
@@ -31,8 +39,19 @@ export function InvitePanel({ household, onRotated }: InvitePanelProps) {
   const [linkCopied, setLinkCopied] = useState(false)
   const [confirmRotate, setConfirmRotate] = useState(false)
   const [rotating, setRotating] = useState(false)
+  // l'ora in cui il pannello si apre basta per decidere se l'invito è scaduto
+  const [openedAt] = useState(() => Date.now())
 
-  const link = inviteLink(window.location.origin, household.join_code)
+  const link = inviteLink(window.location.origin, household.invite_token)
+  // codice e link scadono insieme (7 giorni); vale la scadenza più vicina
+  const expiresAt = new Date(
+    Math.min(
+      Date.parse(household.join_code_expires_at),
+      Date.parse(household.invite_token_expires_at),
+    ),
+  )
+  const expired = expiresAt.getTime() <= openedAt
+  const expiresLabel = expiresAt.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' })
   const message = t.invite.message(household.name, link, appHost(), household.join_code)
 
   async function share() {
@@ -70,34 +89,48 @@ export function InvitePanel({ household, onRotated }: InvitePanelProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <Button fullWidth icon={<Send size={18} aria-hidden="true" />} onClick={() => void share()}>
-        {t.invite.share}
-      </Button>
-      <Button
-        variant="secondary"
-        fullWidth
-        icon={
-          linkCopied ? (
-            <Check size={18} aria-hidden="true" />
-          ) : (
-            <Link2 size={18} aria-hidden="true" />
-          )
-        }
-        onClick={() => void copyLink()}
-      >
-        {linkCopied ? t.invite.linkCopied : t.invite.copyLink}
-      </Button>
-
-      <div className="mt-1 flex flex-col items-center gap-1 rounded-2xl bg-app px-4 py-3 text-center ring-1 ring-subtle">
-        <p className="text-sm text-secondary">{t.invite.orCode}</p>
-        <p
-          className="font-display text-3xl font-bold tracking-[0.2em] text-accent"
-          aria-label={household.join_code.split('').join(' ')}
-        >
-          {household.join_code}
+      {expired ? (
+        <p className="rounded-2xl bg-sand/50 px-4 py-3 text-sm text-primary" role="status">
+          {t.invite.expired}
         </p>
-        <p className="text-xs text-secondary">{t.invite.codeHint}</p>
-      </div>
+      ) : (
+        <>
+          <Button
+            fullWidth
+            icon={<Send size={18} aria-hidden="true" />}
+            onClick={() => void share()}
+          >
+            {t.invite.share}
+          </Button>
+          <Button
+            variant="secondary"
+            fullWidth
+            icon={
+              linkCopied ? (
+                <Check size={18} aria-hidden="true" />
+              ) : (
+                <Link2 size={18} aria-hidden="true" />
+              )
+            }
+            onClick={() => void copyLink()}
+          >
+            {linkCopied ? t.invite.linkCopied : t.invite.copyLink}
+          </Button>
+
+          <div className="mt-1 flex flex-col items-center gap-1 rounded-2xl bg-app px-4 py-3 text-center ring-1 ring-subtle">
+            <p className="text-sm text-secondary">{t.invite.orCode}</p>
+            <p
+              className="font-body text-3xl font-black tracking-[0.2em] text-accent tabular-nums"
+              aria-label={household.join_code.split('').join(' ')}
+            >
+              {household.join_code}
+            </p>
+            <p className="text-xs text-secondary">{t.invite.codeHint}</p>
+          </div>
+
+          <p className="text-center text-xs text-secondary">{t.invite.validUntil(expiresLabel)}</p>
+        </>
+      )}
 
       {confirmRotate ? (
         <div className="flex flex-col gap-2 rounded-2xl bg-sand/40 p-3" role="alertdialog">

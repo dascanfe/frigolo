@@ -29,7 +29,7 @@ export function ProfileSetupScreen({ userId, email, profile, onDone }: ProfileSe
         userId={userId}
         initialName={initialName}
         initialColor={profile.color}
-        initialAvatarUrl={profile.avatar_url}
+        initialAvatarPath={profile.avatar_path}
         submitLabel={t.profile.next}
         onSaved={onDone}
       />

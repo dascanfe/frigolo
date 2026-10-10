@@ -29,7 +29,7 @@ export function FirstListScreen({ onStart, onDone }: FirstListScreenProps) {
 
   if (step.kind === 'name') {
     return (
-      <OnboardingLayout title={t.firstList.title} subtitle={t.lists.nameHint}>
+      <OnboardingLayout title={t.firstList.title} subtitle={t.firstList.nameSubtitle}>
         <CreateListForm
           onCreated={async (id) => {
             if (!step.shared) {

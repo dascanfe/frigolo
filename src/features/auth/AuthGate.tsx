@@ -11,6 +11,7 @@ import {
   useProfileQuery,
 } from '@/features/lists/useLists'
 import type { ListMember } from '@/features/lists/useLists'
+import { avatarPublicUrl } from '@/features/profile/profileApi'
 import { FirstListScreen } from '@/features/onboarding/FirstListScreen'
 import { InviteScreen } from '@/features/onboarding/InviteScreen'
 import { ProfileSetupScreen } from '@/features/onboarding/ProfileSetupScreen'
@@ -84,7 +85,7 @@ function SignedInGate({ userId, email, children }: SignedInGateProps) {
       joined_at: current.household.created_at,
       display_name: profile.display_name,
       color: profile.color,
-      avatar_url: profile.avatar_url,
+      avatar_url: avatarPublicUrl(profile.avatar_path),
     }
     return {
       household: current.household,

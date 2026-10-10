@@ -30,6 +30,7 @@ import {
   renameList,
   useInvalidateLists,
 } from '@/features/lists/useLists'
+import { avatarPublicUrl } from '@/features/profile/profileApi'
 import { DONATION_URL, SUPPORT_EMAIL, it as t } from '@/i18n/it'
 import {
   applyUpdate,
@@ -171,7 +172,7 @@ export function SettingsScreen() {
         <Avatar
           name={memberName(profile)}
           color={profile.color}
-          avatarUrl={profile.avatar_url}
+          avatarUrl={avatarPublicUrl(profile.avatar_path)}
           size={48}
         />
         <span className="flex min-w-0 flex-1 flex-col leading-tight">
