@@ -163,6 +163,7 @@ export const it = {
     limitInvite:
       'Hai già 2 liste, il massimo. Per entrare in questa lasciane prima una dalle Impostazioni.',
     joined: (list: string) => `Sei nella lista "${list}"`,
+    memberJoined: (name: string, list: string) => `${name} ora è nella lista "${list}" 🎉`,
     inviteTitle: (list: string) => `Ti invitano in "${list}"`,
     inviteSubtitle: (count: number) =>
       count === 1
