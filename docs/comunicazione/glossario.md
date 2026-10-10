@@ -65,7 +65,7 @@ Bottoni all'imperativo, alla seconda persona singolare, senza punto finale.
 | Invitare                       | Invita qualcuno       | Invita il partner, Aggiungi membro |
 | Condividere l'invito           | Manda l'invito        | Share, Condividi link di join      |
 | Copiare                        | Copia (poi: Copiato)  | Copia negli appunti                |
-| Nuovo codice d'invito          | Nuovo codice          | Rigenera                           |
+| Rinnovare codice e link        | Nuovo invito          | Rigenera, Nuovo codice             |
 | Mettere in lista               | Aggiungi alla lista   | Inserisci, Add                     |
 | Creare un prodotto             | Crea il prodotto      | Nuovo item                         |
 | Salvare                        | Salva                 | Conferma modifiche, OK             |

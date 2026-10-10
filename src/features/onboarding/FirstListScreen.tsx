@@ -57,6 +57,7 @@ export function FirstListScreen({ onStart, onDone }: FirstListScreenProps) {
       >
         <InvitePanel
           household={household}
+          peopleCount={1}
           onRotated={async () => {
             const { data } = await supabase
               .from('households')

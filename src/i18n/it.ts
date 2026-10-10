@@ -113,7 +113,9 @@ export const it = {
       `Vuoi eliminare la lista "${name}"? Spariscono anche i prodotti creati e le spese. Non si può annullare.`,
     deleted: 'Lista eliminata',
     actionFailed: 'Non ci sono riuscito. Controlla la rete e riprova.',
-    limit: 'Hai già 50 liste: per crearne una nuova lasciane una.',
+    limit: "Hai già 2 liste, il massimo. Per crearne o raggiungerne un'altra, lasciane una.",
+    limitHint:
+      "Puoi avere al massimo 2 liste. Per crearne una nuova o entrare in un'altra, lasciane una dalle Impostazioni.",
     switched: (name: string) => `Ora sei nella lista "${name}"`,
   },
   invite: {
@@ -152,7 +154,11 @@ export const it = {
     badLink: "Questo invito non vale più. Chiedi a chi te l'ha mandato un link nuovo.",
     already: 'Sei già in questa lista. Ti ci porto.',
     tooMany: 'Troppi tentativi. Aspetta qualche minuto e riprova.',
-    full: 'Questa lista è piena: ha già 20 persone.',
+    full: 'Questa lista è piena: ci sono già 5 persone, il massimo.',
+    fullInvite:
+      'Questa lista ha già 5 persone, il massimo. Se qualcuno la lascia, puoi invitare qualcun altro.',
+    limitInvite:
+      'Hai già 2 liste, il massimo. Per entrare in questa lasciane prima una dalle Impostazioni.',
     joined: (list: string) => `Sei nella lista "${list}"`,
     inviteTitle: (list: string) => `Ti invitano in "${list}"`,
     inviteSubtitle: (count: number) =>

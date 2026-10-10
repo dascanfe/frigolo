@@ -157,6 +157,7 @@ function SignedInGate({ userId, email, children }: SignedInGateProps) {
     return (
       <InviteScreen
         code={pendingInvite}
+        listCount={lists?.length ?? 0}
         onDone={async (householdId) => {
           clearPendingInvite()
           await openList(householdId)
