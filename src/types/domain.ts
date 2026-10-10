@@ -125,22 +125,16 @@ export type ItemTotals = Omit<
   avg_interval_days: number | null
 }
 
-/** Supermercati selezionabili dal long press sulla tile */
-export const STORES = [
+/**
+ * Supermercati con cui parte ogni lista nuova: catene presenti in tutta Italia
+ * più il mercato. Ogni lista poi aggiunge, rinomina o toglie i suoi.
+ */
+export const DEFAULT_STORES = [
   'Lidl',
+  'Eurospin',
   'Conad',
-  'Cadoro',
-  'Lando',
-  'Prix',
-  'Maxi',
-  'Alì',
-  'Aldi',
+  'Coop',
   'Carrefour',
-  'Action',
-  'Legàmi',
-  'Normal',
-  'Tigotà',
-  'Acqua & Sapone',
-  'Amazon',
+  'MD',
+  'Mercato',
 ] as const
-export type Store = (typeof STORES)[number]
