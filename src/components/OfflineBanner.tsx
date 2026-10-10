@@ -1,5 +1,6 @@
 import { CloudOff, RefreshCw } from 'lucide-react'
 import { useOnlineStatus, usePendingListMutations } from '@/lib/offlineQueue'
+import { it as t } from '@/i18n/it'
 
 /**
  * Pillola discreta in alto: compare offline, o mentre le modifiche fatte
@@ -15,12 +16,12 @@ export function OfflineBanner() {
   if (!online) {
     message =
       pending === 1
-        ? 'Offline: 1 modifica in attesa di rete'
+        ? t.offline.pendingOne
         : pending > 1
-          ? `Offline: ${pending} modifiche in attesa di rete`
-          : 'Offline: le modifiche verranno sincronizzate'
+          ? t.offline.pendingMany(pending)
+          : t.offline.idle
   } else {
-    message = pending === 1 ? 'Sincronizzo 1 modifica...' : `Sincronizzo ${pending} modifiche...`
+    message = t.offline.syncing(pending)
   }
 
   return (

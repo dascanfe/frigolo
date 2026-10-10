@@ -149,9 +149,9 @@ export function ListScreen() {
           </button>
           <p className="text-sm text-secondary">
             {list.isPending
-              ? 'Carico la lista...'
+              ? t.list.loading
               : list.todoCount === 0
-                ? 'Niente da comprare'
+                ? t.list.nothingToBuy
                 : pluralize(list.todoCount, 'prodotto da comprare', 'prodotti da comprare')}
             {lists.length > 1 && ` · ${pluralize(lists.length, 'lista', 'liste')}`}
           </p>
@@ -178,14 +178,14 @@ export function ListScreen() {
       />
 
       {!searching && storesInList.length > 0 && (
-        <div className="chip-row px-4 py-1" role="group" aria-label="Filtra per supermercato">
+        <div className="chip-row px-4 py-1" role="group" aria-label={t.list.filterByStore}>
           <button
             type="button"
             className="chip h-10 shrink-0 px-4"
             aria-pressed={activeStore === null}
             onClick={() => setStoreFilter(null)}
           >
-            Tutti
+            {t.list.all}
           </button>
           {storesInList.map((name) => (
             <button
@@ -213,18 +213,18 @@ export function ListScreen() {
 
       {searching ? (
         <>
-          <SectionHeader title="Risultati" count={search.results.length} />
+          <SectionHeader title={t.list.results} count={search.results.length} />
           {search.results.length === 0 && !search.canCreate ? (
             <EmptyState
               icon={SearchX}
-              title="Nessun prodotto"
-              description="Prova con un altro nome."
+              title={t.list.noResults}
+              description={t.list.noResultsHint}
             />
           ) : (
-            <ProductGrid label="Risultati della ricerca">
+            <ProductGrid label={t.list.resultsLabel}>
               {search.canCreate && search.results.length === 0 && (
                 <AddTile
-                  label={`Crea "${query.trim()}"`}
+                  label={t.list.create(query.trim())}
                   onTap={() => setCreateRequest({ name: query })}
                 />
               )}
@@ -254,7 +254,7 @@ export function ListScreen() {
                   e creare un doppione con un errore di battitura */}
               {search.canCreate && search.results.length > 0 && (
                 <AddTile
-                  label={`Crea "${query.trim()}"`}
+                  label={t.list.create(query.trim())}
                   onTap={() => setCreateRequest({ name: query })}
                 />
               )}
@@ -303,15 +303,13 @@ export function ListScreen() {
         </>
       ) : (
         <>
-          <SectionHeader title="Da comprare" count={todo.length} />
+          <SectionHeader title={t.list.toBuy} count={todo.length} />
           {todo.length === 0 ? (
             <p className="px-4 pb-2 text-sm text-secondary">
-              {activeStore
-                ? `Niente altro da comprare da ${activeStore}.`
-                : 'Tutto preso: completa la spesa quando vuoi.'}
+              {activeStore ? t.list.nothingElseAt(activeStore) : t.list.allTaken}
             </p>
           ) : (
-            <ProductGrid label="Da comprare">
+            <ProductGrid label={t.list.toBuy}>
               {todo.map((entry) => (
                 <ProductTile
                   key={entry.id}
@@ -334,7 +332,7 @@ export function ListScreen() {
           {cart.length > 0 && (
             <>
               <SectionHeader
-                title="Nel carrello"
+                title={t.list.cart}
                 count={cart.length}
                 collapsible={{
                   open: cartOpen,
@@ -342,13 +340,10 @@ export function ListScreen() {
                   controls: 'cart-grid',
                 }}
               />
-              <p className="-mt-2 px-4 pb-3 text-sm text-secondary">
-                Se non premete &quot;Spesa finita&quot;, il carrello si salva da solo stanotte. Fino
-                ad allora un tocco rimette il prodotto in lista.
-              </p>
+              <p className="-mt-2 px-4 pb-3 text-sm text-secondary">{t.list.cartHint}</p>
               {cartOpen && (
                 <div id="cart-grid">
-                  <ProductGrid label="Nel carrello">
+                  <ProductGrid label={t.list.cart}>
                     {cart.map((entry) => (
                       <ProductTile
                         key={entry.id}
@@ -373,14 +368,12 @@ export function ListScreen() {
       {!searching && recentItems.length > 0 && (
         <section className="mt-8 border-t border-subtle pt-4">
           <SectionHeader
-            title="Gli ultimi acquisti"
+            title={t.list.recent}
             count={recentItems.length}
             action={<History size={20} className="text-secondary" aria-hidden="true" />}
           />
-          <p className="-mt-2 px-4 pb-3 text-sm text-secondary">
-            Le cose comprate di recente: un tocco per rimetterle in lista.
-          </p>
-          <ProductGrid label="Gli ultimi acquisti">
+          <p className="-mt-2 px-4 pb-3 text-sm text-secondary">{t.list.recentHint}</p>
+          <ProductGrid label={t.list.recent}>
             {recentItems.map((item) => {
               const category = catalog.categoryById.get(item.category_id)
               return (
@@ -400,12 +393,9 @@ export function ListScreen() {
 
       {!searching && visibleSuggestions.length > 0 && (
         <section className="mt-8 border-t border-subtle pt-4">
-          <SectionHeader title="Suggeriti per te" count={visibleSuggestions.length} />
-          <p className="-mt-2 px-4 pb-3 text-sm text-secondary">
-            In base a ogni quanto si ricompra una cosa e a cosa è di stagione. Tieni premuto per il
-            motivo.
-          </p>
-          <ProductGrid label="Suggeriti per te">
+          <SectionHeader title={t.list.suggested} count={visibleSuggestions.length} />
+          <p className="-mt-2 px-4 pb-3 text-sm text-secondary">{t.list.suggestedHint}</p>
+          <ProductGrid label={t.list.suggested}>
             {visibleSuggestions.map((suggestion) => (
               <ProductTile
                 key={suggestion.itemId}

@@ -129,12 +129,9 @@ export function SettingsScreen() {
     setCheckingUpdate(true)
     try {
       const found = await checkForUpdate()
-      toast(
-        found ? 'Nuova versione trovata: tocca "Aggiorna adesso"' : "Sei già all'ultima versione",
-        found ? 'success' : 'info',
-      )
+      toast(found ? t.app.updateFound : t.app.upToDate, found ? 'success' : 'info')
     } catch {
-      toast('Controllo non riuscito, riprova con la rete attiva', 'error')
+      toast(t.app.updateCheckFailed, 'error')
     } finally {
       setCheckingUpdate(false)
     }
@@ -142,19 +139,19 @@ export function SettingsScreen() {
 
   async function handleApplyUpdate() {
     setApplying(true)
-    toast('Aggiorno...', 'info', 4000)
+    toast(t.app.updating, 'info', 4000)
     await applyUpdate()
   }
 
   const activeCustom = (customItems.data ?? []).filter((i) => !i.is_archived)
   const archivedCustom = (customItems.data ?? []).filter((i) => i.is_archived)
   const offlineStatus = import.meta.env.DEV
-    ? 'Non attivo in sviluppo'
+    ? t.app.offlineDev
     : sw.needRefresh
-      ? 'Aggiornamento disponibile'
+      ? t.app.offlineUpdate
       : sw.registered || sw.offlineReady
-        ? 'Pronto'
-        : 'Non disponibile'
+        ? t.app.offlineReady
+        : t.app.offlineNone
 
   return (
     <main className="flex flex-col gap-2 pb-6">
@@ -287,19 +284,17 @@ export function SettingsScreen() {
 
       {/* ---------------- Tema ---------------- */}
       <SectionHeader
-        title="Tema"
+        title={t.theme.section}
         action={<Palette size={20} className="text-secondary" aria-hidden="true" />}
       />
       <ThemePicker />
 
       {/* ---------------- Prodotti custom ---------------- */}
-      <SectionHeader title="I prodotti di questa lista" count={activeCustom.length} />
+      <SectionHeader title={t.customItems.title} count={activeCustom.length} />
       {customItems.isPending ? (
-        <p className="px-4 text-sm text-secondary">Carico...</p>
+        <p className="px-4 text-sm text-secondary">{t.customItems.loading}</p>
       ) : activeCustom.length === 0 && archivedCustom.length === 0 ? (
-        <p className="px-4 text-sm text-secondary">
-          Nessun prodotto creato in questa lista. Si aggiungono dalla ricerca o dal catalogo.
-        </p>
+        <p className="px-4 text-sm text-secondary">{t.customItems.empty}</p>
       ) : (
         <ul className="mx-4 divide-y divide-subtle rounded-3xl bg-surface ring-1 ring-subtle">
           {[...activeCustom, ...archivedCustom].map((item) => (
@@ -324,7 +319,11 @@ export function SettingsScreen() {
                   {item.name}
                 </span>
                 {item.is_archived ? (
-                  <Archive size={16} className="text-secondary" aria-label="archiviato" />
+                  <Archive
+                    size={16}
+                    className="text-secondary"
+                    aria-label={t.customItems.archived}
+                  />
                 ) : (
                   <Pencil size={16} className="text-secondary" aria-hidden="true" />
                 )}
@@ -335,14 +334,14 @@ export function SettingsScreen() {
       )}
 
       {/* ---------------- App ---------------- */}
-      <SectionHeader title="App" />
+      <SectionHeader title={t.app.section} />
       <div className="mx-4 flex flex-col gap-3 rounded-3xl bg-surface p-4 text-sm ring-1 ring-subtle">
         <div className="flex justify-between">
-          <span className="text-secondary">Versione</span>
+          <span className="text-secondary">{t.app.version}</span>
           <span className="font-bold text-primary">{__APP_VERSION__}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-secondary">Uso offline</span>
+          <span className="text-secondary">{t.app.offlineUse}</span>
           <span className="font-bold text-primary">{offlineStatus}</span>
         </div>
         {sw.needRefresh ? (
@@ -352,7 +351,7 @@ export function SettingsScreen() {
             onClick={handleApplyUpdate}
             disabled={applying}
           >
-            {applying ? 'Aggiorno...' : 'Aggiorna adesso'}
+            {applying ? t.app.updating : t.app.updateNow}
           </Button>
         ) : (
           <Button
@@ -368,21 +367,18 @@ export function SettingsScreen() {
             onClick={handleCheckUpdate}
             disabled={checkingUpdate || import.meta.env.DEV}
           >
-            {checkingUpdate ? 'Controllo...' : 'Controlla aggiornamenti'}
+            {checkingUpdate ? t.app.checking : t.app.checkUpdates}
           </Button>
         )}
-        <p className="text-xs text-secondary">
-          L&apos;app controlla da sola ogni ora e quando torna in primo piano; qui puoi forzare il
-          controllo.
-        </p>
+        <p className="text-xs text-secondary">{t.app.updateHint}</p>
       </div>
 
       {/* ---------------- Account ---------------- */}
-      <SectionHeader title="Account" />
+      <SectionHeader title={t.account.section} />
       <div className="mx-4 flex flex-col gap-3 rounded-3xl bg-surface p-4 text-sm ring-1 ring-subtle">
         {email && (
           <div className="flex justify-between gap-3">
-            <span className="text-secondary">Email</span>
+            <span className="text-secondary">{t.account.email}</span>
             <span className="truncate font-bold text-primary">{email}</span>
           </div>
         )}
@@ -392,7 +388,7 @@ export function SettingsScreen() {
           icon={<KeyRound size={18} aria-hidden="true" />}
           onClick={() => setPasswordOpen(true)}
         >
-          Cambia password
+          {t.account.changePassword}
         </Button>
       </div>
 
