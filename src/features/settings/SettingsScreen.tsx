@@ -42,6 +42,7 @@ import { supabase } from '@/lib/supabase'
 import { toast } from '@/lib/toast'
 import type { Item } from '@/types/domain'
 import { EditItemSheet } from './EditItemSheet'
+import { MyDataSection } from './MyDataSection'
 import { PasswordSheet } from './PasswordSheet'
 import { ProfileSheet } from './ProfileSheet'
 import { ThemePicker } from './ThemePicker'
@@ -372,6 +373,9 @@ export function SettingsScreen() {
         )}
         <p className="text-xs text-secondary">{t.app.updateHint}</p>
       </div>
+
+      {/* ---------------- I tuoi dati ---------------- */}
+      <MyDataSection />
 
       {/* ---------------- Account ---------------- */}
       <SectionHeader title={t.account.section} />
