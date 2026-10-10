@@ -3,6 +3,7 @@ import { Outlet } from 'react-router'
 import { useHousehold } from '@/features/auth/useHousehold'
 import { useRealtimeSync } from '@/features/list/useRealtimeSync'
 import { TipBubble } from '@/features/tips/TipBubble'
+import { useSuppressTipsForExperienced } from '@/features/tips/useSuppressTipsForExperienced'
 import { getServiceWorkerState, subscribeServiceWorker } from '@/lib/pwa'
 import { toast } from '@/lib/toast'
 import { BottomNav } from './BottomNav'
@@ -12,6 +13,7 @@ import { OfflineBanner } from './OfflineBanner'
 /** Layout comune: colonna centrata (max 1024px, è anche il container query "shell"), bottom nav flottante */
 export function AppShell() {
   useRealtimeSync()
+  useSuppressTipsForExperienced()
   const { household } = useHousehold()
   const sw = useSyncExternalStore(
     subscribeServiceWorker,

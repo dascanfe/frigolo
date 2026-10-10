@@ -40,3 +40,19 @@ describe('suggerimenti al primo uso', () => {
     expect(getCurrentTip()).toBeNull()
   })
 })
+
+describe('chi ha già fatto la spesa', () => {
+  beforeEach(() => {
+    store.clear()
+    resetTipsForTests()
+  })
+
+  it('non vede suggerimenti, né in coda né dopo', async () => {
+    const { suppressAllTips } = await import('./tips')
+    triggerTip('added')
+    suppressAllTips()
+    expect(getCurrentTip()).toBeNull()
+    triggerTip('cart')
+    expect(getCurrentTip()).toBeNull()
+  })
+})

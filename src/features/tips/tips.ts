@@ -83,3 +83,16 @@ export function hasAddedFirstProduct(): boolean {
 export function resetTipsForTests() {
   queue = []
 }
+
+/**
+ * Chi ha già fatto almeno una spesa conosce l'app: niente suggerimenti, né
+ * ora né dopo (vengono segnati tutti come visti).
+ */
+export function suppressAllTips() {
+  const seen = readSeen()
+  if (TIP_IDS.every((id) => seen.has(id)) && queue.length === 0) return
+  for (const id of TIP_IDS) seen.add(id)
+  writeSeen(seen)
+  queue = []
+  emit()
+}
