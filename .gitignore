@@ -1,0 +1,42 @@
+# Dipendenze e build
+node_modules
+dist
+dist-ssr
+dev-dist
+*.local
+
+# Variabili d'ambiente: solo .env.example va nel repo
+.env
+.env.*
+!.env.example
+
+# Log
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Supabase CLI
+supabase/.temp
+supabase/.branches
+
+# Vercel
+.vercel
+
+# Editor e sistema
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Test e coverage
+coverage
+
+# Config locale tooling (gli agenti della squadra invece vanno nel repo)
+.claude/*
+!.claude/agents/
