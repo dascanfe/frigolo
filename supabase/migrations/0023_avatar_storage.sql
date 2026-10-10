@@ -4,8 +4,8 @@
 -- 1. Quota: al massimo 5 file nella propria cartella del bucket avatars.
 --    Il frontend usa nomi con uuid e cancella la foto precedente, quindi di
 --    norma ce n'è una sola; il limite ferma chi riempie lo Storage.
---    Sostituisce la policy di insert della 0006 (stessa regola sulla
---    cartella, più il conteggio).
+--    File solo direttamente nella propria cartella, senza sottocartelle.
+--    Sostituisce le policy di insert e update della 0006.
 -- 2. File orfani: avatar_orphans() elenca i file non usati da nessun profilo
 --    né da nessuna riga membro (colonna deprecata), più vecchi di un giorno
 --    (chi sta caricando una foto non l'ha ancora salvata nel profilo).
@@ -42,7 +42,23 @@ create policy "avatars: ognuno carica nella propria cartella"
   with check (
     bucket_id = 'avatars'
     and (storage.foldername(name))[1] = (select auth.uid())::text
+    and array_length(storage.foldername(name), 1) = 1
     and public.my_avatar_file_count() < 5
+  );
+
+-- Update: stessa cartella, niente sottocartelle anche nel nome nuovo.
+drop policy if exists "avatars: ognuno aggiorna i propri file" on storage.objects;
+create policy "avatars: ognuno aggiorna i propri file"
+  on storage.objects for update
+  to authenticated
+  using (
+    bucket_id = 'avatars'
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+  )
+  with check (
+    bucket_id = 'avatars'
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+    and array_length(storage.foldername(name), 1) = 1
   );
 
 create or replace function public.avatar_orphans(p_min_age interval default interval '1 day')
