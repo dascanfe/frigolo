@@ -1,6 +1,7 @@
 import { ChartColumn, LayoutGrid, Settings, ShoppingBasket } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { NavLink } from 'react-router'
+import { it as t } from '@/i18n/it'
 
 interface NavItem {
   to: string
@@ -10,10 +11,10 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Lista', icon: ShoppingBasket, end: true },
-  { to: '/catalogo', label: 'Catalogo', icon: LayoutGrid },
-  { to: '/analitiche', label: 'Analitiche', icon: ChartColumn },
-  { to: '/impostazioni', label: 'Impostazioni', icon: Settings },
+  { to: '/', label: t.nav.list, icon: ShoppingBasket, end: true },
+  { to: '/catalogo', label: t.nav.catalog, icon: LayoutGrid },
+  { to: '/analitiche', label: t.nav.analytics, icon: ChartColumn },
+  { to: '/impostazioni', label: t.nav.settings, icon: Settings },
 ]
 
 /**
@@ -23,7 +24,7 @@ const NAV_ITEMS: NavItem[] = [
 export function BottomNav() {
   return (
     <nav
-      aria-label="Navigazione principale"
+      aria-label={t.nav.label}
       className="pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4"
       style={{ bottom: 'calc(var(--nav-gap) + var(--safe-bottom))' }}
     >
