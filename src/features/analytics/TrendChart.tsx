@@ -18,7 +18,7 @@ interface TrendChartProps {
   from: Date | null
 }
 
-/** Area chart degli articoli acquistati per settimana o mese */
+/** Area chart dei prodotti acquistati per settimana o mese */
 export function TrendChart({ rows, bucket, from }: TrendChartProps) {
   const series = buildSeries(rows, bucket, from)
   if (series.length === 0 || series.every((p) => p.count === 0)) {
@@ -31,7 +31,7 @@ export function TrendChart({ rows, bucket, from }: TrendChartProps) {
       <div
         className="h-48"
         role="img"
-        aria-label={`Articoli acquistati per ${bucket === 'month' ? 'mese' : bucket === 'day' ? 'giorno' : 'settimana'}`}
+        aria-label={`Prodotti acquistati per ${bucket === 'month' ? 'mese' : bucket === 'day' ? 'giorno' : 'settimana'}`}
       >
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={series} margin={{ top: 12, right: 28, bottom: 0, left: 0 }}>
@@ -63,7 +63,7 @@ export function TrendChart({ rows, bucket, from }: TrendChartProps) {
                 if (!active || !point) return null
                 return (
                   <div className="rounded-xl bg-primary px-3 py-2 text-xs font-bold text-cream shadow-sheet">
-                    {point.label}: {point.count} {point.count === 1 ? 'articolo' : 'articoli'}
+                    {point.label}: {point.count} {point.count === 1 ? 'prodotto' : 'prodotti'}
                   </div>
                 )
               }}

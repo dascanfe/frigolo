@@ -59,7 +59,7 @@ describe('ricorrenza', () => {
     const pronto = suggest({ items, purchases: bought('latte', 27, 20, 13, 6), now: NOW })
     expect(pronto).toHaveLength(1)
     expect(pronto[0]?.kind).toBe('habit')
-    expect(pronto[0]?.reason).toBe('Di solito lo comprate ogni 7 giorni')
+    expect(pronto[0]?.reason).toBe('Di solito ogni 7 giorni')
 
     const troppoPresto = suggest({ items, purchases: bought('latte', 23, 16, 9, 2), now: NOW })
     expect(troppoPresto).toHaveLength(0)
@@ -93,7 +93,7 @@ describe('ricorrenza', () => {
   it('con 2 acquisti usa il loro intervallo come ritmo', () => {
     // comprato 20 e 10 giorni fa: ritmo 10 giorni, passati 10 -> pronto
     const result = suggest({ items: [item('latte')], purchases: bought('latte', 20, 10), now: NOW })
-    expect(result[0]?.reason).toBe('Di solito lo comprate ogni 10 giorni')
+    expect(result[0]?.reason).toBe('Di solito ogni 10 giorni')
   })
 })
 
@@ -113,7 +113,7 @@ describe('frequenza recente', () => {
     // ritmo 8 giorni, passati 12: ricorrenza pronta, quindi il motivo è il ritmo;
     // la frequenza contribuisce comunque al punteggio
     const result = suggest({ items: [item('caffe')], purchases: bought('caffe', 20, 12), now: NOW })
-    expect(result[0]?.reason).toBe('Di solito lo comprate ogni 8 giorni')
+    expect(result[0]?.reason).toBe('Di solito ogni 8 giorni')
     expect(result[0]?.score).toBeGreaterThan(1.5)
   })
 

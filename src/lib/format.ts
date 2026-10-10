@@ -27,7 +27,7 @@ export function unitLabel(unit: Unit): string {
   }
 }
 
-/** Plurale semplice: 1 articolo, 3 articoli */
+/** Plurale semplice: 1 prodotto, 3 prodotti */
 export function pluralize(count: number, singular: string, plural: string): string {
   return `${count} ${count === 1 ? singular : plural}`
 }
