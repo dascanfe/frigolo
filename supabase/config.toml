@@ -156,11 +156,13 @@ enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
 # Dopo il deploy: mettere qui il dominio di produzione (usato dalle email di recupero password)
-site_url = "https://frigolo.dascanfe.com"
+site_url = "http://localhost:5173"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://frigolo.dascanfe.com", "https://frigolo.dascanfe.com/**", "https://frigolo-app.vercel.app", "https://frigolo-app.vercel.app/**", "http://localhost:5173", "http://localhost:5173/**", "http://localhost:4173", "http://localhost:4173/**"]
+# Frigolo: questi valori valgono per lo Supabase LOCALE (sviluppo con pnpm dev e pnpm preview).
+# Per la produzione li sostituisce [remotes.production] in fondo al file: niente localhost.
+additional_redirect_urls = ["http://localhost:5173", "http://localhost:5173/**", "http://localhost:4173", "http://localhost:4173/**", "https://frigolo.dascanfe.com", "https://frigolo.dascanfe.com/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
@@ -407,8 +409,11 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
-# [edge_runtime.secrets]
-# secret_key = "env(SECRET_VALUE)"
+# Frigolo: segreti delle edge function SOLO per lo Supabase locale (config push non li manda in
+# produzione). FRIGOLO_DEV_ORIGINS: origini in più accettate da delete-account, separate da
+# virgola; in produzione non esiste e valgono solo i domini pubblici.
+[edge_runtime.secrets]
+FRIGOLO_DEV_ORIGINS = "http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:4173"
 
 [analytics]
 enabled = true
@@ -445,3 +450,12 @@ enabled = true
 [functions.delete-account]
 enabled = true
 verify_jwt = true
+
+# Frigolo: valori del progetto di produzione (frigolo, Francoforte). config push e config diff
+# verso questo project ref usano questi al posto di quelli sopra: solo i domini pubblici.
+[remotes.production]
+project_id = "egvodwvnralxttxiovau"
+
+[remotes.production.auth]
+site_url = "https://frigolo.dascanfe.com"
+additional_redirect_urls = ["https://frigolo.dascanfe.com", "https://frigolo.dascanfe.com/**", "https://frigolo-app.vercel.app", "https://frigolo-app.vercel.app/**"]
