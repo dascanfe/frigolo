@@ -32,6 +32,23 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-10-10 - Landing (Fase 2)
+
+- Sorgenti in `landing/` (branch `fragola/landing`): `src/` (HTML, CSS, JS, `.htaccess`),
+  `build.mjs` e il modello delle pagine legali. `node landing/build.mjs` prepara
+  `landing/dist`; `--legal-from origin/aglio/audit-legale` rigenera privacy e termini da
+  `docs/legale`; `--copy-to <cartella>` copia nel sito. Copiata in
+  `_Dascanfe Website/.../sub/frigolo/` (niente FTP).
+- Nessuna risorsa di terzi: font dell'app self-hosted, mascotte in webp, tema chiaro e
+  scuro da `prefers-color-scheme`. Installazione con schede iPhone e Android (Android
+  aperta per prima sui telefoni Android). Attributi `data-track` per Pepe e
+  `track.js` commentato.
+- Lighthouse 13 mobile sul server locale: prestazioni 99, accessibilità 100, best
+  practices 100, SEO 100. Verificata a 375px e 1280px, in chiaro e scuro, senza
+  scorrimento orizzontale.
+- Da fare: schermate vere nel telefono finto e immagine Open Graph (Paprika), testi
+  rivisti da Zenzero, pagine legali definitive (Aglio).
+
 ### 2026-10-10 - Secondo giro: limiti, captcha, link delle email, i tuoi dati
 
 - Limiti di Daniele (2 liste, 5 persone) spiegati prima di provare: "Nuova lista" e "Ho un
