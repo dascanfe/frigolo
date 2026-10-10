@@ -71,6 +71,9 @@ update ids set code = h.join_code from public.households h where h.id = ids.id;
 
 do $$
 begin
+  assert (select stores from public.households where id = (select id from ids where k = 'A'))
+         = array['Lidl', 'Eurospin', 'Conad', 'Coop', 'Carrefour', 'MD', 'Mercato'],
+    'supermercati di partenza generici';
   assert (select name from public.households where id = (select id from ids where k = 'B')) = 'Lista',
     'nome vuoto -> "Lista"';
   assert (select display_name from public.profiles where id = 'c0000000-0000-0000-0000-000000000003') = 'Tre bis',
@@ -400,7 +403,7 @@ end $$;
 -- R2: dopo 10 tentativi falliti in un'ora, errore 429 per qualunque codice
 select pg_temp.as_user('c0000000-0000-0000-0000-000000000007');
 do $$
-declare i int;
+declare i int; v_hint text;
 begin
   for i in 1 .. 10 loop
     assert public.join_household('ZZZZ' || lpad(i::text, 4, '2')) is null, 'codice sbagliato -> null';
@@ -408,7 +411,9 @@ begin
   begin
     perform public.join_household((select t from tok));
     assert false, 'R2: join non limitato dopo 10 tentativi';
-  exception when sqlstate 'PT429' then null;
+  exception when sqlstate 'PT429' then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    assert v_hint = 'rate_limited', 'hint rate_limited';
   end;
   begin
     perform * from public.get_household_invite((select t from tok));
@@ -424,53 +429,56 @@ begin
   assert (select count(*) from public.invite_attempts where user_id = 'c0000000-0000-0000-0000-000000000007') = 10,
     'tentativi falliti registrati';
   assert exists (select 1 from cron.job where jobname = 'frigolo-invite-attempts-cleanup'), 'job di pulizia dei tentativi';
+  assert (select failed from public.invite_attempts_daily where day = (now() at time zone 'UTC')::date) >= 10,
+    'contatore giornaliero dei tentativi falliti';
 end $$;
 
--- Limite di 50 liste per utente (U5 ne ha già 2: E e D)
+-- Limite di 2 liste per utente (U5 ne ha già 2: E e D)
 select pg_temp.as_user('c0000000-0000-0000-0000-000000000005');
 do $$
-declare i int;
+declare v_hint text;
 begin
-  for i in 3 .. 50 loop
-    perform public.create_household('L' || i);
-  end loop;
   begin
-    perform public.create_household('L51');
-    assert false, 'creata la 51esima lista';
-  exception when raise_exception then null;
+    perform public.create_household('Terza');
+    assert false, 'creata la terza lista';
+  exception when raise_exception then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    assert v_hint = 'lists_limit', 'hint lists_limit';
   end;
 end $$;
 
--- Limite di 20 membri per lista: D ha U6 e U5, entrano altri 18, il 21esimo no
+-- Limite di 5 persone per lista: D ha U6 e U5, entrano altre 3, la sesta no
 select pg_temp.as_admin();
 do $$
-declare i int; v_user uuid; v_tok text := (select t from tok);
+declare i int; v_user uuid; v_tok text := (select t from tok); v_hint text;
 begin
-  for i in 1 .. 19 loop
+  for i in 1 .. 4 loop
     v_user := ('d0000000-0000-0000-0000-' || lpad(i::text, 12, '0'))::uuid;
     perform pg_temp.as_admin();
     insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data, created_at, updated_at)
     values (v_user, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'm' || i || '@example.test', '{}', now(), now());
     perform pg_temp.as_user(v_user);
-    if i < 19 then
-      assert public.join_household(v_tok) is not null, 'membro entrato';
+    if i < 4 then
+      assert public.join_household(v_tok) is not null, 'persona entrata';
     else
       begin
         perform public.join_household(v_tok);
-        assert false, 'entrato il 21esimo membro';
-      exception when raise_exception then null;
+        assert false, 'entrata la sesta persona';
+      exception when raise_exception then
+        get stacked diagnostics v_hint = pg_exception_hint;
+        assert v_hint = 'members_limit', 'hint members_limit';
       end;
     end if;
   end loop;
   perform pg_temp.as_admin();
-  assert (select count(*) from public.household_members where household_id = (select id from ids where k = 'D')) = 20,
-    'D ha 20 membri';
+  assert (select count(*) from public.household_members where household_id = (select id from ids where k = 'D')) = 5,
+    'D ha 5 persone';
 end $$;
 
 -- M4: lunghezze e quote (scritture dirette dei client)
 select pg_temp.as_user('c0000000-0000-0000-0000-000000000006');
 do $$
-declare v_d uuid := (select id from ids where k = 'D'); v_cat uuid := (select id from public.categories order by sort_order limit 1);
+declare v_d uuid := (select id from ids where k = 'D'); v_cat uuid := (select id from public.categories order by sort_order limit 1); v_hint text;
 begin
   begin
     insert into public.list_entries (household_id, item_id, unit)
@@ -488,16 +496,97 @@ begin
   begin
     insert into public.items (household_id, category_id, name, icon, created_by)
     values (v_d, v_cat, 'Custom 501', 'Package', auth.uid());
-    assert false, 'M4: 501esimo prodotto personalizzato accettato';
-  exception when raise_exception then null;
+    assert false, 'M4: 501esimo prodotto della lista accettato';
+  exception when raise_exception then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    assert v_hint = 'items_quota', 'hint items_quota';
   end;
   insert into public.list_entries (household_id, item_id, status, added_by, checked_at)
   select v_d, id, 'cart', auth.uid(), now() from public.items where household_id = v_d order by name limit 300;
   begin
     insert into public.list_entries (household_id, item_id)
     select v_d, id from public.items where household_id is null limit 1;
-    assert false, 'M4: 301esima voce accettata';
-  exception when raise_exception then null;
+    assert false, 'M4: 301esimo prodotto in lista accettato';
+  exception when raise_exception then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    assert v_hint = 'entries_quota', 'hint entries_quota';
+  end;
+end $$;
+
+-- altri controlli su quote, colonne, mesi e colori
+select pg_temp.as_user('c0000000-0000-0000-0000-000000000006');
+do $$
+declare
+  v_d uuid := (select id from ids where k = 'D');
+  v_d2 uuid;
+  v_cat uuid := (select id from public.categories order by sort_order limit 1);
+  v_item uuid;
+  v_hint text;
+begin
+  v_d2 := public.create_household('D2');
+  insert into public.items (household_id, category_id, name, icon, created_by)
+  values (v_d2, v_cat, 'Da spostare', 'Package', auth.uid()) returning id into v_item;
+  begin
+    update public.items set household_id = v_d where id = v_item;
+    assert false, 'prodotto spostato in una lista piena';
+  exception when raise_exception then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    assert v_hint = 'items_quota', 'hint items_quota su update';
+  end;
+  insert into public.list_entries (household_id, item_id) values (v_d2, v_item);
+  begin
+    update public.list_entries set household_id = v_d where household_id = v_d2;
+    assert false, 'prodotto in lista spostato in una lista piena';
+  exception when raise_exception then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    assert v_hint = 'entries_quota', 'hint entries_quota su update';
+  end;
+  begin
+    update public.shopping_trips set created_at = now() - interval '2 days' where household_id = v_d;
+    assert false, 'shopping_trips.created_at modificabile';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    update public.shopping_trips set household_id = v_d2 where household_id = v_d;
+    assert false, 'spesa spostata in un''altra lista';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    update public.purchases set trip_id = trip_id where household_id = v_d;
+    assert false, 'purchases modificabile';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    insert into public.items (household_id, category_id, name, icon, created_by, season_months)
+    values (v_d2, v_cat, 'Mesi', 'Package', auth.uid(), array[1,1,1,1,1,1,1,1,1,1,1,1,1]);
+    assert false, 'season_months con 13 elementi accettato';
+  exception when check_violation then null;
+  end;
+  begin
+    update public.household_members set color = 'c-pink' where user_id = auth.uid();
+    assert false, 'colore fuori tavolozza nella riga membro';
+  exception when check_violation then null;
+  end;
+end $$;
+
+-- quota di file nella propria cartella delle foto
+do $$
+declare i int;
+begin
+  for i in 1 .. 5 loop
+    insert into storage.objects (bucket_id, name, owner_id)
+    values ('avatars', auth.uid()::text || '/q' || i || '.webp', auth.uid()::text);
+  end loop;
+  begin
+    insert into storage.objects (bucket_id, name, owner_id)
+    values ('avatars', auth.uid()::text || '/q6.webp', auth.uid()::text);
+    assert false, 'sesto file accettato';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform * from public.avatar_orphans();
+    assert false, 'avatar_orphans chiamabile da un utente';
+  exception when insufficient_privilege then null;
   end;
 end $$;
 
@@ -533,7 +622,11 @@ values ('avatars', 'c0000000-0000-0000-0000-000000000006/a.webp', 'c0000000-0000
 select pg_temp.as_user('c0000000-0000-0000-0000-000000000006');
 do $$
 begin
-  assert (select count(*) from storage.objects where bucket_id = 'avatars') = 1, 'A2: un utente vede solo i propri file';
+  assert exists (select 1 from storage.objects where bucket_id = 'avatars'), 'A2: un utente vede i propri file';
+  assert not exists (
+    select 1 from storage.objects
+    where bucket_id = 'avatars' and (storage.foldername(name))[1] <> auth.uid()::text
+  ), 'A2: un utente non vede i file degli altri';
 end $$;
 select pg_temp.as_admin();
 set local role anon;
@@ -542,6 +635,26 @@ begin
   assert (select count(*) from storage.objects where bucket_id = 'avatars') = 0, 'A2: anon non elenca le foto';
 end $$;
 reset role;
+
+-- le RPC dell'invito accettano solo POST
+select pg_temp.as_user('c0000000-0000-0000-0000-000000000002');
+savepoint sola_lettura;
+set transaction read only;
+do $$
+begin
+  begin
+    perform * from public.get_household_invite('ZZZZZZZZ');
+    assert false, 'anteprima eseguita in sola lettura';
+  exception when sqlstate 'PT405' then null;
+  end;
+  begin
+    perform public.join_household('ZZZZZZZZ');
+    assert false, 'join eseguito in sola lettura';
+  exception when sqlstate 'PT405' then null;
+  end;
+end $$;
+rollback to savepoint sola_lettura;
+select pg_temp.as_admin();
 
 -- anon non legge nulla
 set local role anon;
