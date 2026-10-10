@@ -126,6 +126,21 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_attempts_daily: {
+        Row: {
+          day: string
+          failed: number
+        }
+        Insert: {
+          day: string
+          failed?: number
+        }
+        Update: {
+          day?: string
+          failed?: number
+        }
+        Relationships: []
+      }
       items: {
         Row: {
           category_id: string
@@ -461,6 +476,13 @@ export type Database = {
         Args: { p_household_id?: string }
         Returns: number
       }
+      avatar_orphans: {
+        Args: { p_min_age?: string }
+        Returns: {
+          created_at: string
+          name: string
+        }[]
+      }
       avatar_path_from_url: {
         Args: { p_url: string; p_user: string }
         Returns: string
@@ -476,6 +498,7 @@ export type Database = {
         Returns: string
       }
       delete_household: { Args: { p_household_id: string }; Returns: undefined }
+      export_my_data: { Args: never; Returns: Json }
       find_household_by_invite: { Args: { p_code: string }; Returns: string }
       generate_invite_token: { Args: never; Returns: string }
       generate_join_code: { Args: never; Returns: string }
@@ -503,8 +526,11 @@ export type Database = {
       max_households_per_user: { Args: never; Returns: number }
       max_members_per_household: { Args: never; Returns: number }
       member_colors: { Args: never; Returns: string[] }
+      my_account_info: { Args: never; Returns: Json }
+      my_avatar_file_count: { Args: never; Returns: number }
       ping: { Args: never; Returns: string }
       random_member_color: { Args: never; Returns: string }
+      record_failed_invite: { Args: { p_user: string }; Returns: undefined }
       rename_household: {
         Args: { p_household_id: string; p_name: string }
         Returns: string
