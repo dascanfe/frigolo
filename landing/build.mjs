@@ -54,7 +54,9 @@ await sharp(join(pub, 'mascot.png'))
   .toFile(join(dist, 'img/mascot-small.webp'))
 cpSync(join(pub, 'favicon.png'), join(dist, 'favicon.png'))
 cpSync(join(pub, 'icons/apple-touch-icon.png'), join(dist, 'apple-touch-icon.png'))
-cpSync(join(pub, 'og-image.png'), join(dist, 'og-image.png'))
+// anteprima dei link: quella definitiva di Paprika (landing/assets), altrimenti il segnaposto dell'app
+const ogImage = join(here, 'assets/og-image.png')
+cpSync(existsSync(ogImage) ? ogImage : join(pub, 'og-image.png'), join(dist, 'og-image.png'))
 
 // pagine legali: da docs/legale (bozze di Aglio) a HTML con lo stesso stile
 const legalSrc = join(src, 'legal-src')
