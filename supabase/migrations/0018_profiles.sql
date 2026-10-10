@@ -1,5 +1,5 @@
 -- =============================================================================
--- Frigolo - 0017: profili utente (issue #2)
+-- Frigolo - 0018: profili utente (issue #2)
 --
 -- Perché: nome, colore e foto oggi stanno in household_members, cioè sono
 -- "per lista". Con le liste multiple ognuno deve avere un solo profilo, scelto

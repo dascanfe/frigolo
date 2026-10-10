@@ -1,5 +1,5 @@
 -- =============================================================================
--- Frigolo - 0018: liste multiple (issue #3, parte backend)
+-- Frigolo - 0019: liste multiple (issue #3, parte backend)
 --
 -- Perché: ogni utente deve poter usare l'app da solo, creare quante liste
 -- vuole, entrare nelle liste altrui con codice o link, rinominarle, lasciarle

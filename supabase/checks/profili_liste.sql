@@ -1,5 +1,5 @@
 -- =============================================================================
--- Verifica di profili (0017) e liste multiple (0018). SOLO IN LOCALE.
+-- Verifica di profili (0018) e liste multiple (0019). SOLO IN LOCALE.
 --
 --   psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
 --     -v ON_ERROR_STOP=1 -f supabase/checks/profili_liste.sql
