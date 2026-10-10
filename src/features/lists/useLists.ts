@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { it as t } from '@/i18n/it'
 import { supabase } from '@/lib/supabase'
+import { DEFAULT_STORES } from '@/types/domain'
 import type { Household, Profile } from '@/types/domain'
 
 /**
@@ -84,11 +85,16 @@ export function joinedAt(list: ListData, userId: string): string {
  * l'onboarding, che vive fuori dal contesto della lista, sia l'app.
  * ------------------------------------------------------------------------- */
 
-/** Crea una lista e ritorna l'id */
+/** Crea una lista con i supermercati generici e ritorna l'id */
 export async function createList(rawName: string): Promise<string> {
   const name = rawName.trim() || t.lists.nameDefault
   const { data: id, error } = await supabase.rpc('create_household', { p_name: name })
   if (error) throw error
+  // il default del database è ancora la lista veneta: qui si parte da quella generica
+  await supabase
+    .from('households')
+    .update({ stores: [...DEFAULT_STORES] })
+    .eq('id', id)
   return id
 }
 
