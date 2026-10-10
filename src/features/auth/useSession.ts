@@ -3,7 +3,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { it as t } from '@/i18n/it'
 import { verifyAuthLink } from '@/lib/authConfirm'
 import { clearLocalData } from '@/lib/localData'
-import { supabase } from '@/lib/supabase'
+import { AUTH_STORAGE_KEY, supabase } from '@/lib/supabase'
+import {
+  SESSION_STARTUP_TIMEOUT_MS,
+  isNetworkAuthError,
+  readStoredSession,
+} from '@/lib/sessionFallback'
 import { toast } from '@/lib/toast'
 
 export type SessionState =
@@ -40,25 +45,29 @@ export function useSession(): SessionState {
       supabase.auth.verifyOtp({ token_hash: tokenHash, type }),
     )
       .then((link) => {
-        if (!active) return supabase.auth.getSession()
+        if (!active) return startupSession()
         if (link.kind === 'error') setLinkError({ type: link.type })
         if (link.kind === 'ok') {
           if (link.type === 'recovery') setRecovery(true)
           else if (link.type === 'email_change') toast(t.authLink.emailChanged, 'success')
           else toast(t.authLink.confirmed, 'success')
         }
-        return supabase.auth.getSession()
+        return startupSession()
       })
-      .then(({ data }) => {
-        if (active) setSession(data.session)
+      .then((startup) => {
+        if (active) setSession(startup)
       })
       .catch(() => {
-        if (active) setSession(null)
+        if (active) setSession(readStoredSession(window.localStorage, AUTH_STORAGE_KEY))
       })
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, next) => {
+      // la sessione iniziale la decide startupSession (che sa aspettare il server
+      // o fare a meno di lui); gli eventi dopo, come il rinnovo del token tornata
+      // la rete o l'uscita, valgono sempre
+      if (event === 'INITIAL_SESSION') return
       setSession(next)
       if (event === 'PASSWORD_RECOVERY') setRecovery(true)
       if (event === 'SIGNED_OUT') {
@@ -80,6 +89,31 @@ export function useSession(): SessionState {
   if (session === undefined) return { status: 'loading' }
   if (session === null) return { status: 'signed-out', linkError, clearLinkError }
   return { status: 'signed-in', session, user: session.user, recovery, endRecovery }
+}
+
+/**
+ * La sessione con cui aprire l'app. Chiede a supabase-js, ma senza aspettare
+ * più di qualche secondo: se il server non risponde e c'è una sessione salvata
+ * si usa quella (supabase-js continua a rinnovare il token in background e
+ * avvisa con TOKEN_REFRESHED). null solo se non c'è nessuna sessione o se il
+ * server la rifiuta davvero.
+ */
+async function startupSession(): Promise<Session | null> {
+  const stored = () => readStoredSession(window.localStorage, AUTH_STORAGE_KEY)
+  const fromServer = supabase.auth
+    .getSession()
+    .then(({ data, error }) => {
+      if (data.session) return data.session
+      return error && isNetworkAuthError(error) ? stored() : null
+    })
+    .catch(() => stored())
+  // senza sessione salvata non c'è niente da rinnovare: si aspetta la risposta
+  if (!stored()) return fromServer
+  const timeout = new Promise<'timeout'>((resolve) =>
+    window.setTimeout(() => resolve('timeout'), SESSION_STARTUP_TIMEOUT_MS),
+  )
+  const first = await Promise.race([fromServer, timeout])
+  return first === 'timeout' ? stored() : first
 }
 
 /** Esce dall'account e cancella dal dispositivo i dati in cache */

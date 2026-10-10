@@ -117,7 +117,9 @@ function SignedInGate({ userId, email, children }: SignedInGateProps) {
     return <Splash message="Carico la lista..." />
   }
 
-  if (profileQuery.isError || listsQuery.isError) {
+  // con la cache (anche di giorni fa) l'app si apre lo stesso: l'errore conta
+  // solo se non c'è niente da mostrare
+  if (!profileQuery.data || !listsQuery.data) {
     const error = profileQuery.error ?? listsQuery.error
     return (
       <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-6 text-center">
