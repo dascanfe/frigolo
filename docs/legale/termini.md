@@ -42,20 +42,20 @@ Frigolo è **gratuito**. Non ci sono abbonamenti, funzioni a pagamento o pubblic
 
 - Chi ha il codice o il link di invito di una lista può entrarci e da quel momento vede e modifica
   tutto il contenuto della lista, compreso lo storico. Condividilo solo con persone di cui ti fidi.
-- Ogni membro può aggiungere, modificare e togliere prodotti e spese della lista.
+- Ogni persona della lista può aggiungere, modificare e togliere prodotti e spese della lista.
 - Puoi far parte di al massimo **2 liste**, e ogni lista può avere al massimo **5 persone**.
 - I codici e i link di invito valgono **7 giorni**; puoi annullarli in qualsiasi momento creando
   un nuovo invito.
-- Puoi uscire da una lista quando vuoi. Se esci e sei l'ultimo membro, la lista viene cancellata
+- Puoi uscire da una lista quando vuoi. Se esci e nella lista non resta nessun altro, la lista viene cancellata
   con tutto il suo contenuto, dopo un avviso.
 - Se vuoi escludere qualcuno, puoi generare un nuovo codice di invito [QUANDO SARÀ DISPONIBILE:
-  e rimuovere il membro dalla lista].
+  e togliere una persona dalla lista].
 
 ## 5. Cosa non puoi fare
 
 Usando Frigolo ti impegni a non:
 
-- tentare di accedere a liste, account o dati di altre persone senza essere stato invitato, anche
+- tentare di accedere a liste, account o dati di altre persone senza un invito, anche
   provando codici di invito a caso;
 - usare programmi automatici per creare account, inviare richieste in massa o sovraccaricare il
   servizio;
@@ -71,7 +71,7 @@ GitHub: grazie in anticipo.
 ## 6. I tuoi contenuti
 
 Quello che scrivi e carichi (nome, foto, prodotti, note) resta tuo. Ci dai solo il permesso di
-salvarlo e mostrarlo a te e ai membri delle tue liste, per il tempo necessario a far funzionare il
+salvarlo e mostrarlo a te e alle persone delle tue liste, per il tempo necessario a far funzionare il
 servizio. Puoi cancellarlo quando vuoi.
 
 Puoi caricare solo foto che hai il diritto di usare.
@@ -147,7 +147,7 @@ delle controversie previsti dalla legge.
    esempio diritto di recesso, informazioni precontrattuali) anche se il servizio non ha un prezzo
    ma comporta il trattamento di dati personali (direttiva UE 2019/770 sui contenuti digitali)?
 4. **Digital Services Act**: Frigolo conserva contenuti degli utenti (nomi, foto, note) visibili
-   solo ai membri della stessa lista. Quali obblighi valgono per un servizio di hosting gestito da
+   solo alle persone della stessa lista. Quali obblighi valgono per un servizio di hosting gestito da
    una persona fisica (punto di contatto, informazioni nei termini, meccanismo di segnalazione,
    motivazione delle decisioni)? I punti 5 e 7 bastano?
 5. **Età minima** e gestione dei minori tra 14 e 18 anni.
