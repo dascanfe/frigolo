@@ -1,11 +1,19 @@
-import type { Session, User } from '@supabase/supabase-js'
+import type { EmailOtpType, Session, User } from '@supabase/supabase-js'
 import { useCallback, useEffect, useState } from 'react'
+import { it as t } from '@/i18n/it'
+import { verifyAuthLink } from '@/lib/authConfirm'
 import { clearLocalData } from '@/lib/localData'
 import { supabase } from '@/lib/supabase'
+import { toast } from '@/lib/toast'
 
 export type SessionState =
   | { status: 'loading' }
-  | { status: 'signed-out' }
+  | {
+      status: 'signed-out'
+      /** Link di un'email scaduto o già usato (null = nessun problema) */
+      linkError: { type: EmailOtpType | null } | null
+      clearLinkError: () => void
+    }
   | {
       status: 'signed-in'
       session: Session
@@ -16,18 +24,31 @@ export type SessionState =
     }
 
 /**
- * Sessione Supabase corrente. "loading" finché il client non ha letto lo
- * storage locale (e scambiato l'eventuale codice PKCE nell'URL).
+ * Sessione Supabase corrente. "loading" finché il client non ha verificato
+ * l'eventuale link di un'email (/auth/confirm) e letto lo storage locale.
  */
 export function useSession(): SessionState {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
   const [recovery, setRecovery] = useState(false)
+  const [linkError, setLinkError] = useState<{ type: EmailOtpType | null } | null>(null)
 
   useEffect(() => {
     let active = true
 
-    supabase.auth
-      .getSession()
+    // prima l'eventuale link dell'email (/auth/confirm), poi la sessione salvata
+    verifyAuthLink(({ tokenHash, type }) =>
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type }),
+    )
+      .then((link) => {
+        if (!active) return supabase.auth.getSession()
+        if (link.kind === 'error') setLinkError({ type: link.type })
+        if (link.kind === 'ok') {
+          if (link.type === 'recovery') setRecovery(true)
+          else if (link.type === 'email_change') toast(t.authLink.emailChanged, 'success')
+          else toast(t.authLink.confirmed, 'success')
+        }
+        return supabase.auth.getSession()
+      })
       .then(({ data }) => {
         if (active) setSession(data.session)
       })
@@ -54,9 +75,10 @@ export function useSession(): SessionState {
   }, [])
 
   const endRecovery = useCallback(() => setRecovery(false), [])
+  const clearLinkError = useCallback(() => setLinkError(null), [])
 
   if (session === undefined) return { status: 'loading' }
-  if (session === null) return { status: 'signed-out' }
+  if (session === null) return { status: 'signed-out', linkError, clearLinkError }
   return { status: 'signed-in', session, user: session.user, recovery, endRecovery }
 }
 
