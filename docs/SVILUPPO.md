@@ -275,8 +275,8 @@ si legge tenendo premuta la tile.
 - **Coda offline**: le modifiche alla lista fatte senza rete restano visibili
   (optimistic update), vengono salvate su IndexedDB e inviate al ritorno online, anche
   dopo aver chiuso e riaperto l'app. Un banner in alto lo segnala.
-- **Service worker** (Workbox): app shell in precache, `NetworkFirst` per le letture
-  Supabase, `CacheFirst` per i font. Gli aggiornamenti non si installano da soli: si
+- **Service worker** (Workbox): app shell e font in precache, `NetworkFirst` per le letture
+  Supabase. I font (Lato e Playfair Display) arrivano dai pacchetti `@fontsource`, serviti dall'app: nessuna richiesta a Google. Gli aggiornamenti non si installano da soli: si
   applicano dal bottone "Aggiorna" in Impostazioni.
 - **Installazione**: manifest con icone (192, 512, maskable), icona e splash screen iOS,
   invito a installare dalla seconda sessione (su iOS spiega il gesto manuale).
