@@ -1,0 +1,25 @@
+name: Ho una domanda
+description: Non sai come fare qualcosa con Frigolo.
+title: '[Domanda] '
+labels: ['question']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Chiedi pure. Non scrivere password, codici d'invito o dati personali: le issue sono pubbliche.
+  - type: textarea
+    id: domanda
+    attributes:
+      label: La tua domanda
+      placeholder: Come faccio a usare la stessa lista sul telefono e sul computer?
+    validations:
+      required: true
+  - type: dropdown
+    id: dispositivo
+    attributes:
+      label: Su cosa usi Frigolo?
+      options:
+        - iPhone
+        - Android
+        - Computer
+        - Altro
