@@ -257,6 +257,22 @@ le foto e l'account; le liste in cui l'utente era solo spariscono, in quelle con
 restano prodotti e spese senza riferimenti a lui. Dopo, il frontend fa `signOut` e pulisce
 la cache. In produzione si pubblica con `supabase functions deploy delete-account`.
 
+**Frontend del captcha.** Il widget Turnstile (`src/components/Turnstile.tsx`) si carica
+solo nelle schermate di accesso, registrazione, recupero e "Mandala di nuovo"; il token va a
+supabase-js come `captchaToken`. Site key da `VITE_TURNSTILE_SITE_KEY` (in `.env.example` la
+chiave di prova); vuota = niente captcha. Domini da permettere nella CSP:
+`https://challenges.cloudflare.com` in `script-src` e `frame-src`.
+
+**Link delle email.** I template portano a `/auth/confirm?token_hash=...&type=...`: all'avvio
+il link si mette da parte (`src/lib/authConfirm.ts`) e `useSession` lo verifica con
+`verifyOtp`. Conferma email, recupero password e cambio email funzionano così da qualunque
+browser, anche con l'app installata. Link scaduto o già usato: schermata "Questo link è
+scaduto" con "Mandala di nuovo".
+
+**Primo uso.** Lista vuota con "Cosa manca?" e i prodotti "Per cominciare" (finché non c'è una
+spesa); suggerimenti uno per volta (`src/features/tips/`), ricordati sul dispositivo; banner
+di installazione solo dopo il primo prodotto aggiunto.
+
 Il primo accesso porta all'onboarding (`src/features/onboarding/`, testi in
 `src/i18n/it.ts`): "Come ti chiami?" se il profilo è da completare, poi "La tua prima
 lista" (per conto mio, con altre persone, ho un codice) ed eventualmente l'invito. Chi
@@ -441,10 +457,10 @@ ogni tema sono verificati da `theme.test.ts`. La scelta è salvata sul dispositi
 
 ## Qualità
 
-- `pnpm lint`, `pnpm typecheck` e `pnpm test` (58 test: ricerca fuzzy, motore dei
+- `pnpm lint`, `pnpm typecheck` e `pnpm test` (65 test: ricerca fuzzy, motore dei
   suggerimenti, serie temporali, contrasti dei temi, icone del catalogo, campi di testo
   a 16px per evitare lo zoom automatico di iOS, codici d'invito, lista aperta, errori
-  delle quote) girano puliti.
+  del database, limiti, suggerimenti, link delle email) girano puliti.
 - Lighthouse 13 sulla build di produzione (mobile simulato): accessibilità 100, best
   practices 100, performance 83 (bundle iniziale ~215 kB gzip: React, Supabase Auth,
   Router; dal secondo avvio il service worker serve tutto dalla cache). La categoria PWA
