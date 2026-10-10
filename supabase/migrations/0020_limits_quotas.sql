@@ -112,7 +112,7 @@ begin
   if tg_table_name = 'items' then
     if new.household_id is not null and
        (select count(*) from public.items where household_id = new.household_id) >= 500 then
-      raise exception 'Questa lista ha già 500 prodotti creati da voi: archiviane qualcuno.'
+      raise exception 'In questa lista ci sono già 500 prodotti creati: archiviane qualcuno.'
         using errcode = 'P0001', hint = 'items_quota';
     end if;
   elsif tg_table_name = 'list_entries' then
