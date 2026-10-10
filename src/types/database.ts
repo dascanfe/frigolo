@@ -74,6 +74,13 @@ export type Database = {
             referencedRelation: "households"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "household_members_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       households: {
@@ -210,6 +217,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          color: string | null
+          completed_at: string | null
+          created_at: string
+          display_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          color?: string | null
+          completed_at?: string | null
+          created_at?: string
+          display_name: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          color?: string | null
+          completed_at?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       purchases: {
         Row: {
@@ -393,6 +430,14 @@ export type Database = {
           trips: number
         }[]
       }
+      apply_legacy_profile_args: {
+        Args: { p_color: string; p_display_name: string; p_user: string }
+        Returns: undefined
+      }
+      auto_complete_trips: {
+        Args: { p_household_id?: string }
+        Returns: number
+      }
       complete_shopping_trip: {
         Args: { p_household_id: string; p_store?: string }
         Returns: string
@@ -401,21 +446,66 @@ export type Database = {
         Args: { p_color?: string; p_display_name?: string; p_name: string }
         Returns: string
       }
+      delete_household: { Args: { p_household_id: string }; Returns: undefined }
       generate_join_code: { Args: never; Returns: string }
+      get_household_invite: {
+        Args: { p_code: string }
+        Returns: {
+          household_id: string
+          is_member: boolean
+          member_count: number
+          name: string
+        }[]
+      }
       is_household_member: {
         Args: { p_household_id: string }
+        Returns: boolean
+      }
+      is_valid_avatar_url: {
+        Args: { p_url: string; p_user: string }
         Returns: boolean
       }
       join_household: {
         Args: { p_code: string; p_color?: string; p_display_name?: string }
         Returns: string
       }
+      leave_household: { Args: { p_household_id: string }; Returns: boolean }
+      max_households_per_user: { Args: never; Returns: number }
+      max_members_per_household: { Args: never; Returns: number }
+      normalize_join_code: { Args: { p_code: string }; Returns: string }
       ping: { Args: never; Returns: string }
+      rename_household: {
+        Args: { p_household_id: string; p_name: string }
+        Returns: string
+      }
       rename_store: {
         Args: { p_household_id: string; p_new?: string; p_old: string }
         Returns: string[]
       }
       rotate_join_code: { Args: { p_household_id: string }; Returns: string }
+      shares_household_with: { Args: { p_user: string }; Returns: boolean }
+      update_my_profile: {
+        Args: {
+          p_avatar_url?: string
+          p_color?: string
+          p_display_name?: string
+        }
+        Returns: {
+          avatar_url: string | null
+          color: string | null
+          completed_at: string | null
+          created_at: string
+          display_name: string
+          id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never
@@ -548,3 +638,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
