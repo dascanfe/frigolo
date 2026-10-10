@@ -1,5 +1,5 @@
 import { ChevronDown, History, LayoutGrid, SearchX, ShoppingBasket, Store } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { LinkButton } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
@@ -13,6 +13,7 @@ import { CreateItemSheet } from '@/features/catalog/CreateItemSheet'
 import type { CreateItemRequest } from '@/features/catalog/CreateItemSheet'
 import { useCatalog } from '@/features/catalog/useCatalog'
 import { ListSwitcherSheet } from '@/features/lists/ListSwitcherSheet'
+import { triggerTip } from '@/features/tips/tips'
 import { useSearch } from '@/features/search/useSearch'
 import { usePurchaseHistoryQuery, useSuggestions } from '@/features/suggestions/useSuggestions'
 import { it as t } from '@/i18n/it'
@@ -83,6 +84,21 @@ export function ListScreen() {
   }, [suggestions, recentItems])
 
   const isEmpty = !list.isPending && list.entries.length === 0
+
+  /** "Per cominciare": prodotti comuni da toccare, finché non c'è la prima spesa */
+  const starterItems = useMemo(() => {
+    if (!isEmpty || history.isPending || (history.data?.length ?? 0) > 0) return []
+    return t.emptyList.starterNames
+      .map((name) => catalog.items.find((item) => item.name === name && !item.is_archived))
+      .filter((item): item is Item => Boolean(item))
+  }, [isEmpty, history.isPending, history.data, catalog.items])
+
+  // primo prodotto che non c'è nel catalogo: si spiega come crearlo
+  const noResultsCanCreate =
+    search.query.length > 0 && search.results.length === 0 && search.canCreate
+  useEffect(() => {
+    if (noResultsCanCreate) triggerTip('create')
+  }, [noResultsCanCreate])
   const searching = search.query.length > 0
 
   /** Chiude la ricerca: campo vuoto, tastiera chiusa, torna la lista */
@@ -246,20 +262,45 @@ export function ListScreen() {
           )}
         </>
       ) : isEmpty ? (
-        <EmptyState
-          icon={ShoppingBasket}
-          title="Lista vuota"
-          description="Aggiungi i prodotti dal catalogo: un tocco per metterli in lista, un altro per toglierli."
-          action={
-            <LinkButton
-              to="/catalogo"
-              variant="secondary"
-              icon={<LayoutGrid size={18} aria-hidden="true" />}
-            >
-              Apri il catalogo
-            </LinkButton>
-          }
-        />
+        <>
+          <EmptyState
+            icon={ShoppingBasket}
+            title={t.emptyList.title}
+            description={t.emptyList.subtitle}
+            action={
+              <LinkButton
+                to="/catalogo"
+                variant="secondary"
+                icon={<LayoutGrid size={18} aria-hidden="true" />}
+              >
+                {t.emptyList.openCatalog}
+              </LinkButton>
+            }
+          />
+          {starterItems.length > 0 && (
+            <div className="flex flex-col gap-2 pb-4">
+              <p className="px-4 text-center text-xs font-bold text-secondary">
+                {t.emptyList.starters}
+              </p>
+              <div
+                className="flex flex-wrap justify-center gap-2 px-4"
+                role="group"
+                aria-label={t.emptyList.starters}
+              >
+                {starterItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="chip h-10 shrink-0 px-4"
+                    onClick={() => mutations.add(item)}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <>
           <SectionHeader title="Da comprare" count={todo.length} />

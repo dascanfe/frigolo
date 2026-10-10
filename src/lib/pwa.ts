@@ -118,7 +118,6 @@ export interface InstallState {
   isIos: boolean
 }
 
-const SESSIONS_KEY = 'frigolo.sessions'
 const DISMISSED_KEY = 'frigolo.install-dismissed'
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null
@@ -138,18 +137,11 @@ function isStandalone(): boolean {
   )
 }
 
-/** Da chiamare una volta all'avvio: conta le sessioni e cattura il prompt */
+/** Da chiamare una volta all'avvio: cattura il prompt di installazione */
 export function setupInstallPrompt() {
   const ua = navigator.userAgent
   const isIos = /iphone|ipad|ipod/i.test(ua) && !/crios|fxios/i.test(ua)
   setInstallState({ installed: isStandalone(), isIos })
-
-  try {
-    const sessions = Number(localStorage.getItem(SESSIONS_KEY) ?? '0') + 1
-    localStorage.setItem(SESSIONS_KEY, String(sessions))
-  } catch {
-    // storage non disponibile (modalità privata): il banner semplicemente non compare
-  }
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault()
@@ -173,12 +165,14 @@ export function getInstallState() {
   return installState
 }
 
-/** Il banner compare solo dalla seconda sessione, se non è stato chiuso e non si è già installata */
-export function shouldOfferInstall(): boolean {
+/**
+ * Il banner compare solo dopo il primo prodotto aggiunto (prima l'app deve
+ * servire a qualcosa), se non è stato chiuso e non si è già installata.
+ */
+export function shouldOfferInstall(firstProductAdded: boolean): boolean {
   try {
-    const sessions = Number(localStorage.getItem(SESSIONS_KEY) ?? '0')
     const dismissed = localStorage.getItem(DISMISSED_KEY) === '1'
-    return sessions >= 2 && !dismissed && !installState.installed
+    return firstProductAdded && !dismissed && !installState.installed
   } catch {
     return false
   }

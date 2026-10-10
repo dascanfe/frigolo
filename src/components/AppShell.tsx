@@ -2,6 +2,7 @@ import { Fragment, useEffect, useSyncExternalStore } from 'react'
 import { Outlet } from 'react-router'
 import { useHousehold } from '@/features/auth/useHousehold'
 import { useRealtimeSync } from '@/features/list/useRealtimeSync'
+import { TipBubble } from '@/features/tips/TipBubble'
 import { getServiceWorkerState, subscribeServiceWorker } from '@/lib/pwa'
 import { toast } from '@/lib/toast'
 import { BottomNav } from './BottomNav'
@@ -29,6 +30,7 @@ export function AppShell() {
         <Outlet />
       </Fragment>
       <InstallBanner />
+      <TipBubble />
       <BottomNav />
     </div>
   )

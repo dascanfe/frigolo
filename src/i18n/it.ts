@@ -171,6 +171,28 @@ export const it = {
     decline: 'No, grazie',
     checking: "Guardo l'invito...",
   },
+  tips: {
+    added: 'Fatto, è in lista. Tieni premuto un prodotto per cambiare quantità o supermercato.',
+    create: 'Non c\'è? Scrivilo nella ricerca e tocca "Crea": lo aggiungo al catalogo.',
+    cart: 'Al supermercato tocca i prodotti man mano che li prendi: finiscono nel carrello.',
+    finish: 'Hai finito? Tocca "Spesa finita" e tengo il conto di cosa hai comprato.',
+    firstTrip: 'Prima spesa fatta 🥳 Nelle Analitiche vedi cosa compri di più.',
+    ok: 'Ok',
+  },
+  install: {
+    title: 'Tienila sulla schermata Home',
+    ios: 'Tocca Condividi e poi "Aggiungi alla schermata Home".',
+    android: "Si apre come un'app, anche senza rete.",
+    button: 'Installa',
+    dismiss: 'Non mostrare più',
+  },
+  emptyList: {
+    title: 'Cosa manca?',
+    subtitle: 'Tocca un prodotto per metterlo in lista. Toccalo di nuovo per toglierlo.',
+    starters: 'Per cominciare',
+    starterNames: ['Latte fresco', 'Pane', 'Uova', 'Banane', 'Caffè macinato', 'Carta igienica'],
+    openCatalog: 'Apri il catalogo',
+  },
   donation: {
     label: 'Offrimi un caffè 💚',
     text: 'Frigolo è gratis e lo resta. Se ti è utile, puoi offrire un caffè a chi la sviluppa.',

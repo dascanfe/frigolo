@@ -3,6 +3,7 @@ import { useHousehold } from '@/features/auth/useHousehold'
 import { haptics } from '@/lib/haptics'
 import { LIST_MUTATION_KEY } from '@/lib/offlineQueue'
 import type { ListMutationVariables } from '@/lib/offlineQueue'
+import { markFirstAdd, triggerTip } from '@/features/tips/tips'
 import { describeQuotaError } from '@/lib/dbErrors'
 import { supabase } from '@/lib/supabase'
 import { toast } from '@/lib/toast'
@@ -83,6 +84,8 @@ export function useListMutations() {
     /** Aggiunge un prodotto alla lista (stato "da comprare") */
     add(item: Item, options: AddOptions = {}) {
       haptics.tap()
+      markFirstAdd()
+      triggerTip('added')
       const row: ListEntry = {
         id: crypto.randomUUID(),
         household_id: householdId,
@@ -106,6 +109,10 @@ export function useListMutations() {
     /** Da comprare <-> nel carrello */
     setStatus(entryId: string, status: ListEntryStatus) {
       haptics.tap()
+      if (status === 'cart') {
+        triggerTip('cart')
+        triggerTip('finish')
+      }
       mutation.mutate({
         type: 'patch',
         householdId,
@@ -149,6 +156,7 @@ export function useCompleteTrip() {
     },
     onSuccess: () => {
       haptics.success()
+      triggerTip('firstTrip')
       void queryClient.invalidateQueries({ queryKey: listQueryKey(household.id) })
       void queryClient.invalidateQueries({ queryKey: ['purchases', household.id] })
       void queryClient.invalidateQueries({ queryKey: ['analytics', household.id] })
