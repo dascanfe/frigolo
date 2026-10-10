@@ -50,7 +50,7 @@ export default defineConfig({
       workbox: {
         // app shell precachata; le splash iOS restano fuori (pesano e servono solo all'installazione)
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
-        globIgnores: ['**/splash/*'],
+        globIgnores: ['**/splash/*', '**/og-image.png'],
         navigateFallback: '/index.html',
         cleanupOutdatedCaches: true,
         // prende il controllo della pagina gia' alla prima visita
