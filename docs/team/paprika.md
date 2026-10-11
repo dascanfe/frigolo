@@ -23,6 +23,15 @@ allo storyboard, primo pacchetto di post sul piano editoriale di Zenzero.
 
 ## Diario
 
+### 2026-10-11 - Screenshot reali e video di presentazione
+
+- `marketing/demo/dati_demo.sql` (e `rimuovi_demo.sql`): dati inventati (Sara, Luca, Marta, Ale; liste Casa e
+  Coinquilini; 20 spese in 12 settimane), solo in locale, rilanciabile. Il DB locale è tornato com'era (`seed_dev.sql`).
+- `marketing/screenshot/`: 15 PNG 1170x2532 dell'app vera (catalogo prima e dopo il tocco, lista in ordine di corsia,
+  carrello, Spesa finita, cambio lista, lista Coinquilini, invito, analitiche, temi, profilo con la mascotte).
+- `marketing/video/`: pacchetto Remotion con `Frigolo9x16`, `Frigolo16x9`, `Frigolo15s`, sottotitoli `.srt`, suoni di
+  tocco sintetizzati. Render in `out/` (fuori da git). Senza musica: Pixabay blocca il download da script, vedi `musica.md`.
+
 ### 2026-10-10 - Kit visivo (Fase 3, preparazione)
 
 - `marketing/kit/brand.md`: palette con hex (tema Autunno, colori della mascotte, altri temi),
