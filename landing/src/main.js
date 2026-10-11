@@ -1,7 +1,79 @@
-// Landing di Frigolo: schede iPhone / Android per l'installazione.
-// Mostra prima quella del telefono di chi visita; tastiera come le schede ARIA.
+// Landing di Frigolo: comparsa allo scroll, telefono che cambia schermata,
+// animazione dei due telefoni, schede iPhone / Android. Niente librerie.
 ;(function () {
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'))
+  'use strict'
+  var $$ = function (sel, root) {
+    return Array.prototype.slice.call((root || document).querySelectorAll(sel))
+  }
+  var hasIO = 'IntersectionObserver' in window
+
+  /* ---------- comparsa degli elementi ---------- */
+  var reveals = $$('.reveal')
+  if (hasIO) {
+    var revealObs = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return
+          entry.target.classList.add('in')
+          revealObs.unobserve(entry.target)
+        })
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+    )
+    reveals.forEach(function (el) {
+      revealObs.observe(el)
+    })
+  } else {
+    reveals.forEach(function (el) {
+      el.classList.add('in')
+    })
+  }
+
+  /* ---------- funzioni: la schermata segue il testo ---------- */
+  var feats = $$('.feat')
+  var screens = $$('.screens img')
+  if (hasIO && feats.length && screens.length) {
+    var setActive = function (index) {
+      feats.forEach(function (f, i) {
+        f.classList.toggle('is-active', i === index)
+      })
+      screens.forEach(function (s, i) {
+        s.classList.toggle('is-active', i === index)
+      })
+    }
+    setActive(0)
+    var featObs = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) setActive(Number(entry.target.getAttribute('data-screen')))
+        })
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 },
+    )
+    feats.forEach(function (f) {
+      featObs.observe(f)
+    })
+  }
+
+  /* ---------- due telefoni: l'animazione gira solo se si vedono ---------- */
+  var duo = document.getElementById('duo')
+  if (duo) {
+    if (hasIO) {
+      new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            duo.classList.toggle('in', entry.isIntersecting)
+          })
+        },
+        { threshold: 0.35 },
+      ).observe(duo)
+    } else {
+      duo.classList.add('in')
+    }
+  }
+
+  /* ---------- installazione: schede ARIA ---------- */
+  var tabs = $$('.tab')
   if (!tabs.length) return
 
   function select(tab, focus) {

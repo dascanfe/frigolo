@@ -6,16 +6,22 @@
     <title>Frigolo, la lista della spesa sempre in tasca</title>
     <meta
       name="description"
-      content="Frigolo è la lista della spesa sempre in tasca, per conto tuo o in compagnia. Gratis, senza pubblicità, open source. Si installa dal browser su iPhone e Android."
+      content="Frigolo è la lista della spesa sempre in tasca, per conto tuo o in compagnia: si aggiorna su tutti i telefoni, funziona senza rete, in ordine di corsia. Gratis, senza pubblicità, open source. Si installa dal browser su iPhone e Android."
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
     />
     <link rel="canonical" href="https://www.dascanfe.com/sub/frigolo/" />
+    <link rel="alternate" hreflang="it" href="https://www.dascanfe.com/sub/frigolo/" />
+    <link rel="alternate" hreflang="x-default" href="https://www.dascanfe.com/sub/frigolo/" />
+    <meta name="author" content="Daniele Scanferlato" />
     <meta name="theme-color" content="#f4ece2" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1d1712" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
-    <!-- Anteprima dei link: immagine di Paprika (landing/assets/og-image.png) -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="it_IT" />
     <meta property="og:site_name" content="Frigolo" />
@@ -39,6 +45,10 @@
       content="Per conto tuo o in compagnia. Gratis, senza pubblicità, open source."
     />
     <meta name="twitter:image" content="https://www.dascanfe.com/sub/frigolo/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="La mascotte di Frigolo, un frigorifero verde acqua con la spesa"
+    />
 
     <link
       rel="preload"
@@ -54,10 +64,24 @@
       type="font/woff2"
       crossorigin
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="preload"
+      as="image"
+      href="img/s06-carrello-390.webp"
+      imagesrcset="img/s06-carrello-390.webp 390w, img/s06-carrello-520.webp 520w, img/s06-carrello-780.webp 780w"
+      imagesizes="(min-width: 992px) 290px, 250px"
+      fetchpriority="high"
+    />
+    <!--css-->
+    <script>
+      document.documentElement.classList.add('js')
+    </script>
     <script src="main.js" defer></script>
-    <!-- Analitiche senza cookie (Pepe): si attivano togliendo il commento -->
-    <!-- <script src="track.js" defer></script> -->
+    <script src="track.js" data-chiave="__STATS_KEY__" defer></script>
+
+    <!--jsonld:app-->
+    <!--jsonld:faq-->
+    <!--jsonld:video-->
   </head>
   <body>
     <a class="skip" href="#contenuto">Vai al contenuto</a>
@@ -68,141 +92,271 @@
           <img src="img/mascot-small.webp" alt="" width="36" height="36" />
           <span>Frigolo</span>
         </a>
+        <nav aria-label="Sezioni della pagina" class="d-none d-lg-flex">
+          <ul class="nav-links">
+            <li><a href="#funzioni">Funzioni</a></li>
+            <li><a href="#insieme">In compagnia</a></li>
+            <li><a href="#video">Video</a></li>
+            <li><a href="#installa">Installa</a></li>
+            <li><a href="#domande">Domande</a></li>
+          </ul>
+        </nav>
         <a class="btn btn-small" href="https://frigolo.dascanfe.com" data-track="apri-app"
           >Apri Frigolo</a
         >
       </div>
+      <div class="progress-bar-top" aria-hidden="true"></div>
     </header>
 
     <main id="contenuto">
       <!-- Hero -->
-      <section class="hero">
-        <div class="wrap hero-inner">
-          <div class="hero-text">
-            <img
-              class="hero-mascot"
-              src="img/mascot.webp"
-              alt="La mascotte di Frigolo: un frigorifero verde acqua che fa l'occhiolino, con la busta della spesa"
-              width="160"
-              height="160"
-              fetchpriority="high"
-            />
-            <h1>Frigolo</h1>
-            <p class="tagline">
-              La lista della spesa sempre in tasca. Per conto tuo o in compagnia.
-            </p>
-            <p class="lead">
-              Un tocco per aggiungere, uno per togliere. Si aggiorna su tutti i telefoni, funziona
-              anche senza rete ed è gratis.
-            </p>
-            <div class="cta">
-              <a class="btn" href="https://frigolo.dascanfe.com" data-track="apri-app"
-                >Apri Frigolo</a
-              >
-              <a class="btn btn-ghost" href="#installa">Come si installa</a>
+      <section class="hero" aria-labelledby="titolo">
+        <div class="wrap">
+          <div class="row align-items-center">
+            <div class="col-lg-6">
+              <div class="hero-text">
+                <img
+                  class="hero-mascot rise"
+                  src="img/mascot.webp"
+                  alt="La mascotte di Frigolo: un frigorifero verde acqua che fa l'occhiolino, con la busta della spesa"
+                  width="130"
+                  height="130"
+                />
+                <h1 id="titolo">
+                  <span class="h1-brand">Frigolo</span>
+                  <span class="h1-sub">La lista della spesa sempre in tasca.</span>
+                </h1>
+                <p class="tagline rise" style="--d: 0.12s">Per conto tuo o in compagnia.</p>
+                <p class="lead rise" style="--d: 0.18s">
+                  Un tocco per aggiungere, uno per togliere. Si aggiorna su tutti i telefoni,
+                  funziona anche senza rete ed è gratis.
+                </p>
+                <div class="cta rise" style="--d: 0.24s">
+                  <a class="btn" href="https://frigolo.dascanfe.com" data-track="apri-app"
+                    >Apri Frigolo <span class="arrow" aria-hidden="true">&rarr;</span></a
+                  >
+                  <a class="btn btn-ghost" href="#installa">Come si installa</a>
+                </div>
+                <p class="small rise" style="--d: 0.3s">
+                  Niente store e niente pubblicità: si apre dal browser e si tiene sulla schermata
+                  Home.
+                </p>
+              </div>
             </div>
-            <p class="small">
-              Niente store e niente pubblicità: si apre dal browser e si tiene sulla schermata Home.
-            </p>
-          </div>
-
-          <div
-            class="phones"
-            role="img"
-            aria-label="Anteprima di Frigolo sul telefono (immagini in arrivo)"
-          >
-            <div class="phone phone-back">
-              <div class="screen placeholder"><span>Analitiche</span></div>
-            </div>
-            <div class="phone phone-front">
-              <div class="screen placeholder"><span>La lista</span></div>
+            <div class="col-lg-6">
+              <div class="stage" role="group" aria-label="Anteprima dell'app Frigolo">
+                <div class="phone phone-back float rise" style="--d: 0.35s">
+                  <div class="phone-screen">
+                    <shot
+                      slug="s13-analitiche"
+                      alt="La schermata delle analitiche di Frigolo: andamento della spesa e prodotti più comprati"
+                      sizes="200px"
+                      lazy
+                    ></shot>
+                  </div>
+                </div>
+                <div class="phone phone-front float">
+                  <div class="phone-screen">
+                    <shot
+                      slug="s06-carrello"
+                      alt="La lista della spesa di Frigolo: metà prodotti già nel carrello, metà ancora da comprare"
+                      sizes="(min-width: 992px) 290px, 250px"
+                      eager
+                    ></shot>
+                  </div>
+                </div>
+                <span class="chip chip-a" aria-hidden="true"><i>+</i> Latte</span>
+                <span class="chip chip-b" aria-hidden="true"
+                  ><i>&#10003;</i> Pane nel carrello</span
+                >
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Cosa fa -->
-      <section class="section" aria-labelledby="cosa-fa">
+      <!-- Cosa fa: telefono che cambia schermata mentre scorri -->
+      <section class="section" id="funzioni" aria-labelledby="cosa-fa">
         <div class="wrap">
-          <h2 id="cosa-fa">Cosa fa</h2>
-          <ul class="features">
-            <li>
-              <span class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-              </span>
-              <h3>Un tocco e c'è</h3>
-              <p>
-                Un catalogo a griglia con più di 200 prodotti: tocchi il latte ed è in lista. Quello
-                che manca lo crei tu.
-              </p>
-            </li>
-            <li>
-              <span class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4" />
-                </svg>
-              </span>
-              <h3>Sempre aggiornata</h3>
-              <p>
-                Qualcuno aggiunge il pane e sugli altri telefoni compare subito. Te ne accorgi prima
-                della cassa.
-              </p>
-            </li>
-            <li>
-              <span class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6" /></svg>
-              </span>
-              <h3>In ordine di corsia</h3>
-              <p>
-                La lista segue il giro del supermercato: frutta e verdura prima, surgelati alla
-                fine.
-              </p>
-            </li>
-            <li>
-              <span class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" />
-                </svg>
-              </span>
-              <h3>Suggeriti per te</h3>
-              <p>
-                Ti ricorda quello che compri di solito e quello che è di stagione, senza insistere.
-              </p>
-            </li>
-            <li>
-              <span class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M12 19h.01M3 3l18 18"
-                  />
-                </svg>
-              </span>
-              <h3>Anche senza rete</h3>
-              <p>
-                In cantina o nel supermercato senza campo la lista c'è. Le modifiche partono appena
-                torna la rete.
-              </p>
-            </li>
-            <li>
-              <span class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7" /></svg>
-              </span>
-              <h3>Le tue spese</h3>
-              <p>Cosa compri di più, dove e ogni quanto. Utile, senza giudicare.</p>
-            </li>
-          </ul>
+          <header class="section-head reveal">
+            <p class="eyebrow">Le funzioni</p>
+            <h2 id="cosa-fa">Cosa fa</h2>
+            <p class="section-lead">Tutto quello che serve per fare la spesa, e niente di più.</p>
+          </header>
+          <div class="row gx-lg-5">
+            <div class="col-lg-6">
+              <div class="feat-list">
+                <article class="feat reveal" data-screen="0">
+                  <span class="feat-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+                  </span>
+                  <h3>Un tocco e c'è</h3>
+                  <p>
+                    Un catalogo a griglia con più di 200 prodotti: tocchi il latte ed è in lista.
+                    Quello che manca lo crei tu.
+                  </p>
+                  <div class="feat-shot d-lg-none">
+                    <div class="phone">
+                      <div class="phone-screen">
+                        <shot
+                          slug="s02-catalogo"
+                          alt="Il catalogo di Frigolo, categoria Frutta e verdura, con alcune tessere già in lista"
+                          sizes="230px"
+                          lazy
+                        ></shot>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="feat reveal" data-screen="1">
+                  <span class="feat-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4" />
+                    </svg>
+                  </span>
+                  <h3>Sempre aggiornata</h3>
+                  <p>
+                    Qualcuno aggiunge il pane e sugli altri telefoni compare subito. Te ne accorgi
+                    prima della cassa.
+                  </p>
+                  <div class="feat-shot d-lg-none">
+                    <div class="phone">
+                      <div class="phone-screen">
+                        <shot
+                          slug="s04-lista-sara"
+                          alt="La lista Casa vista da chi è al supermercato, con lo yogurt appena aggiunto in cima"
+                          sizes="230px"
+                          lazy
+                        ></shot>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="feat reveal" data-screen="2">
+                  <span class="feat-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6" /></svg>
+                  </span>
+                  <h3>In ordine di corsia</h3>
+                  <p>
+                    La lista segue il giro del supermercato: frutta e verdura prima, surgelati alla
+                    fine.
+                  </p>
+                  <div class="feat-shot d-lg-none">
+                    <div class="phone">
+                      <div class="phone-screen">
+                        <shot
+                          slug="s05-corsia"
+                          alt="La lista ordinata per corsia, con le sezioni nell'ordine del supermercato"
+                          sizes="230px"
+                          lazy
+                        ></shot>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="feat reveal" data-screen="3">
+                  <span class="feat-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" />
+                    </svg>
+                  </span>
+                  <h3>Suggeriti per te</h3>
+                  <p>
+                    Ti ricorda quello che compri di solito e quello che è di stagione, senza
+                    insistere.
+                  </p>
+                  <div class="feat-shot d-lg-none">
+                    <div class="phone">
+                      <div class="phone-screen">
+                        <shot
+                          slug="s14-suggeriti"
+                          alt="I suggerimenti in cima alla lista, con i prodotti che di solito compri"
+                          sizes="230px"
+                          lazy
+                        ></shot>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="feat reveal" data-screen="4">
+                  <span class="feat-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M12 19h.01M3 3l18 18"
+                      />
+                    </svg>
+                  </span>
+                  <h3>Anche senza rete</h3>
+                  <p>
+                    In cantina o nel supermercato senza campo la lista c'è. Le modifiche partono
+                    appena torna la rete.
+                  </p>
+                  <div class="feat-shot d-lg-none">
+                    <div class="phone">
+                      <div class="phone-screen">
+                        <shot
+                          slug="s17-offline"
+                          alt="La lista di Frigolo con il banner Offline: si può usare anche senza rete"
+                          sizes="230px"
+                          lazy
+                        ></shot>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="feat reveal" data-screen="5">
+                  <span class="feat-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7" /></svg>
+                  </span>
+                  <h3>Le tue spese</h3>
+                  <p>Cosa compri di più, dove e ogni quanto. Utile, senza giudicare.</p>
+                  <div class="feat-shot d-lg-none">
+                    <div class="phone">
+                      <div class="phone-screen">
+                        <shot
+                          slug="s13-analitiche"
+                          alt="Le analitiche: andamento della spesa, prodotti più comprati e frequenza"
+                          sizes="230px"
+                          lazy
+                        ></shot>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block" aria-hidden="true">
+              <div class="sticky-phone">
+                <span class="sticky-glow"></span>
+                <div class="phone">
+                  <div class="phone-screen screens">
+                    <shot slug="s02-catalogo" alt="" sizes="300px" lazy class="is-active"></shot>
+                    <shot slug="s04-lista-sara" alt="" sizes="300px" lazy></shot>
+                    <shot slug="s05-corsia" alt="" sizes="300px" lazy></shot>
+                    <shot slug="s14-suggeriti" alt="" sizes="300px" lazy></shot>
+                    <shot slug="s17-offline" alt="" sizes="300px" lazy></shot>
+                    <shot slug="s13-analitiche" alt="" sizes="300px" lazy></shot>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       <!-- Per conto tuo o in compagnia -->
-      <section class="section section-alt" aria-labelledby="compagnia">
+      <section class="section section-alt" id="insieme" aria-labelledby="compagnia">
         <div class="wrap">
-          <h2 id="compagnia">Per conto tuo o in compagnia</h2>
+          <header class="section-head reveal">
+            <p class="eyebrow">Insieme</p>
+            <h2 id="compagnia">Per conto tuo o in compagnia</h2>
+          </header>
+
           <div class="cards">
-            <article class="card">
+            <article class="card reveal reveal-left">
               <div class="avatars" aria-hidden="true">
                 <span class="avatar" style="--c: #3e7c86"
-                  ><img src="img/mascot-small.webp" alt="" width="48" height="48" loading="lazy"
+                  ><img src="img/mascot-small.webp" alt="" width="52" height="52" loading="lazy"
                 /></span>
               </div>
               <h3>Per conto tuo</h3>
@@ -211,16 +365,16 @@
                 quando vuoi.
               </p>
             </article>
-            <article class="card">
+            <article class="card reveal reveal-right">
               <div class="avatars" aria-hidden="true">
                 <span class="avatar" style="--c: #ce5f36"
-                  ><img src="img/mascot-small.webp" alt="" width="48" height="48" loading="lazy"
+                  ><img src="img/mascot-small.webp" alt="" width="52" height="52" loading="lazy"
                 /></span>
                 <span class="avatar" style="--c: #7e7530"
-                  ><img src="img/mascot-small.webp" alt="" width="48" height="48" loading="lazy"
+                  ><img src="img/mascot-small.webp" alt="" width="52" height="52" loading="lazy"
                 /></span>
                 <span class="avatar" style="--c: #c2902f"
-                  ><img src="img/mascot-small.webp" alt="" width="48" height="48" loading="lazy"
+                  ><img src="img/mascot-small.webp" alt="" width="52" height="52" loading="lazy"
                 /></span>
               </div>
               <h3>Con chi fa la spesa con te</h3>
@@ -230,17 +384,103 @@
               </p>
             </article>
           </div>
+
+          <div style="margin-top: 56px">
+            <h3 class="text-center reveal">
+              Uno la riempie da casa, l'altra la vede al supermercato
+            </h3>
+            <div class="duo reveal reveal-scale" id="duo" style="margin-top: 32px">
+              <figure>
+                <div class="phone">
+                  <div class="phone-screen">
+                    <shot
+                      slug="s03-lista-ale"
+                      alt="La lista Casa vista da Ale, a casa, mentre aggiunge lo yogurt"
+                      sizes="210px"
+                      lazy
+                    ></shot>
+                    <div class="pop" aria-hidden="true">+ Yogurt bianco</div>
+                  </div>
+                </div>
+                <figcaption>Ale, a casa <span>aggiunge lo yogurt</span></figcaption>
+              </figure>
+              <div class="sync" aria-hidden="true"><i></i><i></i><i></i></div>
+              <figure>
+                <div class="phone">
+                  <div class="phone-screen">
+                    <shot
+                      slug="s04-lista-sara"
+                      alt="La stessa lista vista da Sara, al supermercato, con lo yogurt già comparso"
+                      sizes="210px"
+                      lazy
+                    ></shot>
+                    <div class="toast-live" aria-hidden="true">Ale ha aggiunto Yogurt bianco</div>
+                  </div>
+                </div>
+                <figcaption>Sara, al supermercato <span>lo vede subito</span></figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Video -->
+      <section class="section" id="video" aria-labelledby="video-titolo">
+        <div class="wrap narrow text-center">
+          <header class="section-head reveal" style="margin-inline: auto">
+            <p class="eyebrow">Il video</p>
+            <h2 id="video-titolo">Frigolo in 40 secondi</h2>
+            <p class="section-lead">
+              La spesa raccontata dall'inizio alla fine: dalla lista condivisa a "Spesa finita".
+            </p>
+          </header>
+          <div class="video-frame reveal reveal-scale">
+            <!--video:on-->
+            <video
+              controls
+              playsinline
+              muted
+              loop
+              preload="none"
+              poster="img/video-poster-1280.webp"
+              width="1280"
+              height="720"
+              aria-label="Video di presentazione di Frigolo, 40 secondi"
+            >
+              <source src="video/frigolo.webm" type="video/webm" />
+              <source src="video/frigolo.mp4" type="video/mp4" />
+              Il tuo browser non riesce a riprodurre il video. Frigolo è la lista della spesa
+              condivisa: gratis, senza pubblicità, open source.
+            </video>
+            <!--video:off-->
+            <img
+              src="img/video-poster-1280.webp"
+              srcset="img/video-poster-640.webp 640w, img/video-poster-1280.webp 1280w"
+              sizes="(min-width: 800px) 760px, 100vw"
+              alt="Anteprima del video di presentazione di Frigolo"
+              width="1280"
+              height="720"
+              loading="lazy"
+              decoding="async"
+            />
+            <p class="video-soon">Il video arriva presto</p>
+            <!--video:end-->
+          </div>
+          <p class="small video-caption">Senza voce: si guarda anche sul bus, senza cuffie.</p>
         </div>
       </section>
 
       <!-- Installazione -->
-      <section class="section" id="installa" aria-labelledby="installa-titolo">
+      <section class="section section-alt" id="installa" aria-labelledby="installa-titolo">
         <div class="wrap">
-          <h2 id="installa-titolo">Tienila sulla schermata Home</h2>
-          <p class="section-lead">
-            Frigolo è una web app: non serve lo store. Si apre dal browser e, aggiunta alla
-            schermata Home, si usa come un'app, anche senza rete.
-          </p>
+          <header class="section-head reveal">
+            <p class="eyebrow">Installazione</p>
+            <h2 id="installa-titolo">Tienila sulla schermata Home</h2>
+            <p class="section-lead">
+              Frigolo è una web app: non serve lo store. Si apre dal browser e, aggiunta alla
+              schermata Home, si usa come un'app, anche senza rete.
+            </p>
+          </header>
 
           <div class="tabs" role="tablist" aria-label="Sistema del telefono">
             <button
@@ -355,84 +595,109 @@
       </section>
 
       <!-- Gratis e open source + caffè -->
-      <section class="section section-alt" aria-labelledby="gratis">
-        <div class="wrap two-cols">
-          <div>
-            <h2 id="gratis">Gratis, e lo resta</h2>
-            <p>
-              Non ci sono abbonamenti né pubblicità, e i tuoi dati non si vendono. Il codice è
-              pubblico: chiunque può leggerlo e proporre miglioramenti.
-            </p>
-            <a class="link-arrow" href="https://github.com/dascanfe/frigolo" data-track="github">
-              Il codice su GitHub
-            </a>
-          </div>
-          <div class="coffee">
-            <h2>Offrimi un caffè 💚</h2>
-            <p>
-              Frigolo è gratis e lo resta. Se ti è utile, puoi offrire un caffè a chi la sviluppa.
-            </p>
-            <a
-              class="btn btn-coffee"
-              href="https://paypal.me/DanieleScanferlato"
-              data-track="caffe"
-            >
-              Offrimi un caffè 💚
-            </a>
-            <p class="small">Chi offre il caffè e chi no usa la stessa identica app.</p>
+      <section class="section" aria-labelledby="gratis">
+        <div class="wrap">
+          <div class="row align-items-center g-5">
+            <div class="col-md-6 reveal reveal-left">
+              <h2 id="gratis">Gratis, e lo resta</h2>
+              <p>
+                Non ci sono abbonamenti né pubblicità, e i tuoi dati non si vendono. Il codice è
+                pubblico: chiunque può leggerlo e proporre miglioramenti.
+              </p>
+              <a class="link-arrow" href="https://github.com/dascanfe/frigolo" data-track="github"
+                >Il codice su GitHub</a
+              >
+            </div>
+            <div class="col-md-6 reveal reveal-right">
+              <div class="coffee">
+                <h2>Offrimi un caffè 💚</h2>
+                <p>
+                  Frigolo è gratis e lo resta. Se ti è utile, puoi offrire un caffè a chi la
+                  sviluppa.
+                </p>
+                <a
+                  class="btn btn-coffee"
+                  href="https://paypal.me/DanieleScanferlato"
+                  data-track="caffe"
+                >
+                  Offrimi un caffè <span class="cup">💚</span>
+                </a>
+                <p class="small" style="margin: 0">
+                  Chi offre il caffè e chi no usa la stessa identica app.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- Domande -->
-      <section class="section" aria-labelledby="domande">
+      <section class="section section-alt" id="domande" aria-labelledby="domande-titolo">
         <div class="wrap narrow">
-          <h2 id="domande">Domande frequenti</h2>
-          <details>
-            <summary>È gratis?</summary>
-            <p>
-              Sì, è gratis e lo resta. Non ci sono versioni a pagamento né pubblicità. Se vuoi, puoi
-              offrire un caffè.
-            </p>
-          </details>
-          <details>
-            <summary>Serve un account?</summary>
-            <p>
-              Sì, basta un'email e una password: servono a ritrovare le tue liste su un altro
-              telefono e a condividerle. Nome e foto li scegli tu e li vede solo chi fa la spesa con
-              te.
-            </p>
-          </details>
-          <details>
-            <summary>Dove sono i miei dati?</summary>
-            <p>
-              Su server in Unione Europea (Francoforte). Non li vendiamo e non li usiamo per la
-              pubblicità. Dalle Impostazioni puoi scaricarli o cancellare l'account quando vuoi. I
-              dettagli sono nell'<a href="privacy.html">informativa sulla privacy</a>.
-            </p>
-          </details>
-          <details>
-            <summary>Funziona senza rete?</summary>
-            <p>
-              Sì. La lista resta sul telefono e le modifiche fatte senza rete partono appena torna.
-              Serve la rete solo la prima volta e per vedere le modifiche degli altri.
-            </p>
-          </details>
-          <details>
-            <summary>Con quante persone posso condividerla?</summary>
-            <p>
-              Fino a 5 persone per lista. Ogni persona può stare in 2 liste, per esempio "Casa" e
-              "Ufficio".
-            </p>
-          </details>
+          <h2 id="domande-titolo" class="reveal">Domande frequenti</h2>
+          <div class="reveal">
+            <details>
+              <summary>È gratis?</summary>
+              <p>
+                Sì, è gratis e lo resta. Non ci sono versioni a pagamento né pubblicità. Se vuoi,
+                puoi offrire un caffè.
+              </p>
+            </details>
+            <details>
+              <summary>Serve un account?</summary>
+              <p>
+                Sì, basta un'email e una password: servono a ritrovare le tue liste su un altro
+                telefono e a condividerle. Nome e foto li scegli tu e li vede solo chi fa la spesa
+                con te.
+              </p>
+            </details>
+            <details>
+              <summary>Funziona su iPhone e Android?</summary>
+              <p>
+                Sì. Frigolo è una web app: la apri dal browser (Safari su iPhone, Chrome su Android)
+                e la aggiungi alla schermata Home. Non passa dagli store.
+              </p>
+            </details>
+            <details>
+              <summary>Dove sono i miei dati?</summary>
+              <p>
+                Su server in Unione Europea (Francoforte). Non li vendiamo e non li usiamo per la
+                pubblicità. Dalle Impostazioni puoi scaricarli o cancellare l'account quando vuoi. I
+                dettagli sono nell'<a href="privacy.html">informativa sulla privacy</a>.
+              </p>
+            </details>
+            <details>
+              <summary>Funziona senza rete?</summary>
+              <p>
+                Sì. La lista resta sul telefono e le modifiche fatte senza rete partono appena
+                torna. Serve la rete solo la prima volta e per vedere le modifiche degli altri.
+              </p>
+            </details>
+            <details>
+              <summary>Con quante persone posso condividerla?</summary>
+              <p>
+                Fino a 5 persone per lista. Ogni persona può stare in 2 liste, per esempio "Casa" e
+                "Ufficio".
+              </p>
+            </details>
+            <details>
+              <summary>Il codice è davvero aperto?</summary>
+              <p>
+                Sì, Frigolo è open source con licenza AGPL-3.0: puoi leggere il codice su GitHub e
+                proporre miglioramenti.
+              </p>
+            </details>
+          </div>
         </div>
       </section>
 
       <section class="final">
-        <div class="wrap final-inner">
+        <div class="wrap final-inner reveal reveal-scale">
           <img src="img/mascot-small.webp" alt="" width="96" height="96" loading="lazy" />
           <p class="final-title">Cosa manca in frigo?</p>
-          <a class="btn" href="https://frigolo.dascanfe.com" data-track="apri-app">Apri Frigolo</a>
+          <a class="btn" href="https://frigolo.dascanfe.com" data-track="apri-app"
+            >Apri Frigolo <span class="arrow" aria-hidden="true">&rarr;</span></a
+          >
         </div>
       </section>
     </main>
