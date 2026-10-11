@@ -21,6 +21,10 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 - i18n: restano nei componenti i testi di catalogo, analitiche, pannelli dei prodotti e
   password.
 
+- Banner "server non raggiungibile": oggi il banner offline guarda solo la rete del
+  telefono; quando il telefono ha rete ma Supabase non risponde non si vede niente (l'app
+  però si apre con la cache). Da fare più avanti.
+
 ## Domande aperte per Daniele
 
 - Supermercati di partenza (Lidl, Eurospin, Conad, Coop, Carrefour, MD, Mercato): in attesa

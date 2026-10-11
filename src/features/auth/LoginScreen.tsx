@@ -8,7 +8,7 @@ import { TextField } from '@/components/TextField'
 import { Turnstile } from '@/components/Turnstile'
 import type { TurnstileHandle } from '@/components/Turnstile'
 import { readPendingInvite } from '@/features/lists/inviteCode'
-import { it as t } from '@/i18n/it'
+import { PRIVACY_URL, TERMS_URL, it as t } from '@/i18n/it'
 import { MIN_PASSWORD_LENGTH, describeAuthError } from '@/lib/authErrors'
 import { supabase } from '@/lib/supabase'
 import { TURNSTILE_SITE_KEY } from '@/lib/turnstile'
@@ -395,6 +395,19 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
           error={error}
           hint={mode === 'signup' ? t.login.passwordHint : undefined}
         />
+        {mode === 'signup' && (
+          <p className="text-xs text-secondary">
+            {t.login.legalBefore}
+            <a href={TERMS_URL} target="_blank" rel="noopener" className="font-bold underline">
+              {t.login.legalTerms}
+            </a>
+            {t.login.legalAnd}
+            <a href={PRIVACY_URL} target="_blank" rel="noopener" className="font-bold underline">
+              {t.login.legalPrivacy}
+            </a>
+            {t.login.legalAfter}
+          </p>
+        )}
         <Turnstile
           ref={turnstile}
           onToken={setCaptchaToken}
