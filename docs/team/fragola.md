@@ -32,6 +32,27 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-10-11 - Landing rifatta con Bootstrap e motion design (PR #20)
+
+- Bootstrap 5.3 compilato con Sass (`landing/src/scss/`): solo reboot, griglia, bottoni e poche
+  utility, palette del kit di Paprika, font dell'app self-hosted. CSS in linea nell'HTML
+  (niente richiesta bloccante), nessun JavaScript di Bootstrap, nessuna risorsa di terzi.
+- Hero con telefono in prospettiva che fluttua, sezione funzioni con telefono sticky che cambia
+  schermata (IntersectionObserver), due telefoni per il realtime, comparsa allo scroll,
+  microinterazioni; solo transform e opacity; `prefers-reduced-motion` rispettato.
+- Screenshot: `build.mjs` usa `landing/assets/screens/<codice>-*.png` o `marketing/screenshot`
+  del worktree di Paprika, altrimenti segnaposto 390x844 (WebP 390/520/780 con srcset).
+  Video: `landing/assets/video/*.mp4|webm` (16:9) o `marketing/video/out`; senza file resta il
+  poster con "Il video arriva presto" e non esce il JSON-LD `VideoObject`.
+- SEO: title, description, canonical, hreflang, Open Graph e Twitter assoluti, JSON-LD
+  `SoftwareApplication`, `FAQPage` (generato dalle domande in pagina) e `VideoObject`.
+- Tracciante di Pepe (`track.js`): la chiave si mette in build con `FRIGOLO_STATS_KEY`; senza
+  chiave resta spento.
+- Lighthouse (server con gzip, simulazione 4G lenta): mobile 98/100/100/100, desktop 100/100/100/100.
+- Da fare: sostituire gli screenshot ancora segnaposto (s03, s04, s14, s17), mettere il video di
+  Paprika, rigenerare con la chiave delle statistiche, caricare via FTP (lo fa il PM).
+- Aggiunte due domande alle FAQ (iPhone e Android, codice aperto): da far rivedere a Zenzero.
+
 ### 2026-10-10 - Landing (Fase 2)
 
 - Sorgenti in `landing/` (branch `fragola/landing`): `src/` (HTML, CSS, JS, `.htaccess`),
