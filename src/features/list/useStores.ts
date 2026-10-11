@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { householdQueryKey, useHousehold } from '@/features/auth/useHousehold'
+import { useHousehold } from '@/features/auth/useHousehold'
+import { listsQueryKey } from '@/features/lists/useLists'
 import { supabase } from '@/lib/supabase'
 
 const collator = new Intl.Collator('it', { sensitivity: 'base' })
@@ -8,12 +9,12 @@ function cleanName(raw: string): string {
   return raw.trim().replace(/\s+/g, ' ').slice(0, 40)
 }
 
-/** Supermercati della casa: aggiunta, rinomina ed eliminazione condivise tra i membri */
+/** Supermercati della lista: aggiunta, rinomina ed eliminazione condivise tra le persone */
 export function useStores() {
   const { household, userId } = useHousehold()
   const queryClient = useQueryClient()
   const stores = household.stores
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: householdQueryKey(userId) })
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: listsQueryKey(userId) })
 
   const addStore = useMutation({
     mutationFn: async (rawName: string): Promise<string> => {
@@ -31,7 +32,7 @@ export function useStores() {
     onSuccess: invalidate,
   })
 
-  /** Rinomina un supermercato (anche negli articoli in lista) */
+  /** Rinomina un supermercato (anche nei prodotti in lista) */
   const renameStore = useMutation({
     mutationFn: async ({ from, to }: { from: string; to: string }): Promise<string> => {
       const name = cleanName(to)
@@ -48,7 +49,7 @@ export function useStores() {
     onSuccess: invalidate,
   })
 
-  /** Toglie un supermercato dalla lista; gli articoli tornano "ovunque" */
+  /** Toglie un supermercato dalla lista; i prodotti tornano "ovunque" */
   const removeStore = useMutation({
     mutationFn: async (name: string) => {
       const { error } = await supabase.rpc('rename_store', {

@@ -275,6 +275,36 @@ le foto e l'account; le liste in cui l'utente era solo spariscono, in quelle con
 restano prodotti e spese senza riferimenti a lui. Dopo, il frontend fa `signOut` e pulisce
 la cache. In produzione si pubblica con `supabase functions deploy delete-account`.
 
+**Frontend del captcha.** Il widget Turnstile (`src/components/Turnstile.tsx`) si carica
+solo nelle schermate di accesso, registrazione, recupero e "Mandala di nuovo"; il token va a
+supabase-js come `captchaToken`. Site key da `VITE_TURNSTILE_SITE_KEY` (in `.env.example` la
+chiave di prova); vuota = niente captcha. Domini da permettere nella CSP:
+`https://challenges.cloudflare.com` in `script-src` e `frame-src`.
+
+**Link delle email.** I template portano a `/auth/confirm?token_hash=...&type=...`: all'avvio
+il link si mette da parte (`src/lib/authConfirm.ts`) e `useSession` lo verifica con
+`verifyOtp`. Conferma email, recupero password e cambio email funzionano così da qualunque
+browser, anche con l'app installata. Link scaduto o già usato: schermata "Questo link è
+scaduto" con "Mandala di nuovo".
+
+**Primo uso.** Lista vuota con "Cosa manca?" e i prodotti "Per cominciare" (finché non c'è una
+spesa); suggerimenti uno per volta (`src/features/tips/`), ricordati sul dispositivo; banner
+di installazione solo dopo il primo prodotto aggiunto.
+
+Il primo accesso porta all'onboarding (`src/features/onboarding/`, testi in
+`src/i18n/it.ts`): "Come ti chiami?" se il profilo è da completare, poi "La tua prima
+lista" (per conto mio, con altre persone, ho un codice) ed eventualmente l'invito. Chi
+apre un link `/invito/<token>` senza essere dentro l'app passa prima da registrazione o
+accesso: il token resta in `localStorage` (`frigolo:pending-invite`) e alla fine compare
+"Ti invitano in {lista}". La schermata "Controlla la posta" è già pronta per quando la
+conferma email sarà attiva.
+
+**Lista aperta.** La lista mostrata si sceglie dal titolo della schermata principale
+("Cambia lista") e resta sul dispositivo (`frigolo:current-list:<user_id>`); se non
+esiste più si apre la più vecchia. Analitiche, spesa e supermercati seguono la lista
+aperta. Senza foto l'avatar è la mascotte (`public/mascot-avatar.webp`, generata da
+`scripts/generate-mascot-avatar.mjs`) sul colore del profilo.
+
 ## Profili e liste (API)
 
 Nella UI una "lista" è una riga di `households`: le tabelle non cambiano nome.
@@ -371,22 +401,27 @@ La sezione "Suggeriti per te" della home è calcolata nel client da
 
 Mai suggeriti: prodotti già in lista o nel carrello, archiviati, o comprati troppo di
 recente rispetto al proprio ritmo. Al massimo 9 suggerimenti e non più di 3 per
-categoria. Il motivo ("Di solito lo comprate ogni 7 giorni", "Di stagione a ottobre")
+categoria. Il motivo ("Di solito ogni 7 giorni", "Di stagione a ottobre")
 si legge tenendo premuta la tile.
 
 ## Offline e sincronizzazione
 
-- **Realtime**: ogni telefono è iscritto ai cambiamenti di `list_entries`, `items` e
-  `household_members` del proprio household (Supabase Realtime): se una persona
-  aggiunge il latte, sull'altro telefono compare entro un secondo.
+- **Realtime**: ogni telefono è iscritto ai cambiamenti di `list_entries`, `items`,
+  `household_members` e `households` della lista aperta (il canale cambia con la lista),
+  più `profiles` (nome, foto, colore) e le proprie righe di `household_members` (entrate
+  e uscite da un altro telefono): se una persona aggiunge il latte, sugli altri telefoni
+  compare entro un secondo.
 - **Cache persistente**: la cache di TanStack Query vive anche su IndexedDB (7 giorni),
   quindi catalogo e lista si leggono anche senza rete.
 - **Coda offline**: le modifiche alla lista fatte senza rete restano visibili
   (optimistic update), vengono salvate su IndexedDB e inviate al ritorno online, anche
   dopo aver chiuso e riaperto l'app. Un banner in alto lo segnala.
-- **Service worker** (Workbox): app shell in precache, `NetworkFirst` per le letture
-  Supabase, `CacheFirst` per i font. Gli aggiornamenti non si installano da soli: si
+- **Service worker** (Workbox): app shell e font in precache, `NetworkFirst` per le letture
+  Supabase. I font (Lato e Playfair Display) arrivano dai pacchetti `@fontsource`, serviti dall'app: nessuna richiesta a Google. Gli aggiornamenti non si installano da soli: si
   applicano dal bottone "Aggiorna" in Impostazioni.
+- **Uscita dall'account**: "Esci" (e ogni fine sessione) cancella dal dispositivo la cache
+  di TanStack Query su IndexedDB, le modifiche offline in attesa e la cache `supabase-rest`
+  del service worker (`src/lib/localData.ts`).
 - **Installazione**: manifest con icone (192, 512, maskable), icona e splash screen iOS,
   invito a installare dalla seconda sessione (su iOS spiega il gesto manuale).
 
@@ -440,9 +475,10 @@ ogni tema sono verificati da `theme.test.ts`. La scelta è salvata sul dispositi
 
 ## Qualità
 
-- `pnpm lint`, `pnpm typecheck` e `pnpm test` (41 test: ricerca fuzzy, motore dei
+- `pnpm lint`, `pnpm typecheck` e `pnpm test` (65 test: ricerca fuzzy, motore dei
   suggerimenti, serie temporali, contrasti dei temi, icone del catalogo, campi di testo
-  a 16px per evitare lo zoom automatico di iOS) girano puliti.
+  a 16px per evitare lo zoom automatico di iOS, codici d'invito, lista aperta, errori
+  del database, limiti, suggerimenti, link delle email) girano puliti.
 - Lighthouse 13 sulla build di produzione (mobile simulato): accessibilità 100, best
   practices 100, performance 83 (bundle iniziale ~215 kB gzip: React, Supabase Auth,
   Router; dal secondo avvio il service worker serve tutto dalla cache). La categoria PWA

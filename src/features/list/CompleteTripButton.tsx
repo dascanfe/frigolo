@@ -4,6 +4,8 @@ import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { TextField } from '@/components/TextField'
+import { it as t } from '@/i18n/it'
+import { describeDbError } from '@/lib/dbErrors'
 import { toast } from '@/lib/toast'
 import { formatQuantity, pluralize } from '@/lib/format'
 import type { ListEntryWithItem } from '@/types/domain'
@@ -17,7 +19,7 @@ interface CompleteTripButtonProps {
   suggestedStore?: string | null
 }
 
-/** Il supermercato comune a tutti gli articoli del carrello che ne hanno uno */
+/** Il supermercato comune a tutti i prodotti del carrello che ne hanno uno */
 function commonStore(cart: ListEntryWithItem[]): string | null {
   const stores = new Set(cart.map((e) => e.store).filter((s): s is string => Boolean(s)))
   return stores.size === 1 ? ([...stores][0] ?? null) : null
@@ -28,7 +30,7 @@ const LEAVE_MS = 860
 
 /**
  * "Spesa finita": bottone fisso sopra la barra, visibile con almeno un
- * articolo nel carrello. Al primo articolo emerge da dietro la barra come una
+ * prodotto nel carrello. Al primo prodotto emerge da dietro la barra come una
  * goccia che si gonfia in pillola; aprendo la lista con il carrello già pieno
  * è subito al suo posto, senza animazione.
  */
@@ -57,7 +59,7 @@ export function CompleteTripButton({ cart, todoCount, suggestedStore }: Complete
   const complete = useCompleteTrip()
   const { stores } = useStores()
 
-  /** Supermercati della casa, prima quelli degli articoli nel carrello */
+  /** Supermercati della lista, prima quelli dei prodotti nel carrello */
   const storeChoices = useMemo(() => {
     const inCart = new Set(cart.map((e) => e.store).filter((s): s is string => Boolean(s)))
     return [...stores.filter((s) => inCart.has(s)), ...stores.filter((s) => !inCart.has(s))]
@@ -69,13 +71,10 @@ export function CompleteTripButton({ cart, todoCount, suggestedStore }: Complete
       setOpen(false)
       setStore('')
       // il messaggio arriva a goccia sparita: comparirebbe proprio sopra l'uscita
-      const message = `Spesa completata: ${pluralize(cart.length, 'articolo', 'articoli')}`
+      const message = t.trip.done(pluralize(cart.length, 'prodotto', 'prodotti'))
       window.setTimeout(() => toast(message, 'success'), LEAVE_MS)
     } catch (error) {
-      toast(
-        error instanceof Error ? error.message : 'Non sono riuscito a completare la spesa',
-        'error',
-      )
+      toast(describeDbError(error, t.trip.failed), 'error')
     }
   }
 
@@ -91,7 +90,7 @@ export function CompleteTripButton({ cart, todoCount, suggestedStore }: Complete
             className="trip-fab pointer-events-auto"
             data-phase={leaving ? 'leave' : phase}
             disabled={leaving}
-            aria-label={`Spesa finita, ${pluralize(lastCount, 'articolo', 'articoli')} nel carrello`}
+            aria-label={`Spesa finita, ${pluralize(lastCount, 'prodotto', 'prodotti')} nel carrello`}
             onClick={() => {
               setStore(suggestedStore ?? commonStore(cart) ?? '')
               setOpen(true)
@@ -125,7 +124,7 @@ export function CompleteTripButton({ cart, todoCount, suggestedStore }: Complete
       <BottomSheet
         open={open}
         onClose={() => setOpen(false)}
-        title="Spesa finita 🥳"
+        title={t.trip.title}
         footer={
           <Button
             fullWidth
@@ -134,16 +133,16 @@ export function CompleteTripButton({ cart, todoCount, suggestedStore }: Complete
             disabled={complete.isPending}
           >
             {complete.isPending
-              ? 'Salvo...'
-              : `Conferma ${pluralize(cart.length, 'articolo', 'articoli')}`}
+              ? t.trip.saving
+              : t.trip.confirm(pluralize(cart.length, 'prodotto', 'prodotti'))}
           </Button>
         }
       >
         <div className="flex flex-col gap-4">
           <p className="text-sm text-secondary">
-            Gli articoli nel carrello finiscono nello storico degli acquisti.
+            {t.trip.intro}
             {todoCount > 0 &&
-              ` ${pluralize(todoCount, 'articolo resta', 'articoli restano')} in lista per la prossima volta.`}
+              t.trip.remaining(pluralize(todoCount, 'prodotto resta', 'prodotti restano'))}
           </p>
           <ul className="divide-y divide-subtle rounded-2xl bg-surface ring-1 ring-subtle">
             {cart.map((entry) => (
@@ -162,11 +161,9 @@ export function CompleteTripButton({ cart, todoCount, suggestedStore }: Complete
             ))}
           </ul>
           <fieldset className="flex flex-col gap-2">
-            <legend className="pb-2 text-sm font-bold text-primary">
-              Dove hai fatto la spesa?
-            </legend>
+            <legend className="pb-2 text-sm font-bold text-primary">{t.trip.where}</legend>
             {storeChoices.length > 0 && (
-              <div className="chip-row -mx-5 px-5" role="group" aria-label="Supermercati">
+              <div className="chip-row -mx-5 px-5" role="group" aria-label={t.trip.stores}>
                 {storeChoices.map((name) => {
                   const selected = store === name
                   return (
@@ -184,11 +181,11 @@ export function CompleteTripButton({ cart, todoCount, suggestedStore }: Complete
               </div>
             )}
             <TextField
-              label="Oppure scrivi il negozio (facoltativo)"
+              label={t.trip.otherStore}
               value={store}
               onChange={(e) => setStore(e.target.value)}
               maxLength={60}
-              placeholder="Es. Esselunga"
+              placeholder={t.trip.otherStorePlaceholder}
               autoComplete="off"
             />
           </fieldset>

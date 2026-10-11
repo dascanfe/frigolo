@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Button } from '@/components/Button'
 import { PasswordField } from '@/components/PasswordField'
-import { describeAuthError } from '@/lib/authErrors'
+import { MIN_PASSWORD_LENGTH, describeAuthError } from '@/lib/authErrors'
 import { supabase } from '@/lib/supabase'
 import { signOut } from './useSession'
 
@@ -50,7 +50,7 @@ export function UpdatePasswordScreen({ onDone }: UpdatePasswordScreenProps) {
           label="Nuova password"
           autoComplete="new-password"
           required
-          minLength={8}
+          minLength={MIN_PASSWORD_LENGTH}
           autoFocus
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -59,7 +59,7 @@ export function UpdatePasswordScreen({ onDone }: UpdatePasswordScreenProps) {
           label="Ripeti la password"
           autoComplete="new-password"
           required
-          minLength={8}
+          minLength={MIN_PASSWORD_LENGTH}
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           error={error}
@@ -67,7 +67,9 @@ export function UpdatePasswordScreen({ onDone }: UpdatePasswordScreenProps) {
         <Button
           type="submit"
           fullWidth
-          disabled={busy || password.length < 8 || confirm.length < 8}
+          disabled={
+            busy || password.length < MIN_PASSWORD_LENGTH || confirm.length < MIN_PASSWORD_LENGTH
+          }
         >
           {busy ? 'Salvo...' : 'Salva la password'}
         </Button>

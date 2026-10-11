@@ -4,9 +4,9 @@ import { purchasesQueryKey } from '@/features/suggestions/useSuggestions'
 import { supabase } from '@/lib/supabase'
 
 /**
- * Correzioni dello storico: togliere un articolo comprato per sbaglio da una
+ * Correzioni dello storico: togliere un prodotto comprato per sbaglio da una
  * spesa, o eliminare una spesa intera (gli acquisti vanno via in cascata).
- * Una spesa rimasta senza articoli viene eliminata.
+ * Una spesa rimasta senza prodotti viene eliminata.
  */
 export function useTripEdits() {
   const { household } = useHousehold()

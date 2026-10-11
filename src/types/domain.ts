@@ -17,6 +17,7 @@ export type FunctionReturns<F extends keyof PublicSchema['Functions']> =
   PublicSchema['Functions'][F]['Returns']
 
 export type Household = Tables<'households'>
+export type Profile = Tables<'profiles'>
 export type HouseholdMember = Tables<'household_members'>
 export type Category = Tables<'categories'>
 export type Item = Tables<'items'>
@@ -109,6 +110,7 @@ export const MEMBER_COLOR_TOKENS = [
   'c-terracotta',
   'c-burnt',
   'c-ochre',
+  'c-ink-soft',
 ] as const satisfies readonly ColorToken[]
 export type MemberColorToken = (typeof MEMBER_COLOR_TOKENS)[number]
 
@@ -124,22 +126,16 @@ export type ItemTotals = Omit<
   avg_interval_days: number | null
 }
 
-/** Supermercati selezionabili dal long press sulla tile */
-export const STORES = [
+/**
+ * Supermercati con cui parte ogni lista nuova: catene presenti in tutta Italia
+ * più il mercato. Ogni lista poi aggiunge, rinomina o toglie i suoi.
+ */
+export const DEFAULT_STORES = [
   'Lidl',
+  'Eurospin',
   'Conad',
-  'Cadoro',
-  'Lando',
-  'Prix',
-  'Maxi',
-  'Alì',
-  'Aldi',
+  'Coop',
   'Carrefour',
-  'Action',
-  'Legàmi',
-  'Normal',
-  'Tigotà',
-  'Acqua & Sapone',
-  'Amazon',
+  'MD',
+  'Mercato',
 ] as const
-export type Store = (typeof STORES)[number]

@@ -11,6 +11,7 @@ import { useHousehold } from '@/features/auth/useHousehold'
 import { useListMutations } from '@/features/list/useToggleItem'
 import { CATEGORY_ICON_SUGGESTIONS } from '@/lib/iconKeywords'
 import type { IconName } from '@/lib/icons'
+import { describeDbError } from '@/lib/dbErrors'
 import { supabase } from '@/lib/supabase'
 import { capitalizeFirst } from '@/lib/format'
 import { toast } from '@/lib/toast'
@@ -111,7 +112,10 @@ function CreateItemForm({
       setError(
         insertError?.code === '23505'
           ? 'Esiste già un prodotto con questo nome.'
-          : (insertError?.message ?? 'Non sono riuscito a salvare il prodotto.'),
+          : describeDbError(
+              insertError,
+              'Non sono riuscito a salvare il prodotto. Riprova tra poco.',
+            ),
       )
       return
     }

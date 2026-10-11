@@ -1,15 +1,23 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { useHousehold, householdQueryKey } from '@/features/auth/useHousehold'
+import { memberName, useHousehold } from '@/features/auth/useHousehold'
+import { listsQueryKey, profileQueryKey } from '@/features/lists/useLists'
+import type { ListData } from '@/features/lists/useLists'
+import { it as t } from '@/i18n/it'
 import { itemsQueryKey } from '@/features/catalog/useCatalog'
 import { supabase } from '@/lib/supabase'
-import type { ListEntry } from '@/types/domain'
+import { toast } from '@/lib/toast'
+import type { HouseholdMember, ListEntry } from '@/types/domain'
 import { listQueryKey } from './useList'
 
 /**
- * Sincronizzazione istantanea tra i due telefoni via Supabase Realtime:
+ * Sincronizzazione istantanea tra i telefoni via Supabase Realtime, per la
+ * lista aperta (il canale cambia quando si cambia lista):
  * - list_entries: la cache viene aggiornata riga per riga (senza refetch)
  * - items, household_members e households: si invalida la query (cambiano di rado)
+ * - profiles: nome, foto o colore cambiati da qualcuno (la RLS manda solo i
+ *   profili di chi condivide una lista con te)
+ * - household_members dell'utente: entrato o uscito da una lista da un altro telefono
  * Al (ri)collegamento del canale la lista viene ricaricata, per recuperare
  * eventuali eventi persi mentre si era offline.
  */
@@ -20,10 +28,12 @@ export function useRealtimeSync() {
   useEffect(() => {
     const householdId = household.id
     const listKey = listQueryKey(householdId)
+    const invalidateLists = () =>
+      void queryClient.invalidateQueries({ queryKey: listsQueryKey(userId) })
     let purchasesTimer: number | null = null
 
     const invalidateHistory = () => {
-      // un DELETE può essere una spesa completata dal partner: storico e analitiche cambiano
+      // un DELETE può essere una spesa finita da un'altra persona: storico e analitiche cambiano
       if (purchasesTimer !== null) window.clearTimeout(purchasesTimer)
       purchasesTimer = window.setTimeout(() => {
         void queryClient.invalidateQueries({ queryKey: ['purchases', householdId] })
@@ -77,13 +87,42 @@ export function useRealtimeSync() {
           table: 'household_members',
           filter: `household_id=eq.${householdId}`,
         },
-        () => void queryClient.invalidateQueries({ queryKey: householdQueryKey(userId) }),
+        (payload: { eventType: string; new: Partial<HouseholdMember> }) => {
+          const joined = payload.eventType === 'INSERT' ? payload.new.user_id : undefined
+          if (!joined || joined === userId) {
+            invalidateLists()
+            return
+          }
+          // qualcuno è appena entrato con un invito: lo si dice a chi c'era già
+          void queryClient.invalidateQueries({ queryKey: listsQueryKey(userId) }).then(() => {
+            const lists = queryClient.getQueryData<ListData[]>(listsQueryKey(userId))
+            const list = lists?.find((l) => l.household.id === householdId)
+            const person = list?.members.find((m) => m.user_id === joined)
+            if (list && person) {
+              toast(t.join.memberJoined(memberName(person), list.household.name), 'success')
+            }
+          })
+        },
       )
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'households', filter: `id=eq.${householdId}` },
-        () => void queryClient.invalidateQueries({ queryKey: householdQueryKey(userId) }),
+        invalidateLists,
       )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'household_members',
+          filter: `user_id=eq.${userId}`,
+        },
+        invalidateLists,
+      )
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, () => {
+        invalidateLists()
+        void queryClient.invalidateQueries({ queryKey: profileQueryKey(userId) })
+      })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           void queryClient.invalidateQueries({ queryKey: listKey })
