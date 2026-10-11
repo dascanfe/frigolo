@@ -75,9 +75,106 @@ idempotenti: rilanciare il seed non crea duplicati.
 | `0013_item_icons`          | Icone dedicate (lamponi, mirtilli, mozzarella, piadine)             |
 | `0014_accenti`             | Accenti veri nei nomi (Caffè, Tè, Pancarrè, Alì)                    |
 | `0015`-`0016`              | Salvataggio automatico notturno della spesa (funzione + pg_cron)    |
+| `0017_security_hotfix`     | Foto non elencabili, membri vincolati alla propria lista            |
+| `0018_profiles`            | Profilo unico per utente (nome, foto, colore) e migrazione dei dati |
+| `0019_multi_lists`         | Liste multiple: crea, entra, rinomina, lascia, elimina, invito      |
+| `0020_limits_quotas`       | Lunghezze massime dei testi e quote per lista                       |
+| `0021_default_stores`      | Supermercati di partenza generici per le liste nuove                |
+| `0022_export_my_data`      | Export dei dati dell'utente (`export_my_data`)                      |
+| `0023_avatar_storage`      | Massimo 5 foto per utente, elenco dei file orfani                   |
 | `seed.sql`                 | Categorie e catalogo base italiano                                  |
 
-### Opzione A: Supabase CLI (consigliata)
+### Sviluppo in locale (consigliato)
+
+Ogni migration si prova prima qui. Serve Docker (Docker Desktop o OrbStack) acceso e la
+[Supabase CLI](https://supabase.com/docs/guides/local-development).
+
+```bash
+supabase start
+```
+
+La prima volta scarica le immagini (qualche minuto), poi avvia Postgres, Auth, Storage,
+Realtime e Studio, applica tutte le migration in ordine e il seed. `supabase status` mostra
+URL e chiavi locali: per far girare l'app contro il database locale crea `.env.local`
+(ignorato da git, ha la precedenza su `.env`) con
+
+```bash
+VITE_SUPABASE_URL=http://127.0.0.1:54321
+VITE_SUPABASE_ANON_KEY=<la "anon key" di supabase status>
+```
+
+| Cosa                      | Dove                                                      |
+| ------------------------- | --------------------------------------------------------- |
+| API (PostgREST, Auth)     | `http://127.0.0.1:54321`                                  |
+| Postgres                  | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Studio                    | `http://127.0.0.1:54323`                                  |
+| Email catturate (Mailpit) | `http://127.0.0.1:54324`                                  |
+
+Comandi utili:
+
+```bash
+supabase db reset                      # ricrea il DB da zero: tutte le migration + seed
+supabase migration new <nome>          # nuovo file in supabase/migrations (poi rinominalo NNNN_nome.sql)
+supabase migration up --local          # applica solo le migration nuove, senza perdere i dati
+supabase db reset --version 0016       # riparte fermandosi a una migration (per provare la successiva su dati finti)
+supabase db lint --local               # controlla le funzioni plpgsql
+supabase stop                          # spegne tutto (i dati restano nel volume Docker)
+```
+
+Tipi TypeScript dal database locale:
+
+```bash
+supabase gen types typescript --local --schema public > src/types/database.ts
+```
+
+Il generatore locale omette il blocco `__InternalSupabase` (`PostgrestVersion: "14.5"`) in
+cima al tipo `Database`: rimettilo a mano, così il diff resta pulito e il client tipizzato
+non cambia.
+
+In locale `enable_signup = false` vale come in produzione: gli utenti di prova si creano
+via SQL. Dopo ogni `supabase db reset` lancia
+
+```bash
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/seed_dev.sql
+```
+
+che crea tre account con cui accedere all'app in locale (password valide solo nel database
+locale; lo script si ferma se trova account veri):
+
+| Email                | Password           | Situazione                                        |
+| -------------------- | ------------------ | ------------------------------------------------- |
+| `alice@frigolo.test` | `frigolo-locale-1` | liste "Casa prova" (con Bruno) e "Ufficio prova"  |
+| `bruno@frigolo.test` | `frigolo-locale-2` | lista "Casa prova"                                |
+| `carla@frigolo.test` | `frigolo-locale-3` | nessuna lista, profilo da completare (onboarding) |
+
+pg_cron funziona anche in locale: i job `frigolo-auto-complete-trips` e
+`frigolo-cron-cleanup` (e dalla 0019 `frigolo-invite-attempts-cleanup`) compaiono in `cron.job`.
+
+Verifiche ripetibili di profili, liste, inviti e limiti (utenti finti, RLS, RPC, regressioni
+della revisione di sicurezza, tutto in una transazione annullata alla fine):
+
+```bash
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/profili_liste.sql
+```
+
+Verifiche sull'API locale (PostgREST, Auth, Storage, edge function `delete-account`, export),
+con gli account di `seed_dev.sql`:
+
+```bash
+node supabase/checks/api_e2e.mjs
+```
+
+Per provare la migrazione dei profili su dati simili a quelli di produzione:
+
+```bash
+supabase db reset --version 0017
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/checks/dati_pre_0018.sql
+supabase migration up --local
+```
+
+### Produzione: Supabase CLI
+
+Solo dopo la prova in locale e la revisione di Aglio, con l'ok di Daniele.
 
 ```bash
 supabase login
@@ -98,7 +195,7 @@ rigenerare i tipi TypeScript dopo una modifica allo schema:
 supabase gen types typescript --linked --schema public > src/types/database.ts
 ```
 
-### Opzione B: SQL editor del dashboard
+### Alternativa: SQL editor del dashboard
 
 Apri il progetto su [supabase.com/dashboard](https://supabase.com/dashboard), vai in
 **SQL Editor > New query** e incolla ed esegui, nell'ordine, il contenuto di:
@@ -123,25 +220,143 @@ select
   (select count(*) from pg_policies where schemaname = 'public') as policy;
 ```
 
-Atteso: 14 categorie, 234 prodotti, 13 policy.
+Atteso: 14 categorie, 234 prodotti, 15 policy.
 
 ## Autenticazione
 
-Accesso con **email e password** (Supabase Auth). L'app è pensata per due persone, quindi
-la registrazione non richiede la conferma dell'email: ci si registra dall'app e si entra
-subito. La protezione vera è il codice di invito della casa: senza quello un account non
-vede nulla.
+Accesso con **email e password** (Supabase Auth). Configurazione in `supabase/config.toml`:
 
-"Password dimenticata" invia un'email con un link (template standard di Supabase, in
-inglese); il link va aperto nello stesso browser da cui è stato richiesto e porta alla
-schermata "Nuova password". Il mailer integrato del piano Free consente al massimo 2 email
-all'ora, più che sufficienti per questo uso.
+- conferma dell'email obbligatoria (`enable_confirmations`), cambio password solo con
+  sessione recente (`secure_password_change`), password di almeno 10 caratteri (la
+  protezione dalle password compromesse non c'è sul piano Free);
+- email in italiano: template HTML in `supabase/templates/` (testi di Zenzero in
+  `docs/comunicazione/email.md`), collegati in `[auth.email.template.*]` e
+  `[auth.email.notification.password_changed]`. In locale si leggono in Mailpit
+  (`http://127.0.0.1:54324`);
+- **SMTP (Resend) e captcha (Cloudflare Turnstile) si gestiscono dal pannello di Supabase**,
+  non dal file: le due sezioni restano commentate, così un `supabase config push` non li
+  spegne e non ne cancella le chiavi. Prima di ogni push: `supabase config diff`;
+- **locale e produzione separati nello stesso file**: in alto i valori per lo Supabase
+  locale (`site_url` `http://localhost:5173`, redirect verso localhost), in fondo
+  `[remotes.production]` con il project ref di produzione e solo i domini pubblici
+  (`https://frigolo.dascanfe.com` e il vecchio `https://frigolo-app.vercel.app`).
+  `supabase config diff/push --project-ref egvodwvnralxttxiovau` usa `[remotes.production]`
+  (lo dice nella prima riga: "using [remotes.production]"); in produzione localhost non
+  entra mai. Per questo in locale i link delle email puntano a `http://localhost:5173`;
+- la edge function `delete-account` accetta come origini i domini pubblici più quelle di
+  `FRIGOLO_DEV_ORIGINS`, un segreto solo locale in `[edge_runtime.secrets]` di
+  `config.toml` (porte 5173 e 4173 su localhost e 127.0.0.1; aggiungi lì le tue, poi
+  `supabase stop && supabase start`). In produzione non è impostato. In locale il gateway
+  risponde comunque `Access-Control-Allow-Origin: *`, quindi il controllo vero si vede solo
+  in produzione;
+- i template HTML sono esclusi da Prettier (`.prettierignore`): andando a capo spezzerebbe
+  le variabili `{{ .Email }}` e simili;
+- le registrazioni (`[auth] enable_signup`) restano chiuse fino all'apertura al pubblico.
 
-Una volta creati i due account si può chiudere la registrazione impostando
-`enable_signup = false` in `supabase/config.toml` e lanciando `supabase config push`.
+Il captcha si prova in locale scommentando `[auth.captcha]` solo sul proprio computer (non
+si committa) con le chiavi di test di Cloudflare: secret `1x0000000000000000000000000000000AA`
+nel file, site key `1x00000000000000000000AA` nel frontend, poi `supabase stop` e
+`supabase start`. Il token di test che accettano è `XXXX.DUMMY.TOKEN.XXXX`.
 
-Il primo accesso porta all'onboarding: si crea la casa (household) oppure si entra in
-quella del partner con il codice di 8 caratteri mostrato nelle Impostazioni.
+**Link nelle email.** Conferma, recupero password e cambio email portano a
+`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=<tipo>` (`email` per la
+conferma della registrazione, `recovery`, `email_change`). La pagina `/auth/confirm`
+dell'app chiama `supabase.auth.verifyOtp({ token_hash, type })`, quindi il link funziona da
+qualunque browser, non solo da quello che ha fatto la richiesta. Dopo `recovery` porta alla
+schermata "Nuova password". Verifica locale: `node supabase/checks/email_links.mjs`
+(istruzioni in testa al file, serve la registrazione aperta temporaneamente in locale).
+
+**Account e dati (GDPR).** `rpc('export_my_data')` restituisce un JSON con account,
+profilo e, per ogni lista, prodotti in lista, prodotti della lista e spese (senza id né nomi
+delle altre persone: per ogni riga solo `da_me`). La cancellazione dell'account passa dalla
+edge function `delete-account` (`supabase/functions/delete-account/`):
+`supabase.functions.invoke('delete-account', { body: { confirm: 'ELIMINA' } })`. Cancella
+le foto e l'account; le liste in cui l'utente era solo spariscono, in quelle condivise
+restano prodotti e spese senza riferimenti a lui. Dopo, il frontend fa `signOut` e pulisce
+la cache. In produzione si pubblica con `supabase functions deploy delete-account`.
+
+## Profili e liste (API)
+
+Nella UI una "lista" è una riga di `households`: le tabelle non cambiano nome.
+
+**Profilo** (`profiles`, uno per utente, uguale in tutte le liste). Nasce da solo alla
+registrazione: nome e colore arrivano da
+`signUp({ options: { data: { display_name, color } } })`. Senza nome il profilo ha
+"Utente" e `completed_at` null, cioè è da completare nell'onboarding; senza colore ne
+riceve uno a caso. Ognuno legge il proprio profilo e quelli di chi condivide almeno una
+lista con lui, e modifica solo il proprio.
+
+- `display_name`: 1-40 caratteri.
+- `color`: sempre valorizzato, solo uno dei token di `MEMBER_COLORS` (`src/lib/colors.ts`):
+  `c-teal`, `c-brick`, `c-olive-deep`, `c-rust`, `c-brown`, `c-terracotta`, `c-burnt`,
+  `c-ochre`, `c-ink-soft`. La lista chiusa sta anche nel DB (`member_colors()`): se cambia la
+  tavolozza vanno aggiornati tutti e due.
+- `avatar_path`: facoltativo. È il **percorso** nel bucket `avatars`, nella propria cartella
+  (`<user_id>/<file>`), non un URL. L'URL lo costruisce il client con
+  `supabase.storage.from('avatars').getPublicUrl(avatar_path)`, così nessuno può far
+  caricare agli altri un'immagine da un server suo. Null = mascotte di Frigolo sullo sfondo
+  di `color`.
+
+| Chiamata                                                                             | Cosa fa                                                                                                    |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `from('profiles').select().eq('id', userId).single()`                                | Il mio profilo (`completed_at` null = da completare)                                                       |
+| `rpc('update_my_profile', { p_display_name, p_color, p_avatar_path })`               | Aggiorna il profilo (null = non cambiare, `p_avatar_path: ''` = togli la foto). Lo segna completo          |
+| `from('households').select('*, household_members(user_id, joined_at, profiles(*))')` | Le mie liste con membri e profili (con `join_code`, `invite_token` e le loro scadenze)                     |
+| `rpc('create_household', { p_name })`                                                | Nuova lista, ritorna l'id                                                                                  |
+| `rpc('get_household_invite', { p_code })`                                            | Anteprima di un invito: `name`, `member_count`, `is_member`. Nessuna riga = codice sbagliato o scaduto     |
+| `rpc('join_household', { p_code })`                                                  | Entra con il codice corto o il token del link. Ritorna l'id, o `null` se il codice è sbagliato o scaduto   |
+| `rpc('rename_household', { p_household_id, p_name })`                                | Rinomina                                                                                                   |
+| `rpc('rotate_join_code', { p_household_id })`                                        | Nuovo codice corto e nuovo token (7 giorni); i vecchi smettono subito di funzionare (= revoca dell'invito) |
+| `rpc('leave_household', { p_household_id })`                                         | Esci. Ritorna `true` se eri l'ultimo membro: la lista è stata eliminata con tutti i dati                   |
+| `rpc('delete_household', { p_household_id })`                                        | Elimina con tutti i dati, solo se sei l'unico membro                                                       |
+
+**Inviti.** Ogni lista ha due segreti, generati con `gen_random_bytes` e validi 7 giorni:
+il codice corto `join_code` (8 caratteri, da dettare o scrivere a mano; maiuscole, spazi e
+trattini ignorati) e il token del link `invite_token` (22 caratteri, distingue maiuscole e
+minuscole): `https://<app>/invito/<invite_token>`. Il frontend conserva il token durante
+registrazione e conferma email, poi chiama `join_household`. Dopo 10 tentativi falliti in
+un'ora (o 30 in un giorno) `join_household` e `get_household_invite` rispondono con
+errore HTTP 429 (codice `PT429`, "Troppi tentativi, riprova più tardi") per qualunque
+codice. L'anteprima non restituisce l'id della lista.
+
+**Limiti.** 2 liste per utente, 5 persone per lista, 500 prodotti creati e 300 prodotti in
+lista per lista, 30 spese al giorno per lista, 300 prodotti per spesa, 5 foto per utente; testi con
+lunghezza massima (`unit` 10, supermercati 40, `quantity` fino a 9999). Una lista che resta
+senza membri (anche per account cancellati) viene eliminata. Realtime: `profiles` è nella
+pubblicazione (gli eventi rispettano la RLS).
+
+**Errori.** Ogni errore delle RPC e delle quote ha in `hint` una chiave stabile: il
+frontend deve riconoscere gli errori da quella, non dal testo (che può cambiare).
+
+| `hint`              | Quando                                                       | HTTP |
+| ------------------- | ------------------------------------------------------------ | ---- |
+| `lists_limit`       | Hai già 2 liste (crea o entra)                               | 400  |
+| `members_limit`     | La lista ha già 5 persone                                    | 400  |
+| `rate_limited`      | Troppi codici sbagliati (10 in un'ora o 30 in un giorno)     | 429  |
+| `use_post`          | Richiesta non in POST (`supabase.rpc` usa già POST)          | 405  |
+| `not_member`        | Non fai parte della lista                                    | 403  |
+| `has_other_people`  | Eliminare una lista con altre persone (si può solo lasciare) | 400  |
+| `not_found`         | Lista o profilo non trovati                                  | 400  |
+| `not_authenticated` | Sessione mancante                                            | 403  |
+| `items_quota`       | 500 prodotti creati nella lista                              | 400  |
+| `entries_quota`     | 300 prodotti in lista                                        | 400  |
+| `trips_quota`       | 30 spese in un giorno                                        | 400  |
+| `purchases_quota`   | 300 prodotti in una spesa                                    | 400  |
+
+**Supermercati.** Le liste nuove partono con Lidl, Eurospin, Conad, Coop, Carrefour, MD e
+Mercato (default di `households.stores`, uguale a `DEFAULT_STORES` del frontend); le liste
+esistenti tengono i loro.
+
+**Foto.** Al massimo 5 file nella propria cartella: il frontend usa nomi con uuid e
+cancella la foto precedente. I file non più usati da nessuno si elencano con
+`avatar_orphans()` e si cancellano con `node scripts/cleanup-avatar-orphans.mjs`
+(`SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` nell'ambiente; senza `--apply` conta e
+basta).
+
+Le colonne `display_name`, `color` e `avatar_url` di `household_members` sono deprecate:
+restano allineate al profilo da trigger finché il frontend in produzione le usa (in
+`avatar_url` c'è l'URL completo ricostruito dal percorso), poi una migration futura le
+toglierà.
 
 ## Suggerimenti
 
@@ -188,9 +403,9 @@ mai in cache, asset immutabili).
    con gli stessi valori del tuo `.env`.
 3. Deploy. Ogni push su `main` rideploya.
 
-Dopo il primo deploy, se il dominio non è `frigolo-app.vercel.app`, aggiorna `site_url` e
-`additional_redirect_urls` in `supabase/config.toml` e lancia `supabase config push`:
-servono al link "password dimenticata".
+Il dominio dell'app sta in `[remotes.production.auth]` di `supabase/config.toml` (`site_url` e
+`additional_redirect_urls`): se cambia, aggiornalo lì e applicalo con `supabase config push`
+(dopo `config diff`, con l'ok di Daniele).
 
 Le registrazioni sono chiuse (`enable_signup = false` in `[auth]` e `[auth.email]`,
 già pushato): esistono solo i due account di casa. Per aprirle di nuovo, ad esempio per
