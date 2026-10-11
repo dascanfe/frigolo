@@ -1,6 +1,6 @@
 # Video di lancio: piano e storyboard
 
-Stato: **da approvare**. Il video si realizza solo dopo l'ok di Daniele a questo storyboard.
+Stato: **storyboard approvato, video realizzato** (vedi `README.md`, `musica.md`). Scena 7 mostra il cambio lista e gli avatar; le analitiche non sono nella versione da 40 s (si possono aggiungere come scena in più).
 
 ## In breve
 

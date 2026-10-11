@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:03,000
+Chi compra il latte?
+
+2
+00:00:03,000 --> 00:00:08,000
+Tocca un prodotto: è in lista.
+
+3
+00:00:08,000 --> 00:00:14,000
+Chi fa la spesa con te lo vede subito.
+
+4
+00:00:14,000 --> 00:00:19,000
+In ordine di corsia: i surgelati alla fine.
+
+5
+00:00:19,000 --> 00:00:24,000
+Preso? Un tocco ed è nel carrello.
+
+6
+00:00:24,000 --> 00:00:28,000
+Spesa finita
+
+7
+00:00:28,000 --> 00:00:32,000
+Per conto tuo o in compagnia.
+
+8
+00:00:32,000 --> 00:00:36,000
+Gratis, senza pubblicità. Si installa dal browser.
+
+9
+00:00:36,000 --> 00:00:40,000
+Frigolo. La lista della spesa sempre in tasca. frigolo.dascanfe.com
