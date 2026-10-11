@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router'
+import { Navigate, createBrowserRouter } from 'react-router'
 import { AppShell } from '@/components/AppShell'
 import { ListScreen } from '@/features/list/ListScreen'
 import { CatalogScreen } from '@/features/catalog/CatalogScreen'
@@ -22,6 +22,9 @@ export const router = createBrowserRouter([
       { path: 'impostazioni', element: <SettingsScreen /> },
       // solo in sviluppo: anteprima delle icone custom
       ...(import.meta.env.DEV ? [{ path: 'dev/icone', element: <IconPreviewScreen /> }] : []),
+      // i link d'invito li legge main.tsx prima del router (captureInviteFromUrl):
+      // qui si torna alla lista, come per ogni indirizzo che non esiste
+      { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
 ])

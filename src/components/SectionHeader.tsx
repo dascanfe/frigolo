@@ -31,7 +31,7 @@ export function SectionHeader({
     count !== undefined ? (
       <span
         className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-surface px-2 text-xs font-black text-secondary ring-1 ring-subtle"
-        aria-label={`${count} articoli`}
+        aria-label={`${count} prodotti`}
       >
         {count}
       </span>

@@ -264,7 +264,7 @@ export function CategoryDonut({ rows, selectedCategoryId, onSelect }: CategoryDo
         letterSpacing={1}
         fill="var(--text-secondary)"
       >
-        ARTICOLI
+        PRODOTTI
       </text>
     </svg>
   )

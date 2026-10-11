@@ -4,12 +4,12 @@ import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { PasswordField } from '@/components/PasswordField'
 import { useHousehold } from '@/features/auth/useHousehold'
-import { describeAuthError } from '@/lib/authErrors'
+import { MIN_PASSWORD_LENGTH, describeAuthError } from '@/lib/authErrors'
 import { haptics } from '@/lib/haptics'
 import { supabase } from '@/lib/supabase'
 import { toast } from '@/lib/toast'
 
-const MIN_PASSWORD = 8
+const MIN_PASSWORD = MIN_PASSWORD_LENGTH
 
 interface PasswordSheetProps {
   open: boolean
