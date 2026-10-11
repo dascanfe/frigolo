@@ -11,7 +11,8 @@ export interface TurnstileRenderOptions {
   sitekey: string
   callback: (token: string) => void
   'expired-callback'?: () => void
-  'error-callback'?: () => void
+  'error-callback'?: (code: string) => boolean | void
+  'timeout-callback'?: () => void
   appearance?: 'always' | 'execute' | 'interaction-only'
   size?: 'normal' | 'flexible' | 'compact'
   theme?: 'auto' | 'light' | 'dark'
@@ -56,4 +57,16 @@ export function loadTurnstile(): Promise<TurnstileApi> {
     document.head.appendChild(script)
   })
   return loading
+}
+
+/** Dopo quanti ms senza token il modulo smette di aspettare Turnstile */
+export const CAPTCHA_WAIT_MS = 6000
+
+/**
+ * Avvia un conto alla rovescia: se non arriva un token entro `ms`, chiama
+ * `onTimeout`. Restituisce la funzione che lo annulla (token arrivato, smontaggio).
+ */
+export function startTokenTimeout(onTimeout: () => void, ms = CAPTCHA_WAIT_MS): () => void {
+  const id = setTimeout(onTimeout, ms)
+  return () => clearTimeout(id)
 }

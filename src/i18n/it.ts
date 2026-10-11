@@ -45,8 +45,7 @@ export const it = {
     forgotSent: (email: string) =>
       `Se ${email} ha un account, ti arriva un'email con il link per scegliere una nuova password.`,
     captchaFailed:
-      'Non sono riuscito a verificare che sei una persona. Ricarica la pagina e riprova.',
-    captchaWaiting: 'Controllo che sei una persona...',
+      'Non sono riuscito a verificare che sei una persona. Riprova.',
     pendingInvite: "Ti hanno invitato in una lista: crea l'account o accedi e poi ci entri.",
   },
   authLink: {
