@@ -31,7 +31,7 @@ import {
   useInvalidateLists,
 } from '@/features/lists/useLists'
 import { avatarPublicUrl } from '@/features/profile/profileApi'
-import { DONATION_URL, SUPPORT_EMAIL, it as t } from '@/i18n/it'
+import { DONATION_URL, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL, it as t } from '@/i18n/it'
 import {
   applyUpdate,
   checkForUpdate,
@@ -423,6 +423,24 @@ export function SettingsScreen() {
           {t.support.text}{' '}
           <a href={`mailto:${SUPPORT_EMAIL}`} className="font-bold text-accent underline">
             {SUPPORT_EMAIL}
+          </a>
+        </p>
+        <p className="flex gap-4 text-xs">
+          <a
+            href={TERMS_URL}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex min-h-11 items-center font-bold text-secondary underline"
+          >
+            {t.legal.terms}
+          </a>
+          <a
+            href={PRIVACY_URL}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex min-h-11 items-center font-bold text-secondary underline"
+          >
+            {t.legal.privacy}
           </a>
         </p>
       </div>
