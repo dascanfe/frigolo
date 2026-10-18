@@ -2,6 +2,7 @@ import type { EmailOtpType } from '@supabase/supabase-js'
 import { LogIn, MailCheck, UserPlus } from 'lucide-react'
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { PasswordField } from '@/components/PasswordField'
 import { TextField } from '@/components/TextField'
@@ -50,6 +51,7 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
   const [hasInvite] = useState(() => readPendingInvite() !== null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [forgotSentTo, setForgotSentTo] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(() => readUrlOutcome())
   // captcha: con la site key serve un token nuovo per ogni invio
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
@@ -150,17 +152,9 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
             {error ?? notice}
           </p>
         )}
-        <Turnstile
-          ref={turnstile}
-          onToken={setCaptchaToken}
-          action="resend"
-        />
+        <Turnstile ref={turnstile} onToken={setCaptchaToken} action="resend" />
         <div className="flex flex-col items-center gap-1">
-          <Button
-            variant="secondary"
-            onClick={() => void handleResend()}
-            disabled={busy}
-          >
+          <Button variant="secondary" onClick={() => void handleResend()} disabled={busy}>
             {busy ? t.common.wait : t.checkEmail.resend}
           </Button>
           <Button
@@ -245,11 +239,7 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
               onChange={(e) => setEmail(e.target.value)}
               error={error}
             />
-            <Turnstile
-              ref={turnstile}
-              onToken={setCaptchaToken}
-              action="resend"
-            />
+            <Turnstile ref={turnstile} onToken={setCaptchaToken} action="resend" />
             <Button type="submit" fullWidth disabled={busy || !cleanEmail}>
               {busy ? t.common.wait : t.authLink.resend}
             </Button>
@@ -288,7 +278,8 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
       setError(describeAuthError(resetError))
       return
     }
-    setNotice(t.login.forgotSent(cleanEmail))
+    // stesso riscontro se l'account esiste o no: non lo si rivela
+    setForgotSentTo(cleanEmail)
   }
 
   return (
@@ -401,17 +392,9 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
             {t.login.legalAfter}
           </p>
         )}
-        <Turnstile
-          ref={turnstile}
-          onToken={setCaptchaToken}
-          action={mode}
-        />
+        <Turnstile ref={turnstile} onToken={setCaptchaToken} action={mode} />
         <Button type="submit" fullWidth disabled={!canSubmit}>
-          {busy
-            ? t.common.wait
-            : mode === 'signin'
-              ? t.login.submitSignin
-              : t.login.submitSignup}
+          {busy ? t.common.wait : mode === 'signin' ? t.login.submitSignin : t.login.submitSignup}
         </Button>
         {mode === 'signin' && (
           <div className="flex justify-center">
@@ -421,6 +404,19 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
           </div>
         )}
       </form>
+      <BottomSheet
+        open={forgotSentTo !== null}
+        onClose={() => setForgotSentTo(null)}
+        title={t.login.forgotSheetTitle}
+      >
+        <div className="flex flex-col items-center gap-4 pb-2 text-center">
+          <img src="/mascot-happy.webp" alt="" width={96} height={96} className="size-24" />
+          <p className="text-primary">{t.login.forgotSheetMessage(forgotSentTo ?? '')}</p>
+          <Button fullWidth onClick={() => setForgotSentTo(null)}>
+            {t.login.forgotSheetOk}
+          </Button>
+        </div>
+      </BottomSheet>
     </main>
   )
 }
