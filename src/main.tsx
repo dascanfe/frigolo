@@ -11,6 +11,7 @@ import App from '@/App'
 import { captureInviteFromUrl } from '@/features/lists/inviteCode'
 import { captureAuthConfirm } from '@/lib/authConfirm'
 import { setupInstallPrompt, setupServiceWorker } from '@/lib/pwa'
+import { setupTelemetry } from '@/lib/telemetry'
 import { applyStoredTheme } from '@/lib/theme'
 
 const rootElement = document.getElementById('root')
@@ -25,6 +26,8 @@ captureInviteFromUrl()
 captureAuthConfirm()
 setupServiceWorker()
 setupInstallPrompt()
+// metriche anonime: durata delle sessioni ed errori (vedi telemetry.ts)
+setupTelemetry()
 
 createRoot(rootElement).render(
   <StrictMode>
