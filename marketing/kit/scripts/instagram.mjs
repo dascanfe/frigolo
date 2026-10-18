@@ -192,11 +192,15 @@ ${cal}
 ${sezioni}
 ## Prima di pubblicare, ogni volta
 
+- [ ] **Formato 4:5 per post e caroselli:** + > Post, poi PRIMA di "Seleziona più" tocca l'icona del
+      formato in basso a sinistra sull'anteprima finché la foto diventa verticale; solo dopo
+      seleziona le altre slide nell'ordine (il formato della prima vale per tutte). Dopo la
+      pubblicazione non si può più cambiare.
 - [ ] Didascalia incollata da \`didascalia.txt\` (il credito musicale c'è nei Reel)
 - [ ] Testo alternativo inserito (Impostazioni avanzate, Testo alternativo)
 - [ ] Link nella bio ancora quello giusto, con i parametri UTM
 - [ ] Per i Reel: copertina scelta dal file \`02-copertina-reel.png\`, musica "Fun Day"
-- [ ] Solo trattino corto, al massimo una emoji
+- [ ] Solo trattino corto
 - [ ] Ho letto i commenti del post precedente e risposto
 
 ## Rigenerare i materiali
