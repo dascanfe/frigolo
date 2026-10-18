@@ -119,8 +119,7 @@ ti segue vedrebbe due volte la stessa cosa.
 
 **Impostazione, una volta sola**
 
-1. Crea l'account ${PAGINA} (se il nome è preso: @frigolo.app o @frigoloapp; poi cambia \`PAGINA\`
-   in \`instagram-dati.mjs\` e rigenera) e passa a **account professionale** (Creator o Business,
+1. L'account ${PAGINA} è già creato (@frigolo era preso). Passalo ad **account professionale** (Creator o Business,
    gratis): servono statistiche e collaborazioni.
 2. Immagine del profilo: la mascotte (\`marketing/kit/mascotte/frigolo-contenta.png\`).
 3. Bio: \`La lista della spesa sempre in tasca. Per conto tuo o in compagnia. Gratis 💚\` e link

@@ -6,7 +6,7 @@ export const utm = (content) =>
 export const BIO_LINK = utm('bio')
 export const CREDITO = 'Musica: Fun Day di AShamaluevMusic'
 // nome della pagina Instagram di Frigolo: se @frigolo è già preso, cambialo qui e rigenera
-export const PAGINA = '@frigolo'
+export const PAGINA = '@frigolo.app'
 const COLLAB = 'Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > ' + PAGINA + '. Dalla pagina ' + PAGINA + ' accetta l\'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.'
 const STORIE = 'Storie: pubblicale dal tuo profilo menzionando ' + PAGINA + ' (sticker Menzione). Dalla pagina ' + PAGINA + ' ricondividi la menzione e salvala in evidenza.'
 
