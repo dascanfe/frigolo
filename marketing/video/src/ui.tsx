@@ -2,7 +2,9 @@ import React from 'react'
 import {
   AbsoluteFill,
   Audio,
+  Freeze,
   Img,
+  OffthreadVideo,
   Sequence,
   delayRender,
   continueRender,
@@ -13,7 +15,8 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion'
-import { C, FONT_TEXT, FONT_TITLE } from './theme'
+import { C, FONT_TEXT, FONT_TITLE, THEME_BG } from './theme'
+import clips from './clips.json'
 
 /* ---------- font locali ---------- */
 const FONTS: [string, string, string, string][] = [
@@ -53,12 +56,12 @@ export const useLayout = (): Layout => {
   return land
     ? {
         land, w, h,
-        phone: { w: 410, cx: 500, top: 115 },
+        phone: { w: 470, cx: 500, top: 30 },
         title: { x: 960, y: 0, w: 820, size: 96, align: 'left', middle: true },
       }
     : {
         land, w, h,
-        phone: { w: 680, cx: 540, top: 610 },
+        phone: { w: 600, cx: 540, top: 590 },
         title: { x: 90, y: 250, w: 900, size: 92, align: 'center', middle: false },
       }
 }
@@ -69,7 +72,7 @@ export const Background: React.FC = () => {
   const { width, height } = useVideoConfig()
   const blobs = [
     { x: 0.15, y: 0.2, r: 0.34, c: C.sabbia, s: 0.6 },
-    { x: 0.9, y: 0.55, r: 0.4, c: '#f0dcc0', s: 0.45 },
+    { x: 0.9, y: 0.55, r: 0.4, c: '#f6dfe5', s: 0.45 },
     { x: 0.3, y: 0.95, r: 0.36, c: C.sabbia, s: 0.8 },
   ]
   const m = Math.max(width, height)
@@ -236,7 +239,6 @@ export const Phone: React.FC<{
         <div style={{ position: 'absolute', left: m.bez, top: m.bez, width: m.sw, height: m.sh, borderRadius: w * 0.135 - m.bez, overflow: 'hidden', background: C.cremaFondo }}>
           {children(m.k)}
         </div>
-        <div style={{ position: 'absolute', left: w / 2 - w * 0.13, top: m.bez + w * 0.02, width: w * 0.26, height: w * 0.05, borderRadius: w, background: '#0d0907' }} />
       </div>
     </div>
   )
@@ -317,5 +319,49 @@ export const Chip: React.FC<{ text: string; x: number; y: number; delay: number;
     <div style={{ position: 'absolute', left: x, top: y, transform: `translateX(-50%) scale(${s})`, opacity: s, background: color, color: fg, fontFamily: FONT_TEXT, fontWeight: 900, fontSize: size, padding: `${size * 0.35}px ${size * 0.8}px`, borderRadius: 999, boxShadow: '0 10px 24px rgba(58,44,33,0.18)', whiteSpace: 'nowrap', letterSpacing: 0.3 }}>
       {text}
     </div>
+  )
+}
+
+/* ---------- clip registrate sull'app vera ---------- */
+type ClipName = keyof typeof clips
+export const clipInfo = (name: ClipName) => clips[name] as { dur: number; taps: { t: number; x: number; y: number; label?: string }[] }
+
+/**
+ * Schermo registrato dall'app (390x796 pt sotto la status bar), intero e in proporzione:
+ * niente zoom, niente ritagli. Sopra: status bar e indicatore Home di iOS. I cerchi dei
+ * tocchi sono nelle posizioni e nei momenti reali dei tocchi registrati.
+ * `lead`: secondi di clip prima del primo tocco. `sfx`: nome del suono per ogni tocco.
+ */
+export const PhoneClip: React.FC<{ name: ClipName; k: number; lead?: number; sfx?: 'tic' | 'tic2' | null; themeStrip?: boolean }> = ({
+  name, k, lead = 0.7, sfx = 'tic', themeStrip = false,
+}) => {
+  const frame = useCurrentFrame()
+  const info = clipInfo(name)
+  const s0 = Math.max(0, (info.taps[0]?.t ?? lead) - lead)
+  const maxLocal = Math.max(0, Math.floor((info.dur - s0) * 30) - 2)
+  let strip = THEME_BG.lampone
+  if (themeStrip) {
+    for (const t of info.taps) {
+      const f = Math.round((t.t - s0) * 30) + 3
+      if (t.label && THEME_BG[t.label] && frame >= f) strip = THEME_BG[t.label]
+    }
+  }
+  return (
+    <>
+      <div style={{ position: 'absolute', inset: 0, background: strip }} />
+      <Freeze frame={Math.min(frame, maxLocal)}>
+        <OffthreadVideo
+          src={staticFile(`clips/${name}.mp4`)}
+          startFrom={Math.round(s0 * 30)}
+          muted
+          style={{ position: 'absolute', left: 0, top: 48 * k, width: 390 * k, height: 796 * k }}
+        />
+      </Freeze>
+      <Img src={staticFile('img/overlay.png')} style={{ position: 'absolute', left: 0, top: 0, width: 390 * k, height: 844 * k }} />
+      {info.taps.map((t, i) => (
+        <Tap key={i} x={t.x} y={t.y} at={Math.round((t.t - s0) * 30)} k={k} />
+      ))}
+      {sfx ? info.taps.map((t, i) => <Sfx key={i} at={Math.round((t.t - s0) * 30)} name={sfx} />) : null}
+    </>
   )
 }

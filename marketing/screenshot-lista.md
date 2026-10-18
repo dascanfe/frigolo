@@ -20,22 +20,22 @@ Account di prova creati apposta, nomi inventati e neutri, nessun cognome.
 
 | Persona | Colore     | Foto                      | Liste             |
 | ------- | ---------- | ------------------------- | ----------------- |
-| Sara    | ottanio    | nessuna (avatar mascotte) | Casa, Coinquilini |
+| Giulia    | ottanio    | nessuna (avatar mascotte) | Casa, Coinquilini |
 | Luca    | arancio    | nessuna (avatar mascotte) | Coinquilini       |
 | Marta   | ocra       | nessuna (avatar mascotte) | Coinquilini       |
-| Ale     | terracotta | nessuna (avatar mascotte) | Casa              |
+| Lele     | terracotta | nessuna (avatar mascotte) | Casa              |
 
 Niente foto di persone: anche se fossero generate, sembrerebbero utenti veri.
 
-- **Lista "Casa"** (Sara e Ale). Da comprare: Latte (2), Pane, Mele (1 kg), Zucchine, Yogurt
+- **Lista "Casa"** (Giulia e Lele). Da comprare: Latte (2), Pane, Mele (1 kg), Zucchine, Yogurt
   bianco (4), Pasta (2), Passata di pomodoro, Uova (6), Caffè, Detersivo piatti, Piselli
   surgelati. Nota su Latte: "Quello senza lattosio".
-- **Lista "Coinquilini"** (Sara, Luca, Marta). Da comprare: Carta igienica, Olio, Sale grosso,
+- **Lista "Coinquilini"** (Giulia, Luca, Marta). Da comprare: Carta igienica, Olio, Sale grosso,
   Spugne, Birra (6), Patatine, Pomodori.
 - **Supermercati:** "Supermercato sotto casa" e "Mercato del sabato" (nessuna insegna vera).
 - **Storico:** 10-12 spese su 6 settimane in "Casa", 8-20 prodotti ciascuna, per avere grafici
   pieni nelle analitiche. Si può generare con uno script di seed.
-- **Prodotti creati dalla lista:** "Biscotti della nonna", "Pesto di Ale".
+- **Prodotti creati dalla lista:** "Biscotti della nonna", "Pesto di Lele".
 
 ## Elenco
 
@@ -43,13 +43,13 @@ Niente foto di persone: anche se fossero generate, sembrerebbero utenti veri.
 | --- | -------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | S1  | Accesso (Crea l'account)                     | Campi vuoti, mascotte visibile                                                      | Landing ("come si comincia")                                     |
 | S2  | Catalogo                                     | Categoria Frutta e verdura aperta, 3-4 tessere già arancio (in lista)               | Video scena 2, social, landing                                   |
-| S3  | Lista "Casa" vista da Ale (a casa)           | Da comprare pieno, Yogurt appena aggiunto                                           | Video scena 3                                                    |
-| S4  | Lista "Casa" vista da Sara (al supermercato) | Stessa lista, 4 prodotti già nel carrello, Yogurt in cima ai "Da comprare"          | Video scena 3, social                                            |
+| S3  | Lista "Casa" vista da Lele (a casa, vede l'Ananas appena aggiunto)           | Da comprare pieno, Yogurt appena aggiunto                                           | Video scena 3                                                    |
+| S4  | Lista "Casa" vista da Giulia (al supermercato) | Stessa lista, 4 prodotti già nel carrello, Yogurt in cima ai "Da comprare"          | Video scena 3, social                                            |
 | S5  | Lista in ordine di corsia                    | Supermercato "Supermercato sotto casa" scelto, sezioni ordinate per corsia          | Video scena 4, post "trucchi"                                    |
 | S6  | Lista con carrello                           | Metà prodotti "Nel carrello" (verde salvia), metà "Da comprare"                     | Video scena 5, landing                                           |
 | S7  | Spesa finita                                 | Messaggio "Spesa finita: 12 prodotti", effetto di festa                             | Video scena 6, social                                            |
 | S8  | Cambia lista                                 | Foglio aperto con "Casa" e "Coinquilini"                                            | Video scena 7, landing                                           |
-| S9  | Persone della lista "Coinquilini"            | Sara, Luca, Marta con avatar mascotte su colori diversi, codice d'invito            | Video scena 7, post sugli inviti                                 |
+| S9  | Persone della lista "Coinquilini"            | Giulia, Luca, Marta con avatar mascotte su colori diversi, codice d'invito            | Video scena 7, post sugli inviti                                 |
 | S10 | Installazione su iPhone                      | Safari su frigolo.dascanfe.com, foglio Condividi con "Aggiungi alla schermata Home" | Video scena 8, landing (istruzioni)                              |
 | S11 | Installazione su Android                     | Chrome con "Installa app"                                                           | Landing (istruzioni)                                             |
 | S12 | Invito ricevuto                              | Schermata d'ingresso con "Marta ti invita nella lista Coinquilini"                  | Post sugli inviti                                                |

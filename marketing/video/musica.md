@@ -1,23 +1,17 @@
 # Musica del video
 
-Stato: **nessuna traccia inclusa**. I render attuali hanno solo i suoni di tocco (tic, plin, tada),
-sintetizzati dallo script `scripts/make-audio.mjs`, quindi senza file di terzi.
+Brano: **Fun Day** di AShamaluevMusic (strumentale, circa 161 s). Il file è in
+`public/audio/musica.mp3` e **non è in git** (cartella ignorata): va rimesso a mano su un computer nuovo.
 
-Perché: Pixabay Music risponde 403 a chi scarica da script (protezione anti-bot) e il download
-dei brani richiede comunque un accesso. Non creo account né scarico a mano.
+## Riga di credito per le didascalie dei post
 
-## Come aggiungerla (2 minuti)
+```
+Musica: Fun Day di AShamaluevMusic
+```
 
-1. Su [pixabay.com/music](https://pixabay.com/music/) scegli un brano allegro e leggero
-   (ukulele, chitarra acustica o glockenspiel, 100-120 BPM, almeno 45 secondi, senza voce).
-2. Scarica l'MP3 e mettilo in `marketing/video/public/audio/musica.mp3`.
-3. Annota qui sotto: titolo, autore, URL della pagina del brano e data del download. La licenza
-   è la [Pixabay Content License](https://pixabay.com/service/license-summary/): uso gratuito anche
-   commerciale, attribuzione non richiesta. Salva la pagina come prova per eventuali segnalazioni.
-4. In `src/theme.ts` imposta `MUSIC = 'audio/musica.mp3'` e lancia `npm run render`.
+## Nel video
 
-## Traccia scelta
-
-| Titolo | Autore | URL | Data download |
-| ------ | ------ | --- | ------------- |
-| (da scegliere) | | | |
+Dissolvenza in entrata di 1 s e in uscita di 2 s, volume moderato (0,22) sotto i suoni di tocco
+(tic, plin, tada, sintetizzati da `scripts/make-audio.mjs`, nessun file di terzi). Il volume e il
+percorso si cambiano in `src/theme.ts` (`MUSIC`, `MUSIC_VOLUME`). Prima di pubblicare conferma la
+licenza del brano sulla pagina dell'autore e tieni la prova della licenza insieme al progetto.
