@@ -1136,6 +1136,66 @@
         </section>
       </div>
 
+      <!-- v3: iscrizioni, percorso, uso, sessioni, errori -->
+      <div class="griglia g-2">
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Iscrizioni</span><span class="info" tabindex="0" data-tip="<b>Account creati</b><div class='riga'>Dai contatori: restano anche gli account poi cancellati. Escluso l'account di Daniele. Non dipende dal periodo scelto.</div>">i</span></h2><span class="conta" id="conta-iscrizioni"></span></header>
+          <div class="etichetta" style="margin:0 0 10px">Per settimana</div>
+          <div class="area" id="a-iscr-settimane" style="height:120px"></div>
+          <div class="asse-x" id="a-iscr-settimane-asse"></div>
+          <div class="etichetta" style="margin:18px 0 10px">Per mese</div>
+          <div class="area" id="a-iscr-mesi" style="height:120px"></div>
+          <div class="asse-x" id="a-iscr-mesi-asse"></div>
+          <div class="etichetta" style="margin:18px 0 10px">Per anno</div>
+          <div class="barre" id="a-iscr-anni"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Percorso di iscrizione</span><span class="info" tabindex="0" data-tip="<b>Dalla landing al primo prodotto</b><div class='riga'>Visite alla landing e visite che vanno all'app (progetto delle statistiche), poi chi si e' registrato nel periodo ed e' ancora iscritto: email confermata, profilo completato, almeno una lista, almeno un prodotto aggiunto. Accanto, la quota sul passo prima.</div>">i</span></h2></header>
+          <div class="barre" id="a-percorso"></div>
+          <p class="nota-sotto" id="a-percorso-nota">La landing e l'app non si possono collegare persona per persona (ed e' voluto): i primi due passi sono visite, gli altri persone.</p>
+        </section>
+      </div>
+
+      <div class="griglia g-2">
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Quanto la usano</span><span class="info" tabindex="0" data-tip="<b>Giorni d'uso per persona</b><div class='riga'>Fra le persone attive nel periodo: quante l'hanno usata in un solo giorno, in 2-5, 6-15 o 16 giorni e piu'. Solo conteggi, nessuna persona.</div>">i</span></h2><span class="conta" id="conta-uso"></span></header>
+          <div class="barre" id="a-uso"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Sessioni</span><span class="info" tabindex="0" data-tip="<b>Quanto resta aperta l'app</b><div class='riga'>Una sessione parte quando l'app si apre o torna in primo piano e finisce dopo 30 secondi in sottofondo. Solo chi ha fatto l'accesso. Mediana stimata sulle fasce di durata.</div>">i</span></h2><span class="conta" id="conta-sessioni"></span></header>
+          <div class="area" id="a-sessioni" style="height:120px"></div>
+          <div class="asse-x" id="a-sessioni-asse"></div>
+          <div class="legenda"><span><i class="nuove"></i> Sessioni</span><span><i class="seconda"></i> Durata media</span></div>
+          <div class="etichetta" style="margin:18px 0 10px">App installata o browser</div>
+          <div class="barre" id="a-modalita"></div>
+          <div class="etichetta" style="margin:18px 0 10px">Dispositivo</div>
+          <div class="barre" id="a-dispositivi"></div>
+        </section>
+      </div>
+
+      <div class="griglia g-3">
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Versioni in uso</span><span class="info" tabindex="0" data-tip="<b>Versioni dell'app</b><div class='riga'>Sessioni per versione: dice quanto ci mette un aggiornamento ad arrivare a tutti.</div>">i</span></h2></header>
+          <div class="barre" id="a-versioni"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Temi scelti</span><span class="info" tabindex="0" data-tip="<b>Tema dell'app</b><div class='riga'>Sessioni per tema in uso.</div>">i</span></h2></header>
+          <div class="barre" id="a-temi"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Funzioni</span><span class="info" tabindex="0" data-tip="<b>Cosa usano</b><div class='riga'>Spesa finita a mano, liste con piu' persone, codici di invito rinnovati, sessioni passate almeno in parte offline.</div>">i</span></h2></header>
+          <div class="barre" id="a-funzioni"></div>
+        </section>
+      </div>
+
+      <section class="pannello" style="margin-bottom:12px">
+        <header><h2 class="titoletto"><span class="t">Errori dell'app</span><span class="info" tabindex="0" data-tip="<b>Errori nel telefono delle persone</b><div class='riga'>Errori del codice e delle richieste al server, con il messaggio ripulito da email, codici e numeri. Al massimo 10 per apertura, senza doppioni. Offline non si contano.</div><div class='riga'>Piu' basso e' meglio.</div>">i</span></h2><span class="conta" id="conta-errori"></span></header>
+        <div class="area" id="a-errori" style="height:110px"></div>
+        <div class="asse-x" id="a-errori-asse"></div>
+        <div class="etichetta" style="margin:18px 0 10px">I piu' frequenti</div>
+        <div class="tabella-guscio" id="a-errori-tabella"></div>
+      </section>
+
       <div class="griglia g-2">
         <section class="pannello">
           <header><h2 class="titoletto"><span class="t">Tornano?</span><span class="info" tabindex="0" data-tip="<b>Retention</b><div class='riga'>Fra chi si e' registrato nel periodo: quanti hanno fatto qualcosa il giorno dopo (1 giorno), nella seconda settimana (giorni 7-13) e nel secondo mese (giorni 30-59). Conta solo chi si e' registrato abbastanza tempo fa da poterlo misurare.</div>">i</span></h2></header>
