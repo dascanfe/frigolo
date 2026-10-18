@@ -57,6 +57,12 @@ insert into public.households (id, name) values
   ('aaaaaaaa-2222-4222-8222-222222222222', 'Ufficio prova')
 on conflict (id) do nothing;
 
+-- gli inviti scadono dopo 7 giorni: a ogni rilancio li rinnoviamo
+update public.households
+set join_code_expires_at = now() + interval '7 days',
+    invite_token_expires_at = now() + interval '7 days'
+where id in ('aaaaaaaa-1111-4111-8111-111111111111', 'aaaaaaaa-2222-4222-8222-222222222222');
+
 insert into public.household_members (household_id, user_id) values
   ('aaaaaaaa-1111-4111-8111-111111111111', '11111111-1111-4111-8111-111111111111'),
   ('aaaaaaaa-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222'),
