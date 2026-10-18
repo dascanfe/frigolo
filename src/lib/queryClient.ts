@@ -1,5 +1,12 @@
-import { QueryClient, focusManager, onlineManager } from '@tanstack/react-query'
+import {
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  focusManager,
+  onlineManager,
+} from '@tanstack/react-query'
 import { registerOfflineMutations } from './offlineQueue'
+import { reportError } from './telemetry'
 
 /**
  * Client TanStack Query. La cache viene persistita su IndexedDB (vedi App e
@@ -7,6 +14,9 @@ import { registerOfflineMutations } from './offlineQueue'
  * offline anche dopo giorni.
  */
 export const queryClient = new QueryClient({
+  // errori di lettura e scrittura nelle metriche anonime (telemetry.ts)
+  queryCache: new QueryCache({ onError: (e) => reportError('query', e) }),
+  mutationCache: new MutationCache({ onError: (e) => reportError('modifica', e) }),
   defaultOptions: {
     queries: {
       staleTime: 60_000,
