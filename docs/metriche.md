@@ -114,6 +114,26 @@ due volte a settimana: chi fa la spesa il sabato non apre l'app il settimo giorn
 Avvertenza sui numeri piccoli: con pochi iscritti le percentuali saltano. Il cruscotto mostra
 sempre anche i valori assoluti ("9 su 22").
 
+### Aggiunte della v3 (migration 0026)
+
+Le azioni degli account in `metrics.excluded` (Daniele) non entrano in nessuna metrica dell'app
+dalla 0025 in poi.
+
+| Metrica                     | Definizione                                                                                                                                                                                                                                                                                          |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Iscrizioni                  | Dal contatore delle registrazioni (restano anche gli account poi cancellati), meno quelle degli account esclusi. Totale, ultime 12 settimane (da lunedì), ultimi 12 mesi, per anno. Non dipende dal periodo scelto.                                                                                  |
+| Distribuzione d'uso         | Fra le persone attive nel periodo, quante sono state attive 1 giorno, 2-5, 6-15, 16 o più; più la mediana dei giorni. Solo conteggi.                                                                                                                                                                 |
+| Sessione                    | Parte quando l'app si apre o torna visibile, finisce dopo 30 secondi nascosta (se l'app viene chiusa, la durata parte all'apertura successiva). Solo chi ha fatto l'accesso. Massimo 4 ore. Stima per difetto.                                                                                       |
+| Durata media e mediana      | Media sui secondi totali; mediana stimata interpolando dentro 8 fasce (meno di 10 s, 10-29 s, 30-59 s, 1-2, 2-5, 5-10, 10-30 minuti, 30 e oltre).                                                                                                                                                    |
+| Modalità, dispositivo, tema | Per sessione: app installata (standalone) o browser; iOS, Android o computer; tema in uso; versione dell'app; se la sessione è passata offline.                                                                                                                                                      |
+| Errori                      | Errori del codice (`window.onerror`, promesse non gestite) e delle letture/scritture (TanStack Query). Messaggio ripulito da email, id, token, parametri e numeri lunghi; pagina senza parametri. Massimo 10 per apertura, niente doppioni, niente errori da offline.                                |
+| Percorso di iscrizione      | Visite alla landing e visite verso l'app (progetto statistiche), poi fra chi si è registrato nel periodo ed è ancora iscritto: email confermata, profilo completato, almeno una lista, almeno un prodotto. I primi due passi sono visite, gli altri persone: non si collegano fra loro, ed è voluto. |
+| Funzioni                    | Spesa finita a mano, liste con 2+ persone, inviti usati, codici di invito rinnovati, sessioni passate almeno in parte offline.                                                                                                                                                                       |
+
+Anti abuso: ogni utente può mandare al massimo 60 sessioni e 20 errori all'ora (tabella
+`metrics.rate_limit`, con user_id, svuotata ogni notte e mai letta dal cruscotto). Sessioni ed
+errori aggregati si tengono 400 giorni.
+
 ## Obiettivi di lancio (proposta di Pepe, da concordare con Salvia)
 
 Primi 30 giorni dopo il lancio. Sono ipotesi ragionevoli per un'app gratuita lanciata con i

@@ -1,0 +1,25 @@
+# ============================================================
+#  Cruscotto di Frigolo: fuori dai motori di ricerca, sempre.
+#
+#  L'indirizzo casuale non e' la difesa: la difesa e' l'accesso
+#  con email e password di Supabase piu' le regole sui due
+#  database, che rispondono solo all'account autorizzato.
+# ============================================================
+
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+  Header set Referrer-Policy "no-referrer"
+
+  <FilesMatch "\.(html|js)$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate"
+  </FilesMatch>
+
+  # la libreria pesa 200 KB e non cambia: si tiene una settimana
+  <FilesMatch "^supabase\.js$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+</IfModule>
