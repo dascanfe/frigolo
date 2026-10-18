@@ -185,6 +185,37 @@ begin
     'le registrazioni passate restano nello storico';
 end $$;
 
+-- -----------------------------------------------------------------------------
+-- 0025: esclusi, istantanea, invio senza segreti
+-- -----------------------------------------------------------------------------
+select pg_temp.as_postgres();
+insert into metrics.excluded (user_id) values ('d0000000-0000-0000-0000-000000000001') on conflict do nothing;
+create temp table prima2 as select pg_temp.conta('lists_created') as liste;
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000001');
+select public.create_household('Lista di chi e escluso');
+select pg_temp.as_postgres();
+do $$
+declare
+  v jsonb := metrics.snapshot();
+begin
+  assert pg_temp.conta('lists_created') = (select liste from prima2), 'le azioni di chi e escluso non contano';
+  assert not exists (select 1 from metrics.active_days where user_id = 'd0000000-0000-0000-0000-000000000001'),
+    'chi e escluso non risulta attivo';
+  assert (v -> 'periodi') ?& array['oggi', '7', '30', 'sempre'], 'quattro periodi';
+  assert jsonb_array_length(v -> 'periodi' -> '7' -> 'ora' -> 'giorni') = 7, 'sette giorni';
+  assert v::text !~* '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', 'nessun id nell istantanea';
+end $$;
+
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000001');
+do $$
+begin
+  begin
+    perform metrics.push_snapshot();
+    assert false, 'un utente lancia l invio';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
 \o
 select 'metriche.sql: tutti i controlli passati' as esito;
 rollback;
