@@ -42,11 +42,26 @@ export const it = {
     submitSignup: "Crea l'account",
     forgot: 'Password dimenticata?',
     forgotNoEmail: 'Scrivi prima la tua email, poi tocca "Password dimenticata?".',
-    forgotSent: (email: string) =>
-      `Se ${email} ha un account, ti arriva un'email con il link per scegliere una nuova password.`,
-    captchaFailed:
-      'Non sono riuscito a verificare che sei una persona. Riprova.',
+    forgotSheetTitle: 'Controlla la posta',
+    forgotSheetMessage: (email: string) =>
+      `Ti ho mandato un'email a ${email}. Apri il link per scegliere una nuova password.`,
+    forgotSheetOk: 'Ok',
+    captchaFailed: 'Non sono riuscito a verificare che sei una persona. Riprova.',
     pendingInvite: "Ti hanno invitato in una lista: crea l'account o accedi e poi ci entri.",
+  },
+  newPassword: {
+    title: 'Nuova password',
+    lead: 'Scegli la nuova password per il tuo account.',
+    password: 'Nuova password',
+    confirm: 'Ripeti la password',
+    mismatch: 'Le due password non coincidono.',
+    save: 'Salva la nuova password',
+    saving: 'Salvo...',
+    cancel: 'Annulla ed esci',
+    changedToast: 'Password cambiata',
+    doneTitle: 'Password cambiata!',
+    doneMessage: "Torna nell'app Frigolo ed entra con la nuova password.",
+    continueHere: 'Oppure continua qui',
   },
   authLink: {
     confirmed: 'Email confermata',
