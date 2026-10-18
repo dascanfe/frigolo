@@ -60,7 +60,7 @@ for (let i = 0; i < jobs.length; i += 4) {
 
 // ---------- piano in Markdown ----------
 if (!solo && !args.includes('--no-piano')) {
-  const { BIO_LINK, utm } = await import('./instagram-dati.mjs')
+  const { BIO_LINK, utm, PAGINA } = await import('./instagram-dati.mjs')
   const cal = CONTENUTI.map((c) => `| ${c.sett} | ${c.giorno} ${c.ora} | ${c.id.slice(0, 5)} | ${c.titolo} | ${c.formato} |`).join('\n')
   const sezioni = CONTENUTI.map((c, i) => {
     const files = [...(c.video || []).map(([, n]) => n), ...c.immagini.map((im, k) => (Array.isArray(im) ? im[0] : `${String(k + 1).padStart(2, '0')}-slide.png`))]
@@ -70,6 +70,7 @@ if (!solo && !args.includes('--no-piano')) {
 - **Formato:** ${c.formato}
 - **Obiettivo:** ${c.obiettivo}
 - **File:** \`pacchetto-instagram/${c.id}/\` (${files.join(', ')})${c.note ? `\n- **Nota:** ${c.note}` : ''}
+- **Come pubblicarlo:** ${c.collab}${c.evidenza ? `\n- **In evidenza su ${PAGINA}:** salva la storia di questo contenuto nella raccolta "${c.evidenza}"` : ''}
 - **Sticker e storie:** ${c.sticker}
 
 **Didascalia** (uguale a \`didascalia.txt\` nella cartella):
@@ -108,6 +109,29 @@ di lancio in [../strategia/lancio.md](../strategia/lancio.md).
   didascalia. Prima di pubblicare conferma la licenza (vedi \`marketing/video/musica.md\`).
 - **Cosa non promettere** (da posizionamento.md): niente "gratis per sempre", niente risparmio,
   niente funzioni che non ci sono (notifiche, codici a barre, più di 5 persone per lista).
+
+## La pagina ${PAGINA}
+
+Frigolo ha una sua pagina, ma **il motore resta il tuo profilo**: i contenuti si pubblicano da te
+come **post in collaborazione** con ${PAGINA}, così compaiono su tutti e due i profili con un solo
+lavoro e gli stessi like e commenti. Niente ricondivisioni nel feed: Instagram non le premia e chi
+ti segue vedrebbe due volte la stessa cosa.
+
+**Impostazione, una volta sola**
+
+1. Crea l'account ${PAGINA} (se il nome è preso: @frigolo.app o @frigoloapp; poi cambia \`PAGINA\`
+   in \`instagram-dati.mjs\` e rigenera) e passa a **account professionale** (Creator o Business,
+   gratis): servono statistiche e collaborazioni.
+2. Immagine del profilo: la mascotte (\`marketing/kit/mascotte/frigolo-contenta.png\`).
+3. Bio: \`La lista della spesa sempre in tasca. Per conto tuo o in compagnia. Gratis 💚\` e link
+   ${BIO_LINK.replace('utm_content=bio', 'utm_content=bio-pagina')}
+4. Raccolte in evidenza: **Installa**, **Come funziona**, **Novità**, **Domande**, **Caffè**. Per
+   ogni contenuto qui sotto è indicato cosa salvare e dove.
+5. Nel tuo profilo personale aggiungi ${PAGINA} nella bio (per esempio "Sto facendo ${PAGINA} 🧊").
+
+**Cosa fa la pagina da sola:** risponde ai messaggi e ai commenti, ricondivide nelle storie chi
+la tagga mentre usa l'app, tiene aggiornate le raccolte in evidenza. Se un giorno la gente comincia
+a cercarla e taggarla da sé, avrà un piano suo.
 
 ## Bio e link
 
