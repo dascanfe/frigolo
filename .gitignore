@@ -40,3 +40,5 @@ coverage
 # Config locale tooling (gli agenti della squadra invece vanno nel repo)
 .claude/*
 !.claude/agents/
+pacchetto-ftp/
+pacchetto-instagram/

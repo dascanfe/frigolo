@@ -372,8 +372,8 @@ for (const [name, title] of [
 
 // ---------------------------------------------------------------- cruscotto delle statistiche
 // landing/statistiche/ -> dist/<id casuale>/, non indicizzato e senza link dalla landing.
-// Le chiavi pubbliche dei due progetti Supabase arrivano dalle variabili d'ambiente:
-// senza, restano i segnaposto e il cruscotto non si collega (nessun errore di build).
+// La chiave pubblica del progetto delle statistiche arriva da STATS_SUPABASE_ANON_KEY:
+// senza, resta il segnaposto e il cruscotto non si collega (nessun errore di build).
 const STATS_DIR = '70ab0c479107f71a'
 const statsOut = join(dist, STATS_DIR)
 cpSync(join(here, 'statistiche'), statsOut, { recursive: true })
@@ -392,10 +392,7 @@ cpSync(
   join(root, 'node_modules/@supabase/supabase-js/dist/umd/supabase.js'),
   join(statsOut, 'lib/supabase.js'),
 )
-const statsKeys = {
-  __STATS_ANON_KEY__: process.env.STATS_SUPABASE_ANON_KEY,
-  __FRIGOLO_ANON_KEY__: process.env.VITE_SUPABASE_ANON_KEY,
-}
+const statsKeys = { __STATS_ANON_KEY__: process.env.STATS_SUPABASE_ANON_KEY }
 let statsConfig = readFileSync(join(statsOut, 'config.js'), 'utf8')
 for (const [segnaposto, valore] of Object.entries(statsKeys)) {
   if (valore) statsConfig = statsConfig.replace(segnaposto, valore)
