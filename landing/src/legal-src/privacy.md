@@ -62,6 +62,13 @@ sulla salute). Frigolo non ne ha bisogno e non le usa.
   persona da un programma automatico.
 - Statistiche d'uso anonime e aggregate (per esempio quante persone aprono
   l'app in un giorno), raccolte **senza cookie** e senza identificativi che ti seguano nel tempo.
+- Durata di utilizzo e dati tecnici: quando usi l'app con il tuo account, registriamo in forma
+  anonima quanto dura ogni utilizzo, la versione dell'app, se è installata o aperta nel browser, il
+  tipo di dispositivo (iPhone, Android o computer), il tema scelto e se eri offline. Questi dati
+  vengono sommati in conteggi giornalieri senza alcun collegamento al tuo account.
+- Errori tecnici: se l'app incontra un errore, inviamo un messaggio tecnico privato di email,
+  codici e numeri, con la versione dell'app e la pagina (senza parametri). Anche questi dati sono
+  conteggi giornalieri non collegati al tuo account.
 
 **Dati salvati sul tuo dispositivo**
 
@@ -132,17 +139,19 @@ scrivendo a frigolo@dascanfe.com.
 
 ## 6. Per quanto tempo li teniamo
 
-| Dati                                   | Per quanto                                                                                                                                     |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Account e profilo                      | Finché non cancelli l'account. Dopo 24 mesi senza accessi l'account viene cancellato, con un'email di avviso 30 giorni prima                   |
-| Liste e storico delle spese            | Finché nella lista c'è almeno una persona. Quando l'ultima persona esce o cancella l'account, la lista viene cancellata con tutto il contenuto |
-| Le tue attività in una lista condivisa | Se cancelli l'account, le voci che hai aggiunto restano nella lista delle altre persone, ma senza il tuo nome né la tua foto                   |
-| Foto profilo                           | Cancellata quando la cambi o cancelli l'account                                                                                                |
-| Giorni in cui hai usato l'app          | 180 giorni, solo per contare quante persone usano Frigolo; cancellati con l'account                                                            |
-| Log tecnici dei fornitori              | Pochi giorni, secondo le impostazioni dei fornitori                                                                                            |
-| Copie di sicurezza (backup)            | Per il periodo previsto dal fornitore (di norma pochi giorni); i dati cancellati spariscono dai backup alla loro scadenza                      |
-| Email scambiate con il titolare        | Il tempo necessario a rispondere, poi al massimo 12 mesi                                                                                       |
-| Dati delle donazioni                   | Per il tempo richiesto dalla legge (fino a 10 anni per gli obblighi fiscali)                                                                   |
+| Dati                                             | Per quanto                                                                                                                                     |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Account e profilo                                | Finché non cancelli l'account. Dopo 24 mesi senza accessi l'account viene cancellato, con un'email di avviso 30 giorni prima                   |
+| Liste e storico delle spese                      | Finché nella lista c'è almeno una persona. Quando l'ultima persona esce o cancella l'account, la lista viene cancellata con tutto il contenuto |
+| Le tue attività in una lista condivisa           | Se cancelli l'account, le voci che hai aggiunto restano nella lista delle altre persone, ma senza il tuo nome né la tua foto                   |
+| Foto profilo                                     | Cancellata quando la cambi o cancelli l'account                                                                                                |
+| Giorni in cui hai usato l'app                    | 180 giorni, solo per contare quante persone usano Frigolo; cancellati con l'account                                                            |
+| Conteggi anonimi di utilizzo ed errori           | Al massimo 400 giorni                                                                                                                          |
+| Numero di invii tecnici per account (anti abuso) | Al massimo 24 ore, poi cancellato                                                                                                              |
+| Log tecnici dei fornitori                        | Pochi giorni, secondo le impostazioni dei fornitori                                                                                            |
+| Copie di sicurezza (backup)                      | Per il periodo previsto dal fornitore (di norma pochi giorni); i dati cancellati spariscono dai backup alla loro scadenza                      |
+| Email scambiate con il titolare                  | Il tempo necessario a rispondere, poi al massimo 12 mesi                                                                                       |
+| Dati delle donazioni                             | Per il tempo richiesto dalla legge (fino a 10 anni per gli obblighi fiscali)                                                                   |
 
 ## 7. I tuoi diritti
 
