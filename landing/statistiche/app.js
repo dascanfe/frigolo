@@ -9,17 +9,16 @@
      eventi) nel progetto delle statistiche, filtrate sulle pagine
      sotto /sub/frigolo (colonna pagine.sito). Le leggono solo le
      regole gia' in vigore: solo l'account di Daniele.
-   - App: gli aggregati d'uso dal progetto di Frigolo (metrics_app).
-
-   Un solo modulo d'accesso entra in tutti e due i progetti; ognuno
-   tiene la sua sessione. Se una manca, si chiude solo la sua sezione.
+   - App: gli aggregati d'uso dell'app. Li calcola ogni ora il
+     database di Frigolo e li manda a questo progetto (tabella
+     frigolo_app_snapshot, stesse regole delle visite): cosi' basta
+     un solo accesso, quello delle statistiche.
    ============================================================ */
 (function () {
   'use strict';
 
   var opzioniClient = { auth: { persistSession: true, autoRefreshToken: true } };
   var sb    = supabase.createClient(window.CONFIG.analitiche.url, window.CONFIG.analitiche.anon, opzioniClient);
-  var sbApp = supabase.createClient(window.CONFIG.frigolo.url, window.CONFIG.frigolo.anon, opzioniClient);
 
   /* I link che portano all'app: il pulsante Apri Frigolo e quelli
      dentro le istruzioni di installazione. */
@@ -1156,11 +1155,11 @@
 
     var email = $('email').value.trim();
     var password = $('password').value;
-    Promise.all([entra(sb, email, password), entra(sbApp, email, password)]).then(function (esiti) {
+    entra(sb, email, password).then(function (ok) {
       btn.disabled = false;
       btn.textContent = 'Entra';
       $('password').value = '';
-      if (!esiti[0] && !esiti[1]) { err.textContent = 'Email o password non corrette.'; return; }
+      if (!ok) { err.textContent = 'Email o password non corrette.'; return; }
       stato.email = email;
       avvia();
     });
@@ -1171,8 +1170,8 @@
       .then(function (r) { return !r.error; }, function () { return false; });
   }
 
-  /* La sezione chiusa chiede solo la password del suo progetto. */
-  [['landing', function () { return sb; }], ['app', function () { return sbApp; }]].forEach(function (x) {
+  /* La sezione chiusa (sessione scaduta) chiede di nuovo la password. */
+  [['landing', function () { return sb; }], ['app', function () { return sb; }]].forEach(function (x) {
     $('accesso-' + x[0]).addEventListener('submit', function (e) {
       e.preventDefault();
       var campo = $('password-' + x[0]);
@@ -1215,7 +1214,7 @@
   }
 
   $('btn-esci').addEventListener('click', function () {
-    Promise.all([sb.auth.signOut(), sbApp.auth.signOut()])
+    Promise.all([sb.auth.signOut()])
       .then(function () { location.reload(); }, function () { location.reload(); });
   });
 
@@ -1576,57 +1575,45 @@
     scrivi('errore-' + chi, '');
   }
 
-  /* Il periodo in date (ora italiana, estremi inclusi): oggi, gli
-     ultimi 7 o 30 giorni, oppure "sempre" (un anno, il massimo che la
-     funzione accetta e' 400 giorni). E lo stesso intervallo subito
-     prima, per il confronto. */
-  function periodoApp(indietro) {
-    var n = stato.tutto ? 365 : (stato.giorni || 1);
-    var a = new Date(); a.setHours(0, 0, 0, 0);
-    a.setDate(a.getDate() - indietro * n);
-    var da = new Date(a); da.setDate(da.getDate() - n + 1);
-    return { p_from: iso(da), p_to: iso(a) };
-  }
-
-  function sessioneApp() {
-    var scadenza = new Promise(function (ok) { setTimeout(function () { ok(MUTO); }, 8000); });
-    var domanda = sbApp.auth.getSession().then(function (r) {
-      var x = r && r.data && r.data.session;
-      if (!x || !x.access_token) return null;
-      if (x.expires_at && x.expires_at * 1000 <= Date.now()) return null;
-      return x;
-    }, function () { return null; });
-    return Promise.race([domanda, scadenza]);
+  /* L'istantanea contiene i quattro periodi del cruscotto, ognuno con
+     il periodo prima per il confronto (tranne "sempre", come nella
+     sezione delle visite). */
+  function chiavePeriodo() {
+    return stato.tutto ? 'sempre' : (stato.giorni === 0 ? 'oggi' : String(stato.giorni));
   }
 
   function caricaApp() {
-    if (stato.finto) { finteApp(); apriSezione('app'); disegnaApp(); piedeApp(); return Promise.resolve(); }
-    return sessioneApp().then(function (viva) {
+    if (stato.finto) {
+      finteApp(); stato.appGenerato = new Date().toISOString();
+      apriSezione('app'); disegnaApp(); piedeApp(); return Promise.resolve();
+    }
+    return sessioneViva().then(function (viva) {
       if (viva === MUTO) { nota('non riesco ad aggiornare, controlla la rete'); return; }
       if (!viva) { chiudiSezione('app'); return; }
-      return sbApp.rpc('metrics_app', periodoApp(0)).then(function (r) {
-        if (r.error) {
-          if (r.error.code === '42501') chiudiSezione('app', 'Questo account non e\' autorizzato a leggere i dati di Frigolo.');
-          else nota('errore da Frigolo: ' + (r.error.message || r.error.code));
+      return sb.from('frigolo_app_snapshot').select('dati, ricevuto').limit(1).then(function (r) {
+        if (r.error) { nota('errore nel leggere le metriche dell\'app: ' + (r.error.message || r.error.code)); return; }
+        var riga = r.data && r.data[0];
+        apriSezione('app');
+        if (!riga || !riga.dati || !riga.dati.periodi) {
+          nota('le metriche dell\'app non sono ancora arrivate');
           return;
         }
-        apriSezione('app');
-        nota('');
-        stato.app = r.data;
-        stato.appPrima = null;
+        var p = riga.dati.periodi[chiavePeriodo()] || {};
+        stato.app = p.ora || null;
+        stato.appPrima = p.prima || null;
+        stato.appGenerato = riga.dati.generato || riga.ricevuto;
+        // arrivano ogni ora: oltre tre ore di ritardo qualcosa si e' fermato
+        var ritardo = (Date.now() - new Date(riga.ricevuto).getTime()) / 3600000;
+        nota(ritardo > 3 ? 'metriche dell\'app ferme da ' + Math.floor(ritardo) + ' ore, da controllare' : '');
         disegnaApp(); piedeApp();
-        return sbApp.rpc('metrics_app', periodoApp(1)).then(function (r2) {
-          stato.appPrima = r2.error ? null : r2.data;
-          disegnaApp();
-        });
       });
-    }).catch(function (e) { console.error(e); nota('non riesco a leggere i dati di Frigolo'); });
+    }).catch(function (e) { console.error(e); nota('non riesco a leggere le metriche dell\'app'); });
   }
 
   function piedeApp() {
     scrivi('piede-app-periodo', stato.tutto ? 'periodo: ultimo anno'
       : (stato.giorni === 0 ? 'periodo: oggi' : 'periodo: ultimi ' + stato.giorni + ' giorni'));
-    scrivi('piede-app-agg', 'aggiornato alle ' + ora(new Date().toISOString()));
+    scrivi('piede-app-agg', stato.appGenerato ? 'dati dell\'app aggiornati alle ' + ora(stato.appGenerato) + ', ogni ora' : '');
   }
 
   function casuale(seme) {
@@ -1793,13 +1780,12 @@
     return;
   }
 
-  /* All'apertura si entra se almeno uno dei due progetti ha gia' una
-     sessione valida; l'altra sezione, se serve, chiede la password. */
-  Promise.all([sessioneViva(), sessioneApp()]).then(function (s2) {
-    var vive = s2.filter(function (x) { return x && x !== MUTO; });
-    vive.forEach(function (x) { if (x.user && x.user.email) stato.email = x.user.email; });
-    if (vive.length) { avvia(); return; }
-    var viva = s2[0] === MUTO || s2[1] === MUTO ? MUTO : null;
+  sessioneViva().then(function (viva) {
+    if (viva && viva !== MUTO) {
+      if (viva.user && viva.user.email) stato.email = viva.user.email;
+      avvia();
+      return;
+    }
     if (viva === MUTO) {
       var err = $('errore-accesso');
       if (err) err.textContent = 'Non riesco a raggiungere il server. Controlla la rete e riprova.';
