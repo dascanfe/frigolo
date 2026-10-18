@@ -1,7 +1,7 @@
 import { useEffect, useEffectEvent, useImperativeHandle, useRef, useState } from 'react'
 import type { Ref } from 'react'
 import { it as t } from '@/i18n/it'
-import { TURNSTILE_SITE_KEY, loadTurnstile } from '@/lib/turnstile'
+import { TURNSTILE_SITE_KEY, loadTurnstile, startTokenTimeout } from '@/lib/turnstile'
 import type { TurnstileApi } from '@/lib/turnstile'
 
 export interface TurnstileHandle {
@@ -12,7 +12,10 @@ export interface TurnstileHandle {
 interface TurnstileProps {
   /** Token pronto, oppure null quando scade o va richiesto di nuovo */
   onToken: (token: string | null) => void
-  /** Lo script non si carica (rete, blocchi): il modulo prova senza token */
+  /**
+   * Il captcha non risponde (script bloccato, errore, timeout, token scaduto):
+   * il modulo prova senza token e non resta mai in attesa
+   */
   onUnavailable?: () => void
   action?: string
   ref?: Ref<TurnstileHandle>
@@ -29,6 +32,7 @@ export function Turnstile({ onToken, onUnavailable, action, ref }: TurnstileProp
   const [failed, setFailed] = useState(false)
   // il genitore passa spesso una arrow inline: l'effetto non deve rimontarsi
   const emit = useEffectEvent((token: string | null) => onToken(token))
+  const cancelWait = useRef<(() => void) | null>(null)
   const unavailable = useEffectEvent(() => onUnavailable?.())
 
   useImperativeHandle(ref, () => ({
@@ -41,14 +45,33 @@ export function Turnstile({ onToken, onUnavailable, action, ref }: TurnstileProp
   useEffect(() => {
     if (!TURNSTILE_SITE_KEY) return
     let cancelled = false
+    const giveUp = () => {
+      if (cancelled) return
+      cancelWait.current?.()
+      cancelWait.current = null
+      emit(null)
+      unavailable()
+    }
+    // in ogni caso, dopo 6 secondi senza token si smette di aspettare
+    cancelWait.current = startTokenTimeout(giveUp)
     loadTurnstile()
       .then((api) => {
         if (cancelled || !container.current) return
         const id = api.render(container.current, {
           sitekey: TURNSTILE_SITE_KEY,
-          callback: (token) => emit(token),
-          'expired-callback': () => emit(null),
-          'error-callback': () => emit(null),
+          callback: (token) => {
+            cancelWait.current?.()
+            cancelWait.current = null
+            emit(token)
+          },
+          'expired-callback': giveUp,
+          'timeout-callback': giveUp,
+          'error-callback': (code) => {
+            // 110200 = hostname non autorizzato per questa site key
+            console.error(`[Turnstile] errore ${code}`)
+            giveUp()
+            return true
+          },
           appearance: 'interaction-only',
           size: 'flexible',
           theme: 'auto',
@@ -57,13 +80,16 @@ export function Turnstile({ onToken, onUnavailable, action, ref }: TurnstileProp
         })
         widget.current = { api, id }
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (cancelled) return
+        console.error('[Turnstile] impossibile caricare o creare il widget', error)
         setFailed(true)
-        unavailable()
+        giveUp()
       })
     return () => {
       cancelled = true
+      cancelWait.current?.()
+      cancelWait.current = null
       if (widget.current) widget.current.api.remove(widget.current.id)
       widget.current = null
     }
