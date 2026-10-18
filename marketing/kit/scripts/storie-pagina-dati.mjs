@@ -15,7 +15,7 @@ export const RACCOLTE = [
     nome: 'Installa',
     quando: 'Stasera, domenica 18 ottobre, subito dopo il post di lancio e la storia "Novità" (circa 19:40)',
     storie: [
-      ['01-copertina.png', { tipo: 'cover', tema: 'lampone', titolo: 'Installala in *30 secondi*', testo: 'Niente store: si fa dal browser.', mascotte: 'contenta' }],
+      ['01-copertina.png', { tipo: 'cover', tema: 'lampone', titolo: 'Installala in *30 secondi* 📱', testo: 'Niente store, si fa dal browser. Promesso', mascotte: 'contenta' }],
       ['02-iphone-1-safari.png', passo({ passo: 'ios-safari', n: 'iPhone 1/3', titolo: 'Apri il link *con Safari*' })],
       ['03-iphone-2-condividi.png', passo({ passo: 'ios-condividi', n: 'iPhone 2/3', titolo: 'Tocca *Condividi*', tema: 'menta' })],
       ['04-iphone-3-aggiungi-a-home.png', passo({ passo: 'ios-home', n: 'iPhone 3/3', titolo: 'Scegli *Aggiungi a Home*' })],
@@ -71,7 +71,7 @@ Dopo la pubblicazione
     nome: 'Novità',
     quando: 'Stasera, domenica 18 ottobre, subito dopo il post di lancio (circa 19:35); martedì 20 si aggiunge la ricondivisione del Reel',
     storie: [
-      ['01-frigolo-online.png', { tipo: 'testo', tema: 'chiaro', titolo: 'Frigolo è *online*', testo: 'La lista della spesa da condividere. Gratis, senza pubblicità.', mascotte: 'contenta', pos: 'destra' }],
+      ['01-frigolo-online.png', { tipo: 'testo', tema: 'chiaro', titolo: 'Frigolo è *online* ✨', testo: 'La lista della spesa da condividere. Gratis, senza pubblicità. Vieni a provarla!', mascotte: 'contenta', pos: 'destra' }],
     ],
     istruzioni: `RACCOLTA IN EVIDENZA: Novità
 Storia: 1 ("Frigolo è online"). Da pubblicare DOPO il post di lancio (S1-01, stasera domenica 18 ottobre alle 19:30), dalla pagina ${PAGINA}.
@@ -91,11 +91,11 @@ Le prossime novità (nuove funzioni, versioni) si aggiungono a questa raccolta.
     nome: 'Domande',
     quando: 'Settimana 4, martedì 10 novembre, insieme a S4-01 (Feedback "Cosa manca?")',
     storie: [
-      ['01-cosa-vorresti.png', { tipo: 'testo', tema: 'menta', titolo: 'Cosa vorresti *in Frigolo?*', testo: 'Scrivilo qui sotto. Leggo tutto.', mascotte: 'pensierosa', pos: 'basso' }],
+      ['01-cosa-vorresti.png', { tipo: 'testo', tema: 'menta', titolo: 'Cosa vorresti *in Frigolo?* 👀', testo: 'Scrivilo qui sotto: leggo tutto e rispondo a tutti.', mascotte: 'pensierosa', pos: 'basso' }],
       ['02-faq.png', { tipo: 'faq', tema: 'chiaro', titolo: 'Le tre *domande* più frequenti', voci: [
-        ['È gratis?', 'Sì. Senza pubblicità e con il codice pubblico.'],
-        ['Servono account?', 'Basta un indirizzo email per registrarti. Gli altri entrano con un link.'],
-        ['Funziona offline?', 'Sì: la lista si apre anche senza rete e si aggiorna quando torna.'],
+        ['È gratis?', 'Sì, e lo resta. Senza pubblicità, con il codice pubblico.'],
+        ['Servono account?', 'Ti basta un indirizzo email. Chi viene con te entra con un link.'],
+        ['Funziona offline?', 'Sì: la lista si apre anche senza rete e si aggiorna appena torna il segnale.'],
       ] }],
     ],
     istruzioni: `RACCOLTA IN EVIDENZA: Domande
@@ -121,7 +121,7 @@ Dopo la pubblicazione
     nome: 'Caffè',
     quando: 'Settimana 4, giovedì 12 novembre, insieme a S4-02 (Post "Offrimi un caffè")',
     storie: [
-      ['01-offrimi-un-caffe.png', { tipo: 'testo', tema: 'lampone', titolo: 'Offrimi un *caffè* 💚', testo: 'Frigolo è gratis e senza pubblicità. Se ti è utile, un caffè mi aiuta a tenerlo vivo.', mascotte: 'contenta', pos: 'destra' }],
+      ['01-offrimi-un-caffe.png', { tipo: 'testo', tema: 'lampone', titolo: 'Offrimi un *caffè* 💚', testo: 'Frigolo è gratis e senza pubblicità. Se ti è utile e ti va, un caffè mi aiuta a tenerlo vivo.', mascotte: 'contenta', pos: 'destra' }],
     ],
     istruzioni: `RACCOLTA IN EVIDENZA: Caffè
 Storia: 1. Da pubblicare nella settimana 4, giovedì 12 novembre, insieme al post S4-02 "Offrimi un caffè". Dalla pagina ${PAGINA}.
