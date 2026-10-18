@@ -145,13 +145,13 @@ Tutti i link alla landing portano questi parametri:
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Frigolo è online.
+Frigolo è online! 🎉
 
-L'ho fatta io: una lista della spesa da condividere. Tocchi un prodotto ed è in lista sul telefono di tutti, in ordine di corsia. Da solo o con chi fa la spesa con te.
+L'ho fatta io: una lista della spesa da condividere. Tocchi un prodotto ed è in lista sul telefono di tutti, in ordine di corsia 🛒 Per conto tuo o con chi fa la spesa con te.
 
-Si apre da un link e si installa dal browser, senza store. È gratis, senza pubblicità e il codice è pubblico.
+Si apre da un link e si installa dal browser, senza store 📱 È gratis, senza pubblicità e il codice è pubblico.
 
-Provala: link nella bio. Poi scrivimi cosa ne pensi, leggo tutto.
+Provala: link nella bio. Poi scrivimi cosa ne pensi, leggo tutto 💚
 
 #frigolo #listadellaspesa #appitaliane #spesa #opensource #vitainsieme #coinquilini #uxdesign
 ```
@@ -172,13 +172,14 @@ Provala: link nella bio. Poi scrivimi cosa ne pensi, leggo tutto.
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Chi compra il latte? Da oggi si sa.
+Chi compra il latte? Da oggi si sa 🥛
 
 Ho fatto Frigolo: una lista della spesa da condividere. Tocchi un prodotto ed è in lista sul telefono di tutti, in ordine di corsia.
 
-Si apre da un link e si installa dal browser, senza store. È gratis, senza pubblicità e il codice è pubblico.
+📱 Si apre da un link e si installa dal browser, senza store
+💚 È gratis, senza pubblicità, con il codice pubblico
 
-Provala: link nella bio.
+Provala: link nella bio ✨
 
 Musica: Fun Day di AShamaluevMusic
 
@@ -200,16 +201,16 @@ Musica: Fun Day di AShamaluevMusic
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Frigolo in 6 passi.
+Frigolo in 6 passi 🛒
 
 1. Tocchi un prodotto nel catalogo
 2. Inviti chi fa la spesa con te, con un link
 3. Quello che aggiungi compare sul telefono di tutti
 4. La lista segue le corsie del supermercato
 5. Metti nel carrello quello che hai preso
-6. Tocchi "Spesa finita" e il giro è chiuso
+6. Tocchi "Spesa finita" e il giro è chiuso ✨
 
-Si usa da soli o in compagnia, fino a 5 persone per lista. Gratis, senza pubblicità.
+Si usa per conto tuo o in compagnia, fino a 5 persone per lista. Gratis, senza pubblicità 💚
 
 Salvalo per quando ti serve e mandalo a chi fa la spesa con te. Link nella bio.
 
@@ -234,7 +235,7 @@ Salvalo per quando ti serve e mandalo a chi fa la spesa con te. Link nella bio.
 Storie, nessuna didascalia. Testi degli sticker qui sotto.
 
 Storia 1: nessuno sticker, serve a presentare Frigolo.
-Storia 2: sondaggio "Chi fa la spesa a casa tua?" con le risposte "Io" e "Un po' tutti".
+Storia 2: sondaggio "Chi fa la spesa a casa tua? 🛒" con le risposte "Io" e "Un po' tutti".
 Storia 3: sticker link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-04.
 ```
 
@@ -252,19 +253,19 @@ Storia 3: sticker link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Frigolo è per chi fa la spesa. Punto.
+Frigolo è per chi fa la spesa. Punto 🛒
 
-Da solo: un tocco per aggiungere, e i suggeriti ricordano quello che compri di solito.
-In due: quello che aggiunge l'altra persona compare subito, anche se sei già a metà scaffale.
-Con i coinquilini: una lista per la casa, la vedono tutti, nessuno deve pagare o scaricare niente dallo store.
-In famiglia: fino a 5 persone per lista, si entra con un link.
+✨ In autonomia: un tocco per aggiungere, e i suggeriti ricordano quello che compri di solito.
+👀 In due: quello che aggiunge l'altra persona compare subito, anche se sei già a metà scaffale.
+🍋 Con i coinquilini: una lista per la casa, la vedono tutti, nessuno deve pagare o scaricare niente dallo store.
+💚 In famiglia: fino a 5 persone per lista, si entra con un link.
 
 Mandalo a chi fa la spesa con te. Link nella bio.
 
 #frigolo #listadellaspesa #coinquilini #coppie #famiglia #vitadacoinquilini #appitaliane #spesa
 ```
 
-**Testo alternativo:** Carosello di 6 slide: Frigolo per chi fa la spesa da solo, in due, con i coinquilini o in famiglia, con le schermate dell'app.
+**Testo alternativo:** Carosello di 6 slide: Frigolo per chi fa la spesa in autonomia, in due, con i coinquilini o in famiglia, con le schermate dell'app.
 
 ### 6. Post "Ordine di corsia" (S2-02)
 
@@ -278,11 +279,11 @@ Mandalo a chi fa la spesa con te. Link nella bio.
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Il trucco che ho voluto per primo: la lista in ordine di corsia.
+Il trucco che ho voluto per primo: la lista in ordine di corsia 🥑
 
-Scegli il supermercato e Frigolo mette in cima frutta e verdura e in fondo i surgelati. Niente più giri avanti e indietro tra gli scaffali.
+Scegli il supermercato e Frigolo mette in cima frutta e verdura e in fondo i surgelati 🧊 Niente più giri avanti e indietro tra gli scaffali (i tuoi passi ringraziano).
 
-L'ordine lo regoli tu, supermercato per supermercato.
+L'ordine lo regoli tu, supermercato per supermercato ✨
 
 Link nella bio.
 
@@ -304,11 +305,11 @@ Link nella bio.
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Io sono già al supermercato. Qualcuno ha appena aggiunto l'ananas.
+Io sono già al supermercato. Qualcuno ha appena aggiunto l'ananas 👀
 
-Succede in tempo reale: aggiungi un prodotto e compare sul telefono di tutte le persone della lista. Te ne accorgi prima della cassa.
+Succede in tempo reale: aggiungi un prodotto e compare sul telefono di tutte le persone della lista. Te ne accorgi prima della cassa 🛒
 
-Link nella bio.
+Link nella bio ✨
 
 Musica: Fun Day di AShamaluevMusic
 
@@ -329,15 +330,15 @@ Musica: Fun Day di AShamaluevMusic
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Come è nata Frigolo.
+Come è nata Frigolo ✨
 
-Sono un UX/UI designer e mi dava fastidio una cosa piccola: la lista della spesa condivisa in chat, dove il latte si perde sempre. Così l'ho disegnata io.
+Sono un UX/UI designer e mi dava fastidio una cosa piccola: la lista della spesa condivisa in chat, dove il latte si perde sempre 🥛 Così l'ho disegnata io.
 
-Il frigorifero verde acqua è la mascotte e ha un nome: Frigolo. Parla poco, come l'app.
+Il frigorifero verde acqua è la mascotte e ha un nome: Frigolo 🧊 Parla poco, come l'app.
 
-Il progetto l'ho fatto con una squadra di agenti AI: io decido, disegno e rivedo, loro scrivono codice e testi. Non è un segreto, è il bello.
+Il progetto l'ho fatto con una squadra di agenti AI: io decido, disegno e rivedo, loro scrivono codice e testi. Non è un segreto, è il bello 🙌
 
-Perché è gratis e il codice è pubblico? Perché una lista della spesa non dovrebbe avere pubblicità né abbonamenti. Se ti piace, il caffè lo offri tu: c'è il link nella bio.
+Perché è gratis e il codice è pubblico? Perché una lista della spesa non dovrebbe avere pubblicità né abbonamenti. Se ti piace, il caffè lo offri tu: c'è il link nella bio 💚
 
 #frigolo #uxdesign #uidesign #dietrolequinte #opensource #buildinpublic #designer #appitaliane
 ```
@@ -357,11 +358,11 @@ Perché è gratis e il codice è pubblico? Perché una lista della spesa non dov
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Il supermercato con il segnale che va e viene. Lo conosci.
+Il supermercato con il segnale che va e viene. Lo conosci 📱
 
-Con Frigolo la lista resta aperta anche senza rete. Aggiungi, togli, metti nel carrello: le modifiche aspettano e partono appena torna il segnale. In alto vedi quante ne sono in attesa.
+Con Frigolo la lista resta aperta anche senza rete. Aggiungi, togli, metti nel carrello: le modifiche aspettano e partono appena torna il segnale ✨ In alto vedi quante ne sono in attesa.
 
-Link nella bio.
+Link nella bio 🛒
 
 #frigolo #listadellaspesa #offline #pwa #spesa #appitaliane #supermercato #opensource
 ```
@@ -380,11 +381,13 @@ Link nella bio.
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Frigolo è semplice, ma sotto c'è altro.
+Frigolo è semplice, ma sotto c'è altro ✨
 
-Le analitiche mostrano cosa compri più spesso, chi mette cosa in lista e l'andamento delle spese nel tempo. I suggeriti ricordano i prodotti che prendi di solito. E il colore lo scegli tu: ci sono sei temi.
+📊 Le analitiche mostrano cosa compri più spesso, chi mette cosa in lista e l'andamento delle spese nel tempo
+🥑 I suggeriti ricordano i prodotti che prendi di solito
+🎨 Il colore lo scegli tu: ci sono sei temi
 
-Niente cookie, niente pubblicità, il codice è pubblico. Link nella bio.
+Niente cookie, niente pubblicità, il codice è pubblico 💚 Link nella bio.
 
 #frigolo #listadellaspesa #design #temi #analitiche #uxdesign #appitaliane #opensource
 ```
@@ -404,13 +407,13 @@ Niente cookie, niente pubblicità, il codice è pubblico. Link nella bio.
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Frigolo ha un mese di vita e ho bisogno di te.
+Frigolo ha un mese di vita e ho bisogno di te 👀
 
 Cosa manca? Cosa ti ha fatto storcere il naso? C'è qualcosa che hai cercato e non hai trovato?
 
-Scrivimelo nei commenti o in messaggio. Leggo tutto e rispondo appena posso: è un progetto fatto da una persona sola.
+Scrivimelo nei commenti o in messaggio. Leggo tutto e rispondo appena posso: è un progetto fatto da una persona sola 🙌
 
-Link nella bio.
+Link nella bio 💚
 
 #frigolo #feedback #listadellaspesa #appitaliane #opensource #buildinpublic #uxdesign #community
 ```
@@ -430,13 +433,13 @@ Link nella bio.
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Come si regge Frigolo?
+Come si regge Frigolo? ☕
 
 Non ha pubblicità, non ha abbonamenti e non vendo i tuoi dati. Server e dominio però qualche costo ce l'hanno, e quel poco lo copro io.
 
 Frigolo è gratis e lo resta. Se ti è utile e ti va, puoi offrirmi un caffè: "Offrimi un caffè 💚" è nella bio. Dopo non si sblocca niente: chi offre e chi no usa la stessa app.
 
-Grazie lo stesso a chi la usa.
+Grazie lo stesso a chi la usa 🙌
 
 #frigolo #opensource #sostenibilita #indie #buildinpublic #appitaliane #listadellaspesa #caffe
 ```
@@ -456,16 +459,16 @@ Grazie lo stesso a chi la usa.
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
 ```text
-Un mese di Frigolo.
+Un mese di Frigolo 🎉
 
 Fatti e numeri veri, da riempire prima di pubblicare:
-- Persone registrate: [N]
-- Liste condivise: [N]
-- Spese finite: [N]
+🛒 Persone registrate: [N]
+📱 Liste condivise: [N]
+✨ Spese finite: [N]
 
 Quello che è cambiato dopo i vostri messaggi: [una riga, per esempio una correzione o una novità fatta su richiesta].
 
-Grazie a chi l'ha provata e a chi l'ha mandata a qualcun altro. Frigolo resta gratis, senza pubblicità e con il codice pubblico. Dimmi cosa vuoi nella prossima versione.
+Grazie a chi l'ha provata e a chi l'ha mandata a qualcun altro 💚 Frigolo resta gratis, senza pubblicità e con il codice pubblico. Dimmi cosa vuoi nella prossima versione.
 
 Link nella bio.
 

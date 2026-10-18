@@ -32,16 +32,16 @@ export const CONTENUTI = [
     immagini: nn([
       T({ tema: 'chiaro', titolo: 'Frigolo è *online*', testo: 'La lista della spesa da condividere.', mascotte: 'contenta', swipe: true }),
       P({ tema: 'menta', titolo: 'Tocchi, è *in lista*', testo: 'Sul telefono di tutti, in ordine di corsia.', schermata: S + 's05-lista-corsia.png' }),
-      P({ tema: 'chiaro', titolo: 'Da solo o *in compagnia*', testo: 'Si invita con un link, fino a 5 persone.', schermata: S + 's09-lista-coinquilini.png' }),
-      C({ tema: 'lampone', titolo: 'Provala, *è gratis*', testo: 'Si installa dal browser, senza store.', mascotte: 'contenta', chip: 'Link nella bio' }),
+      P({ tema: 'chiaro', titolo: 'Per conto tuo o *in compagnia*', testo: 'Si invita con un link, fino a 5 persone.', schermata: S + 's09-lista-coinquilini.png' }),
+      C({ tema: 'lampone', titolo: 'Provala, *è gratis* ✨', testo: 'Si installa dal browser, senza store.', mascotte: 'contenta', chip: 'Link nella bio' }),
     ]),
-    didascalia: `Frigolo è online.
+    didascalia: `Frigolo è online! 🎉
 
-L'ho fatta io: una lista della spesa da condividere. Tocchi un prodotto ed è in lista sul telefono di tutti, in ordine di corsia. Da solo o con chi fa la spesa con te.
+L'ho fatta io: una lista della spesa da condividere. Tocchi un prodotto ed è in lista sul telefono di tutti, in ordine di corsia 🛒 Per conto tuo o con chi fa la spesa con te.
 
-Si apre da un link e si installa dal browser, senza store. È gratis, senza pubblicità e il codice è pubblico.
+Si apre da un link e si installa dal browser, senza store 📱 È gratis, senza pubblicità e il codice è pubblico.
 
-Provala: link nella bio. Poi scrivimi cosa ne pensi, leggo tutto.`,
+Provala: link nella bio. Poi scrivimi cosa ne pensi, leggo tutto 💚`,
     hashtag: '#frigolo #listadellaspesa #appitaliane #spesa #opensource #vitainsieme #coinquilini #uxdesign',
     alt: 'Carosello di 4 slide: Frigolo che festeggia con la scritta "Frigolo è online", la lista in ordine di corsia, la lista condivisa con i coinquilini e l\'invito a provarla dal link nella bio.',
     sticker: 'Subito dopo, in storia: pubblica "Frigolo è online" della raccolta Novità (00-storie-pagina/3-novita) con lo sticker link a ' + utm('storie-s1-01') + ', poi le raccolte Installa e Come funziona.',
@@ -62,13 +62,14 @@ Provala: link nella bio. Poi scrivimi cosa ne pensi, leggo tutto.`,
     immagini: [
       ['02-copertina-reel.png', ST({ tipo: 'cover', tema: 'chiaro', titolo: 'Chi compra *il latte?*', mascotte: 'pensierosa' })],
     ],
-    didascalia: `Chi compra il latte? Da oggi si sa.
+    didascalia: `Chi compra il latte? Da oggi si sa 🥛
 
 Ho fatto Frigolo: una lista della spesa da condividere. Tocchi un prodotto ed è in lista sul telefono di tutti, in ordine di corsia.
 
-Si apre da un link e si installa dal browser, senza store. È gratis, senza pubblicità e il codice è pubblico.
+📱 Si apre da un link e si installa dal browser, senza store
+💚 È gratis, senza pubblicità, con il codice pubblico
 
-Provala: link nella bio.
+Provala: link nella bio ✨
 
 ${CREDITO}`,
     hashtag: '#frigolo #listadellaspesa #appitaliane #spesa #opensource #vitainsieme #coinquilini #uxdesign',
@@ -94,18 +95,18 @@ ${CREDITO}`,
       P({ tema: 'chiaro', titolo: 'Lo vedono *tutti*, subito', testo: 'Anche se sono già al supermercato.', schermata: S + 's03-lista-lele.png' }),
       P({ tema: 'menta', titolo: 'In ordine di *corsia*', testo: 'Frutta e verdura prima, surgelati alla fine.', schermata: S + 's05-lista-corsia.png' }),
       P({ tema: 'chiaro', titolo: 'Spesa *finita*', testo: 'Tutto nel carrello, si chiude con un tocco.', schermata: S + 's07-spesa-finita.png' }),
-      C({ tema: 'lampone', titolo: 'Provala, *è gratis*', testo: 'Senza pubblicità, il codice è pubblico.', mascotte: 'contenta', chip: 'Link nella bio' }),
+      C({ tema: 'lampone', titolo: 'Provala, *è gratis* ✨', testo: 'Senza pubblicità, il codice è pubblico.', mascotte: 'contenta', chip: 'Link nella bio' }),
     ]),
-    didascalia: `Frigolo in 6 passi.
+    didascalia: `Frigolo in 6 passi 🛒
 
 1. Tocchi un prodotto nel catalogo
 2. Inviti chi fa la spesa con te, con un link
 3. Quello che aggiungi compare sul telefono di tutti
 4. La lista segue le corsie del supermercato
 5. Metti nel carrello quello che hai preso
-6. Tocchi "Spesa finita" e il giro è chiuso
+6. Tocchi "Spesa finita" e il giro è chiuso ✨
 
-Si usa da soli o in compagnia, fino a 5 persone per lista. Gratis, senza pubblicità.
+Si usa per conto tuo o in compagnia, fino a 5 persone per lista. Gratis, senza pubblicità 💚
 
 Salvalo per quando ti serve e mandalo a chi fa la spesa con te. Link nella bio.`,
     hashtag: '#frigolo #listadellaspesa #appitaliane #spesa #comefunziona #coppie #coinquilini #opensource',
@@ -131,7 +132,7 @@ Salvalo per quando ti serve e mandalo a chi fa la spesa con te. Link nella bio.`
     didascalia: `Storie, nessuna didascalia. Testi degli sticker qui sotto.
 
 Storia 1: nessuno sticker, serve a presentare Frigolo.
-Storia 2: sondaggio "Chi fa la spesa a casa tua?" con le risposte "Io" e "Un po' tutti".
+Storia 2: sondaggio "Chi fa la spesa a casa tua? 🛒" con le risposte "Io" e "Un po' tutti".
 Storia 3: sticker link "Provala" verso ${utm('storie-s1-04')}.`,
     hashtag: '(le storie non usano hashtag)',
     alt: 'Tre storie: Frigolo che festeggia, la lista dei coinquilini con un sondaggio, la lista con i prodotti nel carrello e il link.',
@@ -148,23 +149,23 @@ Storia 3: sticker link "Provala" verso ${utm('storie-s1-04')}.`,
     formato: 'Carosello 4:5, 6 slide',
     obiettivo: 'Far riconoscere ogni persona nel suo caso e spingere a girare il post: il condividere è il motore di Frigolo.',
     immagini: nn([
-      C({ tema: 'menta', titolo: 'Frigolo è *per chi*...', testo: 'Fa la spesa da solo o in compagnia.', mascotte: 'classica', swipe: true }),
-      P({ tema: 'chiaro', titolo: 'Per chi fa *da solo*', testo: 'Un tocco per aggiungere, i suggeriti ricordano il solito.', schermata: S + 's14-suggeriti.png' }),
+      C({ tema: 'menta', titolo: 'Frigolo è *per chi*...', testo: 'Fa la spesa in autonomia o in compagnia.', mascotte: 'classica', swipe: true }),
+      P({ tema: 'chiaro', titolo: 'Per chi fa *in autonomia*', testo: 'Un tocco per aggiungere, i suggeriti ricordano il solito.', schermata: S + 's14-suggeriti.png' }),
       P({ tema: 'menta', titolo: 'Per chi la fa *in due*', testo: `Niente più "l'avevo scritto in chat".`, schermata: S + 's03-lista-lele.png' }),
       P({ tema: 'chiaro', titolo: 'Per i *coinquilini*', testo: 'Una lista per la casa, la vedono tutti.', schermata: S + 's09-lista-coinquilini.png' }),
       P({ tema: 'menta', titolo: 'Per chi ha *una famiglia*', testo: 'Fino a 5 persone per lista, con un link.', schermata: S + 's12-invito.png' }),
       C({ tema: 'lampone', titolo: 'Manda questo post *a chi fa la spesa con te*', mascotte: 'posta', chip: 'Link nella bio' }),
     ]),
-    didascalia: `Frigolo è per chi fa la spesa. Punto.
+    didascalia: `Frigolo è per chi fa la spesa. Punto 🛒
 
-Da solo: un tocco per aggiungere, e i suggeriti ricordano quello che compri di solito.
-In due: quello che aggiunge l'altra persona compare subito, anche se sei già a metà scaffale.
-Con i coinquilini: una lista per la casa, la vedono tutti, nessuno deve pagare o scaricare niente dallo store.
-In famiglia: fino a 5 persone per lista, si entra con un link.
+✨ In autonomia: un tocco per aggiungere, e i suggeriti ricordano quello che compri di solito.
+👀 In due: quello che aggiunge l'altra persona compare subito, anche se sei già a metà scaffale.
+🍋 Con i coinquilini: una lista per la casa, la vedono tutti, nessuno deve pagare o scaricare niente dallo store.
+💚 In famiglia: fino a 5 persone per lista, si entra con un link.
 
 Mandalo a chi fa la spesa con te. Link nella bio.`,
     hashtag: '#frigolo #listadellaspesa #coinquilini #coppie #famiglia #vitadacoinquilini #appitaliane #spesa',
-    alt: 'Carosello di 6 slide: Frigolo per chi fa la spesa da solo, in due, con i coinquilini o in famiglia, con le schermate dell\'app.',
+    alt: 'Carosello di 6 slide: Frigolo per chi fa la spesa in autonomia, in due, con i coinquilini o in famiglia, con le schermate dell\'app.',
     sticker: 'Storia: condividi il post con lo sticker Quiz "Quante persone in casa tua?" (1 / 2 / 3 / 4 o più) e lo sticker link a ' + utm('storie-s2-01') + '.',
   },
   {
@@ -180,11 +181,11 @@ Mandalo a chi fa la spesa con te. Link nella bio.`,
     immagini: [
       ['01-ordine-di-corsia.png', P({ tema: 'menta', titolo: 'Frutta e verdura prima, *surgelati alla fine*', testo: 'La lista segue il percorso del supermercato.', schermata: S + 's05-lista-corsia.png', ty: 560, pw: 500 })],
     ],
-    didascalia: `Il trucco che ho voluto per primo: la lista in ordine di corsia.
+    didascalia: `Il trucco che ho voluto per primo: la lista in ordine di corsia 🥑
 
-Scegli il supermercato e Frigolo mette in cima frutta e verdura e in fondo i surgelati. Niente più giri avanti e indietro tra gli scaffali.
+Scegli il supermercato e Frigolo mette in cima frutta e verdura e in fondo i surgelati 🧊 Niente più giri avanti e indietro tra gli scaffali (i tuoi passi ringraziano).
 
-L'ordine lo regoli tu, supermercato per supermercato.
+L'ordine lo regoli tu, supermercato per supermercato ✨
 
 Link nella bio.`,
     hashtag: '#frigolo #listadellaspesa #supermercato #spesa #trucchi #organizzazione #appitaliane #vitaquotidiana',
@@ -206,11 +207,11 @@ Link nella bio.`,
     immagini: [
       ['02-copertina-reel.png', ST({ tipo: 'cover', tema: 'menta', titolo: 'Lo aggiungi *tu*, lo vedono *tutti*', mascotte: 'contenta' })],
     ],
-    didascalia: `Io sono già al supermercato. Qualcuno ha appena aggiunto l'ananas.
+    didascalia: `Io sono già al supermercato. Qualcuno ha appena aggiunto l'ananas 👀
 
-Succede in tempo reale: aggiungi un prodotto e compare sul telefono di tutte le persone della lista. Te ne accorgi prima della cassa.
+Succede in tempo reale: aggiungi un prodotto e compare sul telefono di tutte le persone della lista. Te ne accorgi prima della cassa 🛒
 
-Link nella bio.
+Link nella bio ✨
 
 ${CREDITO}`,
     hashtag: '#frigolo #listadellaspesa #temporeale #spesa #appitaliane #opensource #coppie #coinquilini',
@@ -235,15 +236,15 @@ ${CREDITO}`,
       T({ tema: 'inchiostro', titolo: 'Fatta con *una squadra di agenti AI*', testo: 'Io decido e disegno, loro scrivono il codice, i testi e il resto. Io rivedo tutto.', mascotte: 'classica' }),
       C({ tema: 'lampone', titolo: 'Gratis, senza pubblicità, *codice pubblico*', testo: 'Se ti è utile, il caffè lo offri tu.', mascotte: 'contenta', chip: 'Link nella bio' }),
     ]),
-    didascalia: `Come è nata Frigolo.
+    didascalia: `Come è nata Frigolo ✨
 
-Sono un UX/UI designer e mi dava fastidio una cosa piccola: la lista della spesa condivisa in chat, dove il latte si perde sempre. Così l'ho disegnata io.
+Sono un UX/UI designer e mi dava fastidio una cosa piccola: la lista della spesa condivisa in chat, dove il latte si perde sempre 🥛 Così l'ho disegnata io.
 
-Il frigorifero verde acqua è la mascotte e ha un nome: Frigolo. Parla poco, come l'app.
+Il frigorifero verde acqua è la mascotte e ha un nome: Frigolo 🧊 Parla poco, come l'app.
 
-Il progetto l'ho fatto con una squadra di agenti AI: io decido, disegno e rivedo, loro scrivono codice e testi. Non è un segreto, è il bello.
+Il progetto l'ho fatto con una squadra di agenti AI: io decido, disegno e rivedo, loro scrivono codice e testi. Non è un segreto, è il bello 🙌
 
-Perché è gratis e il codice è pubblico? Perché una lista della spesa non dovrebbe avere pubblicità né abbonamenti. Se ti piace, il caffè lo offri tu: c'è il link nella bio.`,
+Perché è gratis e il codice è pubblico? Perché una lista della spesa non dovrebbe avere pubblicità né abbonamenti. Se ti piace, il caffè lo offri tu: c'è il link nella bio 💚`,
     hashtag: '#frigolo #uxdesign #uidesign #dietrolequinte #opensource #buildinpublic #designer #appitaliane',
     alt: 'Carosello di 6 slide sul progetto: il problema, il design, la mascotte Frigolo, la squadra di agenti AI e perché è gratis e open source.',
     sticker: 'Storia: sticker Domande "Cosa vuoi sapere di come è fatta?" e un secondo sticker con link al repository pubblico (https://github.com/dascanfe/frigolo).',
@@ -262,11 +263,11 @@ Perché è gratis e il codice è pubblico? Perché una lista della spesa non dov
     immagini: [
       ['01-offline.png', P({ tema: 'chiaro', titolo: 'In cantina il segnale *non c\'è?*', testo: 'La lista resta aperta. Le modifiche partono appena torna la rete.', schermata: S + 's17-offline.png', ty: 540, pw: 500 })],
     ],
-    didascalia: `Il supermercato con il segnale che va e viene. Lo conosci.
+    didascalia: `Il supermercato con il segnale che va e viene. Lo conosci 📱
 
-Con Frigolo la lista resta aperta anche senza rete. Aggiungi, togli, metti nel carrello: le modifiche aspettano e partono appena torna il segnale. In alto vedi quante ne sono in attesa.
+Con Frigolo la lista resta aperta anche senza rete. Aggiungi, togli, metti nel carrello: le modifiche aspettano e partono appena torna il segnale ✨ In alto vedi quante ne sono in attesa.
 
-Link nella bio.`,
+Link nella bio 🛒`,
     hashtag: '#frigolo #listadellaspesa #offline #pwa #spesa #appitaliane #supermercato #opensource',
     alt: 'La lista di Frigolo con un avviso in alto: una modifica in attesa di rete. Titolo: la lista resta aperta anche senza segnale.',
     sticker: 'Storia: condividi il post con lo sticker Sondaggio "Il segnale nel tuo supermercato?" (Ottimo / A volte sparisce).',
@@ -287,11 +288,13 @@ Link nella bio.`,
       P({ tema: 'chiaro', titolo: 'I suggeriti *ti conoscono*', testo: 'Ricordano cosa compri di solito.', schermata: S + 's14-suggeriti.png' }),
       P({ tema: 'lampone', titolo: 'Sei *temi* a scelta', testo: 'Lampone, Basilico, Mare e gli altri.', schermata: S + 's15-temi.png' }),
     ]),
-    didascalia: `Frigolo è semplice, ma sotto c'è altro.
+    didascalia: `Frigolo è semplice, ma sotto c'è altro ✨
 
-Le analitiche mostrano cosa compri più spesso, chi mette cosa in lista e l'andamento delle spese nel tempo. I suggeriti ricordano i prodotti che prendi di solito. E il colore lo scegli tu: ci sono sei temi.
+📊 Le analitiche mostrano cosa compri più spesso, chi mette cosa in lista e l'andamento delle spese nel tempo
+🥑 I suggeriti ricordano i prodotti che prendi di solito
+🎨 Il colore lo scegli tu: ci sono sei temi
 
-Niente cookie, niente pubblicità, il codice è pubblico. Link nella bio.`,
+Niente cookie, niente pubblicità, il codice è pubblico 💚 Link nella bio.`,
     hashtag: '#frigolo #listadellaspesa #design #temi #analitiche #uxdesign #appitaliane #opensource',
     alt: 'Carosello di 4 slide: le analitiche di Frigolo, l\'andamento nel tempo, i prodotti suggeriti e i sei temi di colore.',
     sticker: 'Storia: condividi la slide 4 con uno sticker Sondaggio "Quale tema?" (Lampone / Basilico / Mare / Altro).',
@@ -312,13 +315,13 @@ Niente cookie, niente pubblicità, il codice è pubblico. Link nella bio.`,
       ['02-storia-domanda.png', ST({ tipo: 'testo', tema: 'chiaro', titolo: 'Cosa vorresti *in più?*', testo: 'Rispondi qui, leggo tutto.', mascotte: 'pensierosa' })],
       ['03-storia-sondaggio.png', ST({ tipo: 'testo', tema: 'lampone', titolo: 'La *usi* ancora?', testo: 'Rispondi con sincerità.', mascotte: 'classica' })],
     ],
-    didascalia: `Frigolo ha un mese di vita e ho bisogno di te.
+    didascalia: `Frigolo ha un mese di vita e ho bisogno di te 👀
 
 Cosa manca? Cosa ti ha fatto storcere il naso? C'è qualcosa che hai cercato e non hai trovato?
 
-Scrivimelo nei commenti o in messaggio. Leggo tutto e rispondo appena posso: è un progetto fatto da una persona sola.
+Scrivimelo nei commenti o in messaggio. Leggo tutto e rispondo appena posso: è un progetto fatto da una persona sola 🙌
 
-Link nella bio.`,
+Link nella bio 💚`,
     hashtag: '#frigolo #feedback #listadellaspesa #appitaliane #opensource #buildinpublic #uxdesign #community',
     alt: 'Il frigorifero Frigolo con la nuvoletta del dubbio e la domanda "Cosa manca a Frigolo?".',
     sticker: 'Storia 1: sticker Domande "Cosa vorresti in più?". Storia 2: Sondaggio "La usi ancora?" (Sì, spesso / A volte / No). Link a ' + utm('storie-s4-01') + ' nella storia dopo.',
@@ -337,13 +340,13 @@ Link nella bio.`,
     immagini: [
       ['01-offrimi-un-caffe.png', T({ tema: 'lampone', titolo: 'Frigolo è gratis *e lo resta*', testo: 'Se ti è utile, il caffè lo offri tu.', mascotte: 'contenta', chip: 'Offrimi un caffè 💚' })],
     ],
-    didascalia: `Come si regge Frigolo?
+    didascalia: `Come si regge Frigolo? ☕
 
 Non ha pubblicità, non ha abbonamenti e non vendo i tuoi dati. Server e dominio però qualche costo ce l'hanno, e quel poco lo copro io.
 
 Frigolo è gratis e lo resta. Se ti è utile e ti va, puoi offrirmi un caffè: "Offrimi un caffè 💚" è nella bio. Dopo non si sblocca niente: chi offre e chi no usa la stessa app.
 
-Grazie lo stesso a chi la usa.`,
+Grazie lo stesso a chi la usa 🙌`,
     hashtag: '#frigolo #opensource #sostenibilita #indie #buildinpublic #appitaliane #listadellaspesa #caffe',
     alt: 'Frigolo contento con la scritta "Frigolo è gratis e lo resta. Se ti è utile, il caffè lo offri tu".',
     sticker: 'Storia: condividi il post con lo sticker link a https://paypal.me/DanieleScanferlato (testo del bottone "Offrimi un caffè"). Una sola storia, senza ripeterla.',
@@ -363,16 +366,16 @@ Grazie lo stesso a chi la usa.`,
       P({ tema: 'chiaro', titolo: 'Cosa *c\'è* adesso', testo: 'Liste condivise, ordine di corsia, offline, analitiche, temi.', schermata: S + 's13-analitiche.png' }),
       C({ tema: 'menta', titolo: 'Si *continua*', testo: 'Dimmi cosa vuoi nella prossima versione.', mascotte: 'classica', chip: 'Link nella bio' }),
     ]),
-    didascalia: `Un mese di Frigolo.
+    didascalia: `Un mese di Frigolo 🎉
 
 Fatti e numeri veri, da riempire prima di pubblicare:
-- Persone registrate: [N]
-- Liste condivise: [N]
-- Spese finite: [N]
+🛒 Persone registrate: [N]
+📱 Liste condivise: [N]
+✨ Spese finite: [N]
 
 Quello che è cambiato dopo i vostri messaggi: [una riga, per esempio una correzione o una novità fatta su richiesta].
 
-Grazie a chi l'ha provata e a chi l'ha mandata a qualcun altro. Frigolo resta gratis, senza pubblicità e con il codice pubblico. Dimmi cosa vuoi nella prossima versione.
+Grazie a chi l'ha provata e a chi l'ha mandata a qualcun altro 💚 Frigolo resta gratis, senza pubblicità e con il codice pubblico. Dimmi cosa vuoi nella prossima versione.
 
 Link nella bio.`,
     hashtag: '#frigolo #riepilogo #listadellaspesa #buildinpublic #opensource #appitaliane #grazie #uxdesign',
