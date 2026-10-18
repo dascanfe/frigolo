@@ -59,6 +59,8 @@ export function takeAuthConfirm(): { confirm: AuthConfirm | null; malformed: boo
 export type AuthLinkResult =
   | { kind: 'none' }
   | { kind: 'ok'; type: EmailOtpType }
+  /** C'era già una sessione e non si è voluto cambiare account: link ignorato */
+  | { kind: 'skipped' }
   /** Link scaduto, già usato o rovinato: type null se non si capisce di che link si tratta */
   | { kind: 'error'; type: EmailOtpType | null }
 
@@ -69,14 +71,16 @@ let verification: Promise<AuthLinkResult> | null = null
  * volte i componenti in sviluppo) e apre la sessione.
  */
 export function verifyAuthLink(
-  verify: (confirm: AuthConfirm) => Promise<{ error: unknown }>,
+  verify: (confirm: AuthConfirm) => Promise<{ error: unknown } | 'skipped'>,
 ): Promise<AuthLinkResult> {
   if (verification) return verification
   const { confirm, malformed } = takeAuthConfirm()
   verification = (async (): Promise<AuthLinkResult> => {
     if (!confirm) return malformed ? { kind: 'error', type: null } : { kind: 'none' }
     try {
-      const { error } = await verify(confirm)
+      const outcome = await verify(confirm)
+      if (outcome === 'skipped') return { kind: 'skipped' }
+      const { error } = outcome
       return error ? { kind: 'error', type: confirm.type } : { kind: 'ok', type: confirm.type }
     } catch {
       return { kind: 'error', type: confirm.type }

@@ -41,9 +41,19 @@ export function useSession(): SessionState {
     let active = true
 
     // prima l'eventuale link dell'email (/auth/confirm), poi la sessione salvata
-    verifyAuthLink(({ tokenHash, type }) =>
-      supabase.auth.verifyOtp({ token_hash: tokenHash, type }),
-    )
+    verifyAuthLink(async ({ tokenHash, type }) => {
+      // un link aperto mentre si è già dentro (magari con un altro account):
+      // prima di cambiare sessione si chiede. Il cambio email riguarda per forza
+      // l'account già aperto: lì non serve chiedere
+      if (
+        type !== 'email_change' &&
+        readStoredSession(window.localStorage, AUTH_STORAGE_KEY) &&
+        !window.confirm(t.authLink.switchAccount)
+      ) {
+        return 'skipped'
+      }
+      return supabase.auth.verifyOtp({ token_hash: tokenHash, type })
+    })
       .then((link) => {
         if (!active) return startupSession()
         if (link.kind === 'error') setLinkError({ type: link.type })
@@ -60,6 +70,13 @@ export function useSession(): SessionState {
       .catch(() => {
         if (active) setSession(readStoredSession(window.localStorage, AUTH_STORAGE_KEY))
       })
+
+    // uscita forzata (signOut senza rete): l'interfaccia torna all'accesso
+    const onForcedSignOut = () => {
+      setRecovery(false)
+      setSession(null)
+    }
+    forcedSignOutListeners.add(onForcedSignOut)
 
     const {
       data: { subscription },
@@ -80,6 +97,7 @@ export function useSession(): SessionState {
     return () => {
       active = false
       subscription.unsubscribe()
+      forcedSignOutListeners.delete(onForcedSignOut)
     }
   }, [])
 
@@ -116,11 +134,39 @@ async function startupSession(): Promise<Session | null> {
   return first === 'timeout' ? stored() : first
 }
 
-/** Esce dall'account e cancella dal dispositivo i dati in cache */
+const forcedSignOutListeners = new Set<() => void>()
+
+/** Quanto aspettare il server prima di uscire comunque solo sul dispositivo */
+const SIGN_OUT_TIMEOUT_MS = 3000
+
+/**
+ * Esce dall'account e cancella dal dispositivo i dati in cache. Se il server
+ * non risponde (offline, token scaduto che non si rinnova) supabase-js non
+ * toglierebbe la sessione: la si toglie qui dallo storage e l'interfaccia
+ * torna comunque all'accesso.
+ */
 export async function signOut(): Promise<void> {
+  let failed: boolean
   try {
-    await supabase.auth.signOut()
-  } finally {
-    await clearLocalData()
+    const outcome = await Promise.race([
+      supabase.auth.signOut(),
+      new Promise<'timeout'>((resolve) =>
+        window.setTimeout(() => resolve('timeout'), SIGN_OUT_TIMEOUT_MS),
+      ),
+    ])
+    failed = outcome === 'timeout' || Boolean(outcome.error)
+  } catch {
+    failed = true
   }
+  if (failed) {
+    try {
+      for (const suffix of ['', '-code-verifier', '-user']) {
+        window.localStorage.removeItem(`${AUTH_STORAGE_KEY}${suffix}`)
+      }
+    } catch {
+      // storage non disponibile: niente da togliere
+    }
+    for (const listener of forcedSignOutListeners) listener()
+  }
+  await clearLocalData()
 }

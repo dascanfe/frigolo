@@ -2,16 +2,16 @@ import type { EmailOtpType } from '@supabase/supabase-js'
 import { LogIn, MailCheck, UserPlus } from 'lucide-react'
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { PasswordField } from '@/components/PasswordField'
 import { TextField } from '@/components/TextField'
 import { Turnstile } from '@/components/Turnstile'
 import type { TurnstileHandle } from '@/components/Turnstile'
 import { readPendingInvite } from '@/features/lists/inviteCode'
-import { it as t } from '@/i18n/it'
+import { PRIVACY_URL, TERMS_URL, it as t } from '@/i18n/it'
 import { MIN_PASSWORD_LENGTH, describeAuthError } from '@/lib/authErrors'
 import { supabase } from '@/lib/supabase'
-import { TURNSTILE_SITE_KEY } from '@/lib/turnstile'
 
 type Mode = 'signin' | 'signup'
 
@@ -51,14 +51,13 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
   const [hasInvite] = useState(() => readPendingInvite() !== null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [forgotSentTo, setForgotSentTo] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(() => readUrlOutcome())
   // captcha: con la site key serve un token nuovo per ogni invio
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const turnstile = useRef<TurnstileHandle>(null)
-  const [captchaUnavailable, setCaptchaUnavailable] = useState(false)
-  // senza script (rete, blocchi) si prova lo stesso: se Supabase vuole il
-  // captcha risponde con un errore che spiega cosa fare
-  const captchaReady = !TURNSTILE_SITE_KEY || captchaToken !== null || captchaUnavailable
+  // il captcha non blocca mai il modulo: se non risponde si invia senza token
+  // e, se Supabase lo pretende, risponde con un errore che dice di riprovare
   const captcha = captchaToken ?? undefined
   const renewCaptcha = () => turnstile.current?.reset()
 
@@ -67,8 +66,7 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
     !busy &&
     cleanEmail.length > 3 &&
     password.length >= (mode === 'signup' ? MIN_PASSWORD : 1) &&
-    (mode === 'signin' || displayName.trim().length > 0) &&
-    captchaReady
+    (mode === 'signin' || displayName.trim().length > 0)
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -154,18 +152,9 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
             {error ?? notice}
           </p>
         )}
-        <Turnstile
-          ref={turnstile}
-          onToken={setCaptchaToken}
-          onUnavailable={() => setCaptchaUnavailable(true)}
-          action="resend"
-        />
+        <Turnstile ref={turnstile} onToken={setCaptchaToken} action="resend" />
         <div className="flex flex-col items-center gap-1">
-          <Button
-            variant="secondary"
-            onClick={() => void handleResend()}
-            disabled={busy || !captchaReady}
-          >
+          <Button variant="secondary" onClick={() => void handleResend()} disabled={busy}>
             {busy ? t.common.wait : t.checkEmail.resend}
           </Button>
           <Button
@@ -186,7 +175,7 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
 
   async function handleLinkResend(event: FormEvent) {
     event.preventDefault()
-    if (!cleanEmail || !captchaReady || busy) return
+    if (!cleanEmail || busy) return
     setBusy(true)
     setError(null)
     setNotice(null)
@@ -250,13 +239,8 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
               onChange={(e) => setEmail(e.target.value)}
               error={error}
             />
-            <Turnstile
-              ref={turnstile}
-              onToken={setCaptchaToken}
-              onUnavailable={() => setCaptchaUnavailable(true)}
-              action="resend"
-            />
-            <Button type="submit" fullWidth disabled={busy || !cleanEmail || !captchaReady}>
+            <Turnstile ref={turnstile} onToken={setCaptchaToken} action="resend" />
+            <Button type="submit" fullWidth disabled={busy || !cleanEmail}>
               {busy ? t.common.wait : t.authLink.resend}
             </Button>
           </form>
@@ -282,7 +266,6 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
       setError(t.login.forgotNoEmail)
       return
     }
-    if (!captchaReady) return
     setBusy(true)
     setError(null)
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
@@ -295,7 +278,8 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
       setError(describeAuthError(resetError))
       return
     }
-    setNotice(t.login.forgotSent(cleanEmail))
+    // stesso riscontro se l'account esiste o no: non lo si rivela
+    setForgotSentTo(cleanEmail)
   }
 
   return (
@@ -395,29 +379,44 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
           error={error}
           hint={mode === 'signup' ? t.login.passwordHint : undefined}
         />
-        <Turnstile
-          ref={turnstile}
-          onToken={setCaptchaToken}
-          onUnavailable={() => setCaptchaUnavailable(true)}
-          action={mode}
-        />
+        {mode === 'signup' && (
+          <p className="text-xs text-secondary">
+            {t.login.legalBefore}
+            <a href={TERMS_URL} target="_blank" rel="noopener" className="font-bold underline">
+              {t.login.legalTerms}
+            </a>
+            {t.login.legalAnd}
+            <a href={PRIVACY_URL} target="_blank" rel="noopener" className="font-bold underline">
+              {t.login.legalPrivacy}
+            </a>
+            {t.login.legalAfter}
+          </p>
+        )}
+        <Turnstile ref={turnstile} onToken={setCaptchaToken} action={mode} />
         <Button type="submit" fullWidth disabled={!canSubmit}>
-          {busy
-            ? t.common.wait
-            : !captchaReady
-              ? t.login.captchaWaiting
-              : mode === 'signin'
-                ? t.login.submitSignin
-                : t.login.submitSignup}
+          {busy ? t.common.wait : mode === 'signin' ? t.login.submitSignin : t.login.submitSignup}
         </Button>
         {mode === 'signin' && (
           <div className="flex justify-center">
-            <Button variant="ghost" onClick={handleForgotPassword} disabled={busy || !captchaReady}>
+            <Button variant="ghost" onClick={handleForgotPassword} disabled={busy}>
               {t.login.forgot}
             </Button>
           </div>
         )}
       </form>
+      <BottomSheet
+        open={forgotSentTo !== null}
+        onClose={() => setForgotSentTo(null)}
+        title={t.login.forgotSheetTitle}
+      >
+        <div className="flex flex-col items-center gap-4 pb-2 text-center">
+          <img src="/mascot-happy.webp" alt="" width={96} height={96} className="size-24" />
+          <p className="text-primary">{t.login.forgotSheetMessage(forgotSentTo ?? '')}</p>
+          <Button fullWidth onClick={() => setForgotSentTo(null)}>
+            {t.login.forgotSheetOk}
+          </Button>
+        </div>
+      </BottomSheet>
     </main>
   )
 }
