@@ -9,6 +9,10 @@
 /** Nome della mascotte (deciso da Daniele) */
 export const MASCOT_NAME = 'Frigolo'
 
+/** Pagine legali sulla landing */
+export const TERMS_URL = 'https://www.dascanfe.com/sub/frigolo/termini.html'
+export const PRIVACY_URL = 'https://www.dascanfe.com/sub/frigolo/privacy.html'
+
 /** Email di contatto e supporto */
 export const SUPPORT_EMAIL = 'frigolo@dascanfe.com'
 
@@ -29,16 +33,35 @@ export const it = {
     namePlaceholder: 'Es. Marta',
     nameHint: 'Va bene anche un soprannome.',
     passwordHint: 'Ti servirà per entrare da altri telefoni.',
+    legalBefore: 'Registrandoti accetti i ',
+    legalTerms: 'termini',
+    legalAnd: " e l'",
+    legalPrivacy: 'informativa privacy',
+    legalAfter: '.',
     submitSignin: 'Entra',
     submitSignup: "Crea l'account",
     forgot: 'Password dimenticata?',
     forgotNoEmail: 'Scrivi prima la tua email, poi tocca "Password dimenticata?".',
-    forgotSent: (email: string) =>
-      `Se ${email} ha un account, ti arriva un'email con il link per scegliere una nuova password.`,
-    captchaFailed:
-      'Non sono riuscito a verificare che sei una persona. Ricarica la pagina e riprova.',
-    captchaWaiting: 'Controllo che sei una persona...',
+    forgotSheetTitle: 'Controlla la posta',
+    forgotSheetMessage: (email: string) =>
+      `Ti ho mandato un'email a ${email}. Apri il link per scegliere una nuova password.`,
+    forgotSheetOk: 'Ok',
+    captchaFailed: 'Non sono riuscito a verificare che sei una persona. Riprova.',
     pendingInvite: "Ti hanno invitato in una lista: crea l'account o accedi e poi ci entri.",
+  },
+  newPassword: {
+    title: 'Nuova password',
+    lead: 'Scegli la nuova password per il tuo account.',
+    password: 'Nuova password',
+    confirm: 'Ripeti la password',
+    mismatch: 'Le due password non coincidono.',
+    save: 'Salva la nuova password',
+    saving: 'Salvo...',
+    cancel: 'Annulla ed esci',
+    changedToast: 'Password cambiata',
+    doneTitle: 'Password cambiata!',
+    doneMessage: "Torna nell'app Frigolo ed entra con la nuova password.",
+    continueHere: 'Oppure continua qui',
   },
   authLink: {
     confirmed: 'Email confermata',
@@ -50,6 +73,7 @@ export const it = {
     resend: 'Mandala di nuovo',
     sent: (email: string) => `Fatto: se ${email} ha un account, ti arriva un'email nuova.`,
     backToLogin: "Torna all'accesso",
+    switchAccount: "Questo link ti fa entrare con l'account a cui è arrivata l'email. Continuare?",
   },
   checkEmail: {
     title: 'Controlla la posta',
@@ -310,6 +334,10 @@ export const it = {
   donation: {
     label: 'Offrimi un caffè 💚',
     text: 'Frigolo è gratis e lo resta. Se ti è utile, puoi offrire un caffè a chi la sviluppa.',
+  },
+  legal: {
+    terms: "Termini d'uso",
+    privacy: 'Privacy',
   },
   support: {
     text: "Un dubbio, un problema o un'idea? Scrivi a",

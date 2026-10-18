@@ -129,7 +129,7 @@ function setInstallState(patch: Partial<InstallState>) {
   for (const listener of installListeners) listener()
 }
 
-function isStandalone(): boolean {
+export function isStandalone(): boolean {
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
     ('standalone' in navigator &&
