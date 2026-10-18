@@ -1,4 +1,4 @@
-# Piano Instagram: le prime 4 settimane
+# Piano Instagram: le prime 4 settimane (18 ottobre - 14 novembre 2026)
 
 A cura di Paprika (contenuti) e Zenzero (testi). Per il profilo personale di Daniele. Si parte dal
 lancio: ogni contenuto è già pronto in `pacchetto-instagram/` (fuori dal repo e dal sito, nella
@@ -7,13 +7,42 @@ Il tono è quello di [tono.md](tono.md): frasi brevi, tu, una sola emoji e solo 
 posizionamento è in [../strategia/posizionamento.md](../strategia/posizionamento.md) e il piano
 di lancio in [../strategia/lancio.md](../strategia/lancio.md).
 
+## Le storie della pagina
+
+Oltre ai 12 contenuti, la pagina @frigolo.app ha **5 raccolte in evidenza** già pronte in
+`pacchetto-instagram/00-storie-pagina/`: 1080x1920, tema lampone con la mascotte, schermate vere
+dell'app, fasce alta (250 px) e bassa (340 px) libere per l'interfaccia di Instagram. Ogni
+cartella ha le storie numerate nell'ordine di pubblicazione e un `istruzioni.txt` con sticker e
+link. Si pubblicano dalla pagina @frigolo.app, poi si salvano in evidenza. Le cinque copertine
+rotonde sono in `copertine-in-evidenza/`.
+
+| Raccolta | Quando | Storie | Sticker principale |
+| -------- | ------ | ------ | ------------------ |
+| Installa (`1-installa`) | Stasera, domenica 18 ottobre, subito dopo il post di lancio e la storia "Novità" (circa 19:40) | 7 | Link alla landing |
+| Come funziona (`2-come-funziona`) | Stasera, domenica 18 ottobre, dopo la raccolta Installa (circa 19:50) | 4 | Link alla landing |
+| Novità (`3-novita`) | Stasera, domenica 18 ottobre, subito dopo il post di lancio (circa 19:35); martedì 20 si aggiunge la ricondivisione del Reel | 1 | Link alla landing |
+| Domande (`4-domande`) | Settimana 4, martedì 10 novembre, insieme a S4-01 (Feedback "Cosa manca?") | 2 | Domanda "Cosa vorresti in Frigolo?" + link |
+| Caffè (`5-caffe`) | Settimana 4, giovedì 12 novembre, insieme a S4-02 (Post "Offrimi un caffè") | 1 | Link PayPal |
+
+**Sera del lancio, domenica 18 ottobre, in ordine**
+
+1. 19:30 Post di lancio (S1-01), carosello in collaborazione con @frigolo.app.
+2. 19:35 Pubblica "Frigolo è online" (`3-novita`) con sticker link, e se vuoi condividi il post nelle storie.
+3. 19:40 Pubblica le 7 storie di `1-installa`, poi le 4 di `2-come-funziona`.
+4. Salva ogni gruppo nella sua raccolta in evidenza, con la copertina da `copertine-in-evidenza/`.
+
+**Più avanti:** martedì 20 ottobre il Reel di lancio (S1-02) si ricondivide e si aggiunge a `3-novita`; `4-domande` martedì 10 novembre insieme a S4-01, `5-caffe` giovedì 12 novembre
+insieme a S4-02 (è l'unico invito a donare, in linea con il tono).
+
 ## Come è fatto il piano
 
-- **12 contenuti in 4 settimane**, 3 a settimana: martedì sera, giovedì a pranzo, sabato mattina.
+- **13 contenuti in 4 settimane.** Si parte **domenica 18 ottobre 2026 alle 19:30** con il post di
+  lancio; poi 3 a settimana: martedì sera, giovedì a pranzo, sabato mattina (la settimana del
+  lancio ne ha 4 perché comincia di domenica). Il Reel di lancio esce martedì 20 alle 19:30.
   Gli orari sono un punto di partenza: dopo 2 settimane si guardano le statistiche di Instagram
   (Pubblico, "Quando i tuoi follower sono online") e si spostano.
-- **Tra i 12 ci sono:** 2 Reel (lancio e tempo reale), 5 caroselli, 3 post singoli, 1 set di storie
-  e 1 post con storie per il feedback.
+- **Tra i 13 ci sono:** 2 Reel (lancio e tempo reale), 6 caroselli (compreso il post di lancio),
+  3 post singoli, 1 set di storie e 1 post con storie per il feedback.
 - **Storie:** una o due al giorno nei giorni di pubblicazione, con gli sticker indicati. Le storie
   senza immagine dedicata condividono il post del giorno.
 - **Una cosa per volta, nessun invito a donare fuori dal post del caffè** (tono.md: niente
@@ -86,31 +115,59 @@ Tutti i link alla landing portano questi parametri:
 
 | Sett. | Quando | Codice | Contenuto | Formato |
 | ----- | ------ | ------ | --------- | ------- |
-| 1 | Martedì 19:30 | S1-01 | Reel di lancio | Reel 9:16 (44 secondi) |
-| 1 | Giovedì 12:30 | S1-02 | Carosello "Come funziona" | Carosello 4:5, 7 slide |
-| 1 | Sabato 11:00 | S1-03 | Storie del weekend (3) | Storie 9:16, 3 immagini |
-| 2 | Martedì 19:00 | S2-01 | Carosello "Per chi è" | Carosello 4:5, 6 slide |
-| 2 | Giovedì 12:30 | S2-02 | Post "Ordine di corsia" | Post singolo 4:5 |
-| 2 | Sabato 11:00 | S2-03 | Reel breve "Tempo reale" | Reel 9:16 (15 secondi) |
-| 3 | Martedì 19:00 | S3-01 | Carosello "Dietro le quinte" | Carosello 4:5, 6 slide |
-| 3 | Giovedì 12:30 | S3-02 | Post "Anche senza rete" | Post singolo 4:5 |
-| 3 | Sabato 11:00 | S3-03 | Carosello "Analitiche e temi" | Carosello 4:5, 4 slide |
-| 4 | Martedì 19:00 | S4-01 | Feedback "Cosa manca?" | Post singolo 4:5 + 2 storie |
-| 4 | Giovedì 12:30 | S4-02 | Post "Offrimi un caffè" | Post singolo 4:5 |
-| 4 | Sabato 11:00 | S4-03 | Riepilogo del mese | Carosello 4:5, 3 slide |
+| 1 | Dom 18 ott ore 19:30 | S1-01 | Post di lancio | Carosello 4:5, 4 slide |
+| 1 | Mar 20 ott ore 19:30 | S1-02 | Reel di lancio | Reel 9:16 (44 secondi) |
+| 1 | Gio 22 ott ore 12:30 | S1-03 | Carosello "Come funziona" | Carosello 4:5, 7 slide |
+| 1 | Sab 24 ott ore 11:00 | S1-04 | Storie del weekend (3) | Storie 9:16, 3 immagini |
+| 2 | Mar 27 ott ore 19:00 | S2-01 | Carosello "Per chi è" | Carosello 4:5, 6 slide |
+| 2 | Gio 29 ott ore 12:30 | S2-02 | Post "Ordine di corsia" | Post singolo 4:5 |
+| 2 | Sab 31 ott ore 11:00 | S2-03 | Reel breve "Tempo reale" | Reel 9:16 (15 secondi) |
+| 3 | Mar 3 nov ore 19:00 | S3-01 | Carosello "Dietro le quinte" | Carosello 4:5, 6 slide |
+| 3 | Gio 5 nov ore 12:30 | S3-02 | Post "Anche senza rete" | Post singolo 4:5 |
+| 3 | Sab 7 nov ore 11:00 | S3-03 | Carosello "Analitiche e temi" | Carosello 4:5, 4 slide |
+| 4 | Mar 10 nov ore 19:00 | S4-01 | Feedback "Cosa manca?" | Post singolo 4:5 + 2 storie |
+| 4 | Gio 12 nov ore 12:30 | S4-02 | Post "Offrimi un caffè" | Post singolo 4:5 |
+| 4 | Sab 14 nov ore 11:00 | S4-03 | Riepilogo del mese | Carosello 4:5, 3 slide |
 
 ## I contenuti
 
-### 1. Reel di lancio (S1-01)
+### 1. Post di lancio (S1-01)
 
-- **Quando:** settimana 1, martedì alle 19:30
+- **Quando:** domenica 18 ottobre 2026 alle 19:30 (settimana 1)
+- **Formato:** Carosello 4:5, 4 slide
+- **Obiettivo:** Annunciare che Frigolo è online e portare le prime prove dalla rete di Daniele.
+- **File:** `pacchetto-instagram/S1-01-post-lancio/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png)
+- **Nota:** Stile e grafica delle storie del weekend (S1-04), in formato post 4:5. Il Reel di lancio segue martedì 20.
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
+- **In evidenza su @frigolo.app:** salva la storia di questo contenuto nella raccolta "Novità"
+- **Sticker e storie:** Subito dopo, in storia: pubblica "Frigolo è online" della raccolta Novità (00-storie-pagina/3-novita) con lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-01, poi le raccolte Installa e Come funziona.
+
+**Didascalia** (uguale a `didascalia.txt` nella cartella):
+
+```text
+Frigolo è online.
+
+L'ho fatta io: una lista della spesa da condividere. Tocchi un prodotto ed è in lista sul telefono di tutti, in ordine di corsia. Da solo o con chi fa la spesa con te.
+
+Si apre da un link e si installa dal browser, senza store. È gratis, senza pubblicità e il codice è pubblico.
+
+Provala: link nella bio. Poi scrivimi cosa ne pensi, leggo tutto.
+
+#frigolo #listadellaspesa #appitaliane #spesa #opensource #vitainsieme #coinquilini #uxdesign
+```
+
+**Testo alternativo:** Carosello di 4 slide: Frigolo che festeggia con la scritta "Frigolo è online", la lista in ordine di corsia, la lista condivisa con i coinquilini e l'invito a provarla dal link nella bio.
+
+### 2. Reel di lancio (S1-02)
+
+- **Quando:** martedì 20 ottobre 2026 alle 19:30 (settimana 1)
 - **Formato:** Reel 9:16 (44 secondi)
 - **Obiettivo:** Far conoscere Frigolo e portare le prime registrazioni dalla rete di Daniele.
-- **File:** `pacchetto-instagram/S1-01-reel-lancio/` (01-reel-lancio.mp4, 02-copertina-reel.png)
+- **File:** `pacchetto-instagram/S1-02-reel-lancio/` (01-reel-lancio.mp4, 02-copertina-reel.png)
 - **Nota:** Usa la copertina come immagine del Reel e scegli come musica "Fun Day" (è già nel video). Il video ha i sottotitoli disegnati dentro.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **In evidenza su @frigolo.app:** salva la storia di questo contenuto nella raccolta "Novità"
-- **Sticker e storie:** Nessuno nel Reel. Subito dopo, in storia, condividi il Reel con lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-01.
+- **Sticker e storie:** Nessuno nel Reel. Subito dopo, in storia, condividi il Reel con lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-02.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
@@ -130,15 +187,15 @@ Musica: Fun Day di AShamaluevMusic
 
 **Testo alternativo:** Copertina del Reel: il frigorifero verde acqua Frigolo con una nuvoletta di dubbio e la scritta "Chi compra il latte?".
 
-### 2. Carosello "Come funziona" (S1-02)
+### 3. Carosello "Come funziona" (S1-03)
 
-- **Quando:** settimana 1, giovedì alle 12:30
+- **Quando:** giovedì 22 ottobre 2026 alle 12:30 (settimana 1)
 - **Formato:** Carosello 4:5, 7 slide
 - **Obiettivo:** Spiegare in un minuto cosa fa Frigolo. Salvataggi e invii a chi fa la spesa con te.
-- **File:** `pacchetto-instagram/S1-02-carosello-come-funziona/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png, 07-slide.png)
+- **File:** `pacchetto-instagram/S1-03-carosello-come-funziona/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png, 07-slide.png)
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **In evidenza su @frigolo.app:** salva la storia di questo contenuto nella raccolta "Come funziona"
-- **Sticker e storie:** Storia del giorno: condividi la slide 4 con uno sticker Domanda "Chi fa la spesa a casa tua?" e, nella storia dopo, lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-02.
+- **Sticker e storie:** Storia del giorno: condividi la slide 4 con uno sticker Domanda "Chi fa la spesa a casa tua?" e, nella storia dopo, lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-03.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
@@ -161,15 +218,15 @@ Salvalo per quando ti serve e mandalo a chi fa la spesa con te. Link nella bio.
 
 **Testo alternativo:** Carosello di 7 slide con le schermate di Frigolo: catalogo, invito, lista condivisa, ordine di corsia, spesa finita e invito a provarla.
 
-### 3. Storie del weekend (3) (S1-03)
+### 4. Storie del weekend (3) (S1-04)
 
-- **Quando:** settimana 1, sabato alle 11:00
+- **Quando:** sabato 24 ottobre 2026 alle 11:00 (settimana 1)
 - **Formato:** Storie 9:16, 3 immagini
 - **Obiettivo:** Sondaggio leggero per far parlare chi ci segue e portare visite alla landing con lo sticker link.
-- **File:** `pacchetto-instagram/S1-03-storie-weekend/` (01-storia-online.png, 02-storia-sondaggio.png, 03-storia-link.png)
+- **File:** `pacchetto-instagram/S1-04-storie-weekend/` (01-storia-online.png, 02-storia-sondaggio.png, 03-storia-link.png)
 - **Come pubblicarlo:** Storie: pubblicale dal tuo profilo menzionando @frigolo.app (sticker Menzione). Dalla pagina @frigolo.app ricondividi la menzione e salvala in evidenza.
 - **In evidenza su @frigolo.app:** salva la storia di questo contenuto nella raccolta "Installa"
-- **Sticker e storie:** Storia 2: Sondaggio "Chi fa la spesa a casa tua?" (Io / Un po' tutti), da mettere nella fascia bassa sopra il telefono. Storia 3: Link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-03 (sticker nella fascia bassa, sopra la zona di risposta).
+- **Sticker e storie:** Storia 2: Sondaggio "Chi fa la spesa a casa tua?" (Io / Un po' tutti), da mettere nella fascia bassa sopra il telefono. Storia 3: Link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-04 (sticker nella fascia bassa, sopra la zona di risposta).
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
 
@@ -178,14 +235,14 @@ Storie, nessuna didascalia. Testi degli sticker qui sotto.
 
 Storia 1: nessuno sticker, serve a presentare Frigolo.
 Storia 2: sondaggio "Chi fa la spesa a casa tua?" con le risposte "Io" e "Un po' tutti".
-Storia 3: sticker link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-03.
+Storia 3: sticker link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-04.
 ```
 
 **Testo alternativo:** Tre storie: Frigolo che festeggia, la lista dei coinquilini con un sondaggio, la lista con i prodotti nel carrello e il link.
 
-### 4. Carosello "Per chi è" (S2-01)
+### 5. Carosello "Per chi è" (S2-01)
 
-- **Quando:** settimana 2, martedì alle 19:00
+- **Quando:** martedì 27 ottobre 2026 alle 19:00 (settimana 2)
 - **Formato:** Carosello 4:5, 6 slide
 - **Obiettivo:** Far riconoscere ogni persona nel suo caso e spingere a girare il post: il condividere è il motore di Frigolo.
 - **File:** `pacchetto-instagram/S2-01-carosello-per-chi-e/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png)
@@ -209,9 +266,9 @@ Mandalo a chi fa la spesa con te. Link nella bio.
 
 **Testo alternativo:** Carosello di 6 slide: Frigolo per chi fa la spesa da solo, in due, con i coinquilini o in famiglia, con le schermate dell'app.
 
-### 5. Post "Ordine di corsia" (S2-02)
+### 6. Post "Ordine di corsia" (S2-02)
 
-- **Quando:** settimana 2, giovedì alle 12:30
+- **Quando:** giovedì 29 ottobre 2026 alle 12:30 (settimana 2)
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Mostrare la funzione più concreta e visiva di Frigolo.
 - **File:** `pacchetto-instagram/S2-02-post-ordine-corsia/` (01-ordine-di-corsia.png)
@@ -234,9 +291,9 @@ Link nella bio.
 
 **Testo alternativo:** La lista di Frigolo sul telefono, divisa per sezioni nell'ordine del supermercato, con la scritta "Frutta e verdura prima, surgelati alla fine".
 
-### 6. Reel breve "Tempo reale" (S2-03)
+### 7. Reel breve "Tempo reale" (S2-03)
 
-- **Quando:** settimana 2, sabato alle 11:00
+- **Quando:** sabato 31 ottobre 2026 alle 11:00 (settimana 2)
 - **Formato:** Reel 9:16 (15 secondi)
 - **Obiettivo:** Mostrare in 15 secondi il momento che fa capire Frigolo: aggiungi e compare sul telefono dell'altra persona.
 - **File:** `pacchetto-instagram/S2-03-reel-tempo-reale/` (01-reel-15s.mp4, 02-copertina-reel.png)
@@ -260,9 +317,9 @@ Musica: Fun Day di AShamaluevMusic
 
 **Testo alternativo:** Copertina del Reel: Frigolo contento con la scritta "Lo aggiungi tu, lo vedono tutti".
 
-### 7. Carosello "Dietro le quinte" (S3-01)
+### 8. Carosello "Dietro le quinte" (S3-01)
 
-- **Quando:** settimana 3, martedì alle 19:00
+- **Quando:** martedì 3 novembre 2026 alle 19:00 (settimana 3)
 - **Formato:** Carosello 4:5, 6 slide
 - **Obiettivo:** Raccontare il progetto con la voce di un UX/UI designer: design, mascotte, perché è gratis e open source.
 - **File:** `pacchetto-instagram/S3-01-carosello-dietro-le-quinte/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png)
@@ -287,9 +344,9 @@ Perché è gratis e il codice è pubblico? Perché una lista della spesa non dov
 
 **Testo alternativo:** Carosello di 6 slide sul progetto: il problema, il design, la mascotte Frigolo, la squadra di agenti AI e perché è gratis e open source.
 
-### 8. Post "Anche senza rete" (S3-02)
+### 9. Post "Anche senza rete" (S3-02)
 
-- **Quando:** settimana 3, giovedì alle 12:30
+- **Quando:** giovedì 5 novembre 2026 alle 12:30 (settimana 3)
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Rispondere al dubbio "e se in negozio non prende?". Funzione che toglie un freno.
 - **File:** `pacchetto-instagram/S3-02-post-offline/` (01-offline.png)
@@ -311,9 +368,9 @@ Link nella bio.
 
 **Testo alternativo:** La lista di Frigolo con un avviso in alto: una modifica in attesa di rete. Titolo: la lista resta aperta anche senza segnale.
 
-### 9. Carosello "Analitiche e temi" (S3-03)
+### 10. Carosello "Analitiche e temi" (S3-03)
 
-- **Quando:** settimana 3, sabato alle 11:00
+- **Quando:** sabato 7 novembre 2026 alle 11:00 (settimana 3)
 - **Formato:** Carosello 4:5, 4 slide
 - **Obiettivo:** Mostrare la profondità: cosa compri, chi mette in lista, e i colori da scegliere.
 - **File:** `pacchetto-instagram/S3-03-carosello-analitiche-temi/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png)
@@ -334,9 +391,9 @@ Niente cookie, niente pubblicità, il codice è pubblico. Link nella bio.
 
 **Testo alternativo:** Carosello di 4 slide: le analitiche di Frigolo, l'andamento nel tempo, i prodotti suggeriti e i sei temi di colore.
 
-### 10. Feedback "Cosa manca?" (S4-01)
+### 11. Feedback "Cosa manca?" (S4-01)
 
-- **Quando:** settimana 4, martedì alle 19:00
+- **Quando:** martedì 10 novembre 2026 alle 19:00 (settimana 4)
 - **Formato:** Post singolo 4:5 + 2 storie
 - **Obiettivo:** Raccogliere idee e problemi veri. Le risposte alimentano la roadmap.
 - **File:** `pacchetto-instagram/S4-01-feedback/` (01-post-cosa-manca.png, 02-storia-domanda.png, 03-storia-sondaggio.png)
@@ -360,9 +417,9 @@ Link nella bio.
 
 **Testo alternativo:** Il frigorifero Frigolo con la nuvoletta del dubbio e la domanda "Cosa manca a Frigolo?".
 
-### 11. Post "Offrimi un caffè" (S4-02)
+### 12. Post "Offrimi un caffè" (S4-02)
 
-- **Quando:** settimana 4, giovedì alle 12:30
+- **Quando:** giovedì 12 novembre 2026 alle 12:30 (settimana 4)
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Dire come si regge Frigolo e dare, con garbo, un modo per ringraziare. Nessuna insistenza.
 - **File:** `pacchetto-instagram/S4-02-offrimi-un-caffe/` (01-offrimi-un-caffe.png)
@@ -386,9 +443,9 @@ Grazie lo stesso a chi la usa.
 
 **Testo alternativo:** Frigolo contento con la scritta "Frigolo è gratis e lo resta. Se ti è utile, il caffè lo offri tu".
 
-### 12. Riepilogo del mese (S4-03)
+### 13. Riepilogo del mese (S4-03)
 
-- **Quando:** settimana 4, sabato alle 11:00
+- **Quando:** sabato 14 novembre 2026 alle 11:00 (settimana 4)
 - **Formato:** Carosello 4:5, 3 slide
 - **Obiettivo:** Chiudere il ciclo, ringraziare e dire cosa succede dopo. I numeri veri si scrivono in didascalia.
 - **File:** `pacchetto-instagram/S4-03-riepilogo-mese/` (01-slide.png, 02-slide.png, 03-slide.png)
@@ -433,7 +490,7 @@ Immagini, didascalie e questo piano nascono da `marketing/kit/scripts/instagram-
 
 ```sh
 node marketing/kit/scripts/instagram.mjs            # tutto
-node marketing/kit/scripts/instagram.mjs --solo S1-02   # un solo contenuto
+node marketing/kit/scripts/instagram.mjs --solo S1-03   # un solo contenuto
 ```
 
 Cartella di uscita: `PACCHETTO=/percorso` (default: `Frigolo published/pacchetto-instagram`).
