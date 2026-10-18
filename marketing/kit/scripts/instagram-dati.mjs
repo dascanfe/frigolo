@@ -5,6 +5,10 @@ export const utm = (content) =>
   `${BASE}?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=${content}`
 export const BIO_LINK = utm('bio')
 export const CREDITO = 'Musica: Fun Day di AShamaluevMusic'
+// nome della pagina Instagram di Frigolo: se @frigolo è già preso, cambialo qui e rigenera
+export const PAGINA = '@frigolo'
+const COLLAB = 'Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > ' + PAGINA + '. Dalla pagina ' + PAGINA + ' accetta l\'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.'
+const STORIE = 'Storie: pubblicale dal tuo profilo menzionando ' + PAGINA + ' (sticker Menzione). Dalla pagina ' + PAGINA + ' ricondividi la menzione e salvala in evidenza.'
 
 const S = 'marketing/screenshot/'
 const P = (o) => ({ f: 'p', tipo: 'phone', ...o })
@@ -16,6 +20,8 @@ const nn = (arr) => arr.map((x, i) => ({ ...x, n: `${i + 1}/${arr.length}` }))
 export const CONTENUTI = [
   {
     id: 'S1-01-reel-lancio',
+    collab: COLLAB,
+    evidenza: 'Novità',
     sett: 1,
     giorno: 'Martedì',
     ora: '19:30',
@@ -42,6 +48,8 @@ ${CREDITO}`,
   },
   {
     id: 'S1-02-carosello-come-funziona',
+    collab: COLLAB,
+    evidenza: 'Come funziona',
     sett: 1,
     giorno: 'Giovedì',
     ora: '12:30',
@@ -75,6 +83,8 @@ Salvalo per quando ti serve e mandalo a chi fa la spesa con te. Link nella bio.`
   },
   {
     id: 'S1-03-storie-weekend',
+    collab: STORIE,
+    evidenza: 'Installa',
     sett: 1,
     giorno: 'Sabato',
     ora: '11:00',
@@ -97,6 +107,7 @@ Storia 3: sticker link "Provala" verso ${utm('storie-s1-03')}.`,
   },
   {
     id: 'S2-01-carosello-per-chi-e',
+    collab: COLLAB,
     sett: 2,
     giorno: 'Martedì',
     ora: '19:00',
@@ -125,6 +136,7 @@ Mandalo a chi fa la spesa con te. Link nella bio.`,
   },
   {
     id: 'S2-02-post-ordine-corsia',
+    collab: COLLAB,
     sett: 2,
     giorno: 'Giovedì',
     ora: '12:30',
@@ -147,6 +159,8 @@ Link nella bio.`,
   },
   {
     id: 'S2-03-reel-tempo-reale',
+    collab: COLLAB,
+    evidenza: 'Come funziona',
     sett: 2,
     giorno: 'Sabato',
     ora: '11:00',
@@ -170,6 +184,7 @@ ${CREDITO}`,
   },
   {
     id: 'S3-01-carosello-dietro-le-quinte',
+    collab: COLLAB,
     sett: 3,
     giorno: 'Martedì',
     ora: '19:00',
@@ -199,6 +214,8 @@ Perché è gratis e il codice è pubblico? Perché una lista della spesa non dov
   },
   {
     id: 'S3-02-post-offline',
+    collab: COLLAB,
+    evidenza: 'Come funziona',
     sett: 3,
     giorno: 'Giovedì',
     ora: '12:30',
@@ -219,6 +236,7 @@ Link nella bio.`,
   },
   {
     id: 'S3-03-carosello-analitiche-temi',
+    collab: COLLAB,
     sett: 3,
     giorno: 'Sabato',
     ora: '11:00',
@@ -242,6 +260,8 @@ Niente cookie, niente pubblicità, il codice è pubblico. Link nella bio.`,
   },
   {
     id: 'S4-01-feedback',
+    collab: COLLAB,
+    evidenza: 'Domande',
     sett: 4,
     giorno: 'Martedì',
     ora: '19:00',
@@ -266,6 +286,8 @@ Link nella bio.`,
   },
   {
     id: 'S4-02-offrimi-un-caffe',
+    collab: COLLAB,
+    evidenza: 'Caffè',
     sett: 4,
     giorno: 'Giovedì',
     ora: '12:30',
@@ -288,6 +310,7 @@ Grazie lo stesso a chi la usa.`,
   },
   {
     id: 'S4-03-riepilogo-mese',
+    collab: COLLAB,
     sett: 4,
     giorno: 'Sabato',
     ora: '11:00',

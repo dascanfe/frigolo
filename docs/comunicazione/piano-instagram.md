@@ -25,6 +25,29 @@ di lancio in [../strategia/lancio.md](../strategia/lancio.md).
 - **Cosa non promettere** (da posizionamento.md): niente "gratis per sempre", niente risparmio,
   niente funzioni che non ci sono (notifiche, codici a barre, più di 5 persone per lista).
 
+## La pagina @frigolo
+
+Frigolo ha una sua pagina, ma **il motore resta il tuo profilo**: i contenuti si pubblicano da te
+come **post in collaborazione** con @frigolo, così compaiono su tutti e due i profili con un solo
+lavoro e gli stessi like e commenti. Niente ricondivisioni nel feed: Instagram non le premia e chi
+ti segue vedrebbe due volte la stessa cosa.
+
+**Impostazione, una volta sola**
+
+1. Crea l'account @frigolo (se il nome è preso: @frigolo.app o @frigoloapp; poi cambia `PAGINA`
+   in `instagram-dati.mjs` e rigenera) e passa a **account professionale** (Creator o Business,
+   gratis): servono statistiche e collaborazioni.
+2. Immagine del profilo: la mascotte (`marketing/kit/mascotte/frigolo-contenta.png`).
+3. Bio: `La lista della spesa sempre in tasca. Per conto tuo o in compagnia. Gratis 💚` e link
+   https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=bio-pagina
+4. Raccolte in evidenza: **Installa**, **Come funziona**, **Novità**, **Domande**, **Caffè**. Per
+   ogni contenuto qui sotto è indicato cosa salvare e dove.
+5. Nel tuo profilo personale aggiungi @frigolo nella bio (per esempio "Sto facendo @frigolo 🧊").
+
+**Cosa fa la pagina da sola:** risponde ai messaggi e ai commenti, ricondivide nelle storie chi
+la tagga mentre usa l'app, tiene aggiornate le raccolte in evidenza. Se un giorno la gente comincia
+a cercarla e taggarla da sé, avrà un piano suo.
+
 ## Bio e link
 
 Testo suggerito (stanno nei 150 caratteri di Instagram):
@@ -86,6 +109,8 @@ Tutti i link alla landing portano questi parametri:
 - **Obiettivo:** Far conoscere Frigolo e portare le prime registrazioni dalla rete di Daniele.
 - **File:** `pacchetto-instagram/S1-01-reel-lancio/` (01-reel-lancio.mp4, 02-copertina-reel.png)
 - **Nota:** Usa la copertina come immagine del Reel e scegli come musica "Fun Day" (è già nel video). Il video ha i sottotitoli disegnati dentro.
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
+- **In evidenza su @frigolo:** salva la storia di questo contenuto nella raccolta "Novità"
 - **Sticker e storie:** Nessuno nel Reel. Subito dopo, in storia, condividi il Reel con lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-01.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -112,6 +137,8 @@ Musica: Fun Day di AShamaluevMusic
 - **Formato:** Carosello 4:5, 7 slide
 - **Obiettivo:** Spiegare in un minuto cosa fa Frigolo. Salvataggi e invii a chi fa la spesa con te.
 - **File:** `pacchetto-instagram/S1-02-carosello-come-funziona/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png, 07-slide.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
+- **In evidenza su @frigolo:** salva la storia di questo contenuto nella raccolta "Come funziona"
 - **Sticker e storie:** Storia del giorno: condividi la slide 4 con uno sticker Domanda "Chi fa la spesa a casa tua?" e, nella storia dopo, lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-02.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -141,6 +168,8 @@ Salvalo per quando ti serve e mandalo a chi fa la spesa con te. Link nella bio.
 - **Formato:** Storie 9:16, 3 immagini
 - **Obiettivo:** Sondaggio leggero per far parlare chi ci segue e portare visite alla landing con lo sticker link.
 - **File:** `pacchetto-instagram/S1-03-storie-weekend/` (01-storia-online.png, 02-storia-sondaggio.png, 03-storia-link.png)
+- **Come pubblicarlo:** Storie: pubblicale dal tuo profilo menzionando @frigolo (sticker Menzione). Dalla pagina @frigolo ricondividi la menzione e salvala in evidenza.
+- **In evidenza su @frigolo:** salva la storia di questo contenuto nella raccolta "Installa"
 - **Sticker e storie:** Storia 2: Sondaggio "Chi fa la spesa a casa tua?" (Io / Un po' tutti), da mettere nella fascia bassa sopra il telefono. Storia 3: Link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-03 (sticker nella fascia bassa, sopra la zona di risposta).
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -161,6 +190,7 @@ Storia 3: sticker link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm
 - **Formato:** Carosello 4:5, 6 slide
 - **Obiettivo:** Far riconoscere ogni persona nel suo caso e spingere a girare il post: il condividere è il motore di Frigolo.
 - **File:** `pacchetto-instagram/S2-01-carosello-per-chi-e/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: condividi il post con lo sticker Quiz "Quante persone in casa tua?" (1 / 2 / 3 / 4 o più) e lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s2-01.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -186,6 +216,7 @@ Mandalo a chi fa la spesa con te. Link nella bio.
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Mostrare la funzione più concreta e visiva di Frigolo.
 - **File:** `pacchetto-instagram/S2-02-post-ordine-corsia/` (01-ordine-di-corsia.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: condividi il post con lo sticker Sondaggio "Giri per il supermercato a caso?" (Sì / No, ho un ordine).
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -210,6 +241,8 @@ Link nella bio.
 - **Formato:** Reel 9:16 (15 secondi)
 - **Obiettivo:** Mostrare in 15 secondi il momento che fa capire Frigolo: aggiungi e compare sul telefono dell'altra persona.
 - **File:** `pacchetto-instagram/S2-03-reel-tempo-reale/` (01-reel-15s.mp4, 02-copertina-reel.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
+- **In evidenza su @frigolo:** salva la storia di questo contenuto nella raccolta "Come funziona"
 - **Sticker e storie:** Storia: condividi il Reel con lo sticker Emoji slider "Quanto ti succede?" e il link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s2-03.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -234,6 +267,7 @@ Musica: Fun Day di AShamaluevMusic
 - **Formato:** Carosello 4:5, 6 slide
 - **Obiettivo:** Raccontare il progetto con la voce di un UX/UI designer: design, mascotte, perché è gratis e open source.
 - **File:** `pacchetto-instagram/S3-01-carosello-dietro-le-quinte/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: sticker Domande "Cosa vuoi sapere di come è fatta?" e un secondo sticker con link al repository pubblico (https://github.com/dascanfe/frigolo).
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -260,6 +294,8 @@ Perché è gratis e il codice è pubblico? Perché una lista della spesa non dov
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Rispondere al dubbio "e se in negozio non prende?". Funzione che toglie un freno.
 - **File:** `pacchetto-instagram/S3-02-post-offline/` (01-offline.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
+- **In evidenza su @frigolo:** salva la storia di questo contenuto nella raccolta "Come funziona"
 - **Sticker e storie:** Storia: condividi il post con lo sticker Sondaggio "Il segnale nel tuo supermercato?" (Ottimo / A volte sparisce).
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -282,6 +318,7 @@ Link nella bio.
 - **Formato:** Carosello 4:5, 4 slide
 - **Obiettivo:** Mostrare la profondità: cosa compri, chi mette in lista, e i colori da scegliere.
 - **File:** `pacchetto-instagram/S3-03-carosello-analitiche-temi/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: condividi la slide 4 con uno sticker Sondaggio "Quale tema?" (Lampone / Basilico / Mare / Altro).
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -304,6 +341,8 @@ Niente cookie, niente pubblicità, il codice è pubblico. Link nella bio.
 - **Formato:** Post singolo 4:5 + 2 storie
 - **Obiettivo:** Raccogliere idee e problemi veri. Le risposte alimentano la roadmap.
 - **File:** `pacchetto-instagram/S4-01-feedback/` (01-post-cosa-manca.png, 02-storia-domanda.png, 03-storia-sondaggio.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
+- **In evidenza su @frigolo:** salva la storia di questo contenuto nella raccolta "Domande"
 - **Sticker e storie:** Storia 1: sticker Domande "Cosa vorresti in più?". Storia 2: Sondaggio "La usi ancora?" (Sì, spesso / A volte / No). Link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s4-01 nella storia dopo.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -328,6 +367,8 @@ Link nella bio.
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Dire come si regge Frigolo e dare, con garbo, un modo per ringraziare. Nessuna insistenza.
 - **File:** `pacchetto-instagram/S4-02-offrimi-un-caffe/` (01-offrimi-un-caffe.png)
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
+- **In evidenza su @frigolo:** salva la storia di questo contenuto nella raccolta "Caffè"
 - **Sticker e storie:** Storia: condividi il post con lo sticker link a https://paypal.me/DanieleScanferlato (testo del bottone "Offrimi un caffè"). Una sola storia, senza ripeterla.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
@@ -353,6 +394,7 @@ Grazie lo stesso a chi la usa.
 - **Obiettivo:** Chiudere il ciclo, ringraziare e dire cosa succede dopo. I numeri veri si scrivono in didascalia.
 - **File:** `pacchetto-instagram/S4-03-riepilogo-mese/` (01-slide.png, 02-slide.png, 03-slide.png)
 - **Nota:** Prima di pubblicare, riempire i segnaposto [N] della didascalia con i numeri del cruscotto di Pepe. Se un numero è troppo piccolo, meglio ometterlo.
+- **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo. Dalla pagina @frigolo accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: condividi il post con lo sticker Domande "Cosa vuoi nella prossima versione?" e il link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s4-03.
 
 **Didascalia** (uguale a `didascalia.txt` nella cartella):
