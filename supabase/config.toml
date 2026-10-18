@@ -177,7 +177,7 @@ refresh_token_reuse_interval = 10
 # Allow/disallow new user signups to your project.
 # Frigolo: resta false finché non si apre al pubblico. Il giorno dell'apertura si mette true
 # come ULTIMO passo (vedi docs/team/basilio.md, "Apertura al pubblico").
-enable_signup = false
+enable_signup = true
 # Allow/disallow anonymous sign-ins to your project.
 enable_anonymous_sign_ins = false
 # Allow/disallow testing manual linking of accounts
