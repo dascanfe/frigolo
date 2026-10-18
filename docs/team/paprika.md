@@ -23,6 +23,15 @@ allo storyboard, primo pacchetto di post sul piano editoriale di Zenzero.
 
 ## Diario
 
+### 2026-10-18 - Video e schermate, versione 2
+
+- Schermate e video rifatti con l'app vera: tema Lampone, status bar iOS (9:41, Dynamic Island, segnale, Wi-Fi, batteria) come livello SVG sopra la cattura, 1170x2532 (390x844 a 3x), niente barre del browser.
+- Persone: Giulia e Lele (prima Sara e Ale), avatar = mascotte su colori diversi. `marketing/demo/dati_demo.sql` aggiornato; DB locale tornato a `seed_dev.sql`.
+- `marketing/video/capture/` (Playwright): `statics.mjs` rifà le schermate statiche (nuove: s03-lista-lele, s04-lista-giulia, s14-suggeriti, s17-offline, s15-temi), `clips.mjs` registra clip vere con due contesti (Giulia e Lele in tempo reale), tocchi reali salvati in `src/clips.json`.
+- Video 44,5 s (9:16, 16:9, 15 s): Giulia aggiunge l'Ananas e compare sul telefono di Lele; al tocco il prodotto passa in "Nel carrello"; Spesa finita vera; scene nuove: analitiche (spese per mese, andamento) e scelta del tema. Lo schermo non è mai ingrandito né ritagliato.
+- Musica: Fun Day di AShamaluevMusic (credito in `marketing/video/musica.md`), mp3 fuori da git, dissolvenze 1 s / 2 s, volume 0,22.
+- Limiti: le clip girano a circa 16-20 fotogrammi al secondo (la cattura è un po' meno fluida del telefono vero); `s04-lista-giulia` mostra il catalogo con l'Ananas appena toccata; i MP4 sono in `out/` (fuori da git, 3-9 MB).
+
 ### 2026-10-11 - Screenshot reali e video di presentazione
 
 - `marketing/demo/dati_demo.sql` (e `rimuovi_demo.sql`): dati inventati (Sara, Luca, Marta, Ale; liste Casa e

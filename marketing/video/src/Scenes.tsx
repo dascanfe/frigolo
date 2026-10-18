@@ -1,7 +1,7 @@
 import React from 'react'
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion'
 import { C, FONT_TEXT, FONT_TITLE } from './theme'
-import { Chip, Confetti, Crop, Headline, Mascot, Phone, Screen, SceneShell, Sfx, Tap, useLayout, phoneMetrics } from './ui'
+import { Chip, Confetti, Headline, Mascot, Phone, PhoneClip, SceneShell, Sfx, Tap, clipInfo, useLayout } from './ui'
 
 export interface SceneProps {
   dur: number
@@ -17,204 +17,126 @@ export const Scene1: React.FC<SceneProps> = (p) => {
   const mw = L.land ? 620 : 720
   return (
     <SceneShell {...p}>
-      <Headline text="Chi compra|*il latte?*" delay={6} size={L.land ? 120 : 120} top={250} />
+      <Headline text="Chi compra|*il latte?*" delay={6} size={120} top={250} />
       <Mascot kind="pensierosa" w={mw} x={L.land ? 120 : (L.w - mw) / 2} y={L.land ? L.h - mw + 40 : 880} delay={10} from="bottom" />
     </SceneShell>
   )
 }
 
-/* 2. Catalogo: tocca un prodotto */
-const CAT_TILES: [number, number, number, number][] = [
-  [139, 192, 111, 110],
-  [16, 315, 110, 111],
-  [263, 315, 110, 111],
-]
+/* 2. Catalogo: tocca un prodotto (clip vera: Banane, Fragole, Kiwi) */
 export const Scene2: React.FC<SceneProps> = (p) => {
   const L = useLayout()
-  const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
-  const taps = [34, 62, 90]
   return (
     <SceneShell {...p}>
       <Headline text="Tocca un prodotto:|*è in lista.*" />
-      <Phone {...L.phone} delay={4}>
-        {(k) => (
-          <>
-            <Screen src="s02-catalogo-prima.png" k={k} />
-            {CAT_TILES.map((b, i) => {
-              const s = spring({ frame: frame - taps[i], fps, config: { damping: 9, stiffness: 160 } })
-              return <Crop key={i} src="s02-catalogo-dopo.png" box={b} k={k} scale={0.7 + 0.3 * s} opacity={frame >= taps[i] ? 1 : 0} />
-            })}
-            {CAT_TILES.map((b, i) => (
-              <Tap key={i} x={b[0] + b[2] / 2} y={b[1] + b[3] / 2} at={taps[i]} k={k} />
-            ))}
-          </>
-        )}
-      </Phone>
-      {taps.map((t, i) => <Sfx key={i} at={t} name="tic" />)}
+      <Phone {...L.phone} delay={4}>{(k) => <PhoneClip name="catalogo" k={k} lead={0.6} />}</Phone>
     </SceneShell>
   )
 }
 
-/* 3. Due telefoni in tempo reale */
-const YOGURT: [number, number, number, number] = [263, 380, 110, 111]
+/* 3. Due telefoni: Giulia aggiunge l'Ananas, sul telefono di Lele compare l'Ananas (clip vere, in parallelo) */
 export const Scene3: React.FC<SceneProps> = (p) => {
   const L = useLayout()
-  const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
-  const w = L.land ? 372 : 490
-  const cxL = L.land ? 250 : 275
-  const cxR = L.land ? 660 : 805
-  const top = L.land ? 150 : 690
-  const tapAt = 30
-  const popAt = 52
-  const s = spring({ frame: frame - popAt, fps, config: { damping: 8, stiffness: 150 } })
-  const m = phoneMetrics(w)
+  const w = L.land ? 430 : 490
+  const cxL = L.land ? 240 : 275
+  const cxR = L.land ? 690 : 805
+  const top = L.land ? 130 : 690
+  const g = clipInfo('due-giulia')
+  const lead = 0.8
+  const s0 = g.taps[0].t - lead
   return (
     <SceneShell {...p}>
-      <Headline text="Chi fa la spesa|con te *lo vede subito.*" size={L.land ? 88 : 88} />
+      <Headline text="Chi fa la spesa|con te *lo vede subito.*" size={88} />
       <Phone w={w} cx={cxL} top={top} ry={12} rx={3} delay={2} floatPhase={0}>
-        {(k) => (
-          <>
-            <Screen src="s02-catalogo-prima.png" k={k} />
-            <Crop src="s02-catalogo-dopo.png" box={CAT_TILES[0]} k={k} scale={0.7 + 0.3 * spring({ frame: frame - tapAt, fps, config: { damping: 9, stiffness: 160 } })} opacity={frame >= tapAt ? 1 : 0} />
-            <Tap x={194} y={247} at={tapAt} k={k} />
-          </>
-        )}
+        {(k) => <PhoneClip name="due-giulia" k={k} lead={lead} />}
       </Phone>
       <Phone w={w} cx={cxR} top={top} ry={-12} rx={3} delay={6} floatPhase={2}>
-        {(k) => (
-          <>
-            <Screen src="s05-lista-corsia.png" k={k} />
-            <div style={{ position: 'absolute', left: (YOGURT[0] - 3) * k, top: (YOGURT[1] - 3) * k, width: (YOGURT[2] + 6) * k, height: (YOGURT[3] + 6) * k, background: C.cremaFondo, opacity: frame < popAt + 2 ? 1 : 0 }} />
-            <Crop src="s05-lista-corsia.png" box={YOGURT} k={k} scale={Math.max(0, s)} opacity={frame >= popAt ? 1 : 0} />
-            <div style={{ position: 'absolute', left: (YOGURT[0] - 8) * k, top: (YOGURT[1] - 8) * k, width: 26 * k, height: 26 * k, borderRadius: '50%', background: C.teal, border: `${2 * k}px solid ${C.crema}`, overflow: 'hidden', transform: `scale(${Math.max(0, s)})` }}>
-              <Img src={staticFile('img/mascot-avatar.webp')} style={{ width: '100%', height: '100%' }} />
-            </div>
-          </>
-        )}
+        {(k) => <PhoneClip name="due-lele" k={k} lead={lead} sfx={null} />}
       </Phone>
-      <Chip text="Sara aggiunge" x={cxL} y={top - 70} delay={14} />
-      <Chip text="Ale, al supermercato" x={cxR} y={top - 70} delay={20} color={C.arancio} fg={C.crema} />
-      {/* freccia di sincronizzazione */}
-      <div style={{ position: 'absolute', left: (cxL + cxR) / 2 - 40, top: top + m.h * 0.42, width: 80, height: 80, opacity: fade(frame, tapAt + 4) * (1 - fade(frame, popAt + 20, 10)), transform: `translateX(${interpolate(frame, [tapAt + 4, popAt], [-60, 60], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`, borderRadius: '50%', background: C.mattone, boxShadow: '0 10px 24px rgba(58,44,33,0.3)' }} />
-      <Sfx at={tapAt} name="tic" />
-      <Sfx at={popAt} name="plin" />
+      <Chip text="Giulia aggiunge l'Ananas" x={cxL} y={top - 70} delay={14} />
+      <Chip text="Sul telefono di Lele" x={cxR} y={top - 70} delay={20} color={C.arancio} fg={C.crema} />
+      <Sfx at={Math.round((g.taps[0].t - s0) * 30) + 14} name="plin" />
     </SceneShell>
   )
 }
 
-/* 4. In ordine di corsia */
+/* 4. In ordine di corsia (clip vera: scorre la lista) */
 export const Scene4: React.FC<SceneProps> = (p) => {
   const L = useLayout()
-  const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
-  const zoom = interpolate(frame, [0, 140], [1, 1.14])
-  const ring = (a: number, b: number) => interpolate(frame, [a, a + 8, b, b + 8], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
-  const lab = (at: number) => spring({ frame: frame - at, fps, config: { damping: 13 } })
   return (
     <SceneShell {...p}>
       <Headline text="In ordine di corsia:|i *surgelati* alla fine." />
-      <Phone {...L.phone} delay={0}>
-        {(k) => (
-          <div style={{ position: 'absolute', inset: 0, transform: `scale(${zoom})`, transformOrigin: '50% 38%' }}>
-            <Screen src="s05-lista-corsia.png" k={k} />
-            <div style={{ position: 'absolute', left: 14 * k, top: 255 * k, width: 114 * k, height: 114 * k, borderRadius: 24 * k, border: `${4 * k}px solid ${C.crema}`, boxShadow: `0 0 0 ${3 * k}px ${C.inchiostro}`, opacity: ring(18, 70) }} />
-            <div style={{ position: 'absolute', left: 137 * k, top: 625 * k, width: 114 * k, height: 114 * k, borderRadius: 24 * k, border: `${4 * k}px solid ${C.crema}`, boxShadow: `0 0 0 ${3 * k}px ${C.inchiostro}`, opacity: ring(80, 140) }} />
-            <div style={{ position: 'absolute', left: 190 * k, top: 218 * k, background: C.inchiostro, color: C.crema, fontFamily: FONT_TEXT, fontWeight: 900, fontSize: 15 * k, padding: `${6 * k}px ${12 * k}px`, borderRadius: 99, transform: `scale(${lab(22) * (ring(18, 70) > 0.5 ? 1 : 0)})`, transformOrigin: 'left center', whiteSpace: 'nowrap' }}>Frutta e verdura</div>
-            <div style={{ position: 'absolute', left: 255 * k, top: 655 * k, background: C.inchiostro, color: C.crema, fontFamily: FONT_TEXT, fontWeight: 900, fontSize: 15 * k, padding: `${6 * k}px ${12 * k}px`, borderRadius: 99, transform: `scale(${lab(84) * (ring(80, 140) > 0.5 ? 1 : 0)})`, transformOrigin: 'left center', whiteSpace: 'nowrap' }}>Surgelati</div>
-          </div>
-        )}
-      </Phone>
+      <Phone {...L.phone} delay={0}>{(k) => <PhoneClip name="corsia" k={k} lead={0.5} />}</Phone>
     </SceneShell>
   )
 }
 
-/* 5. Nel carrello */
+/* 5. Nel carrello: al tocco il prodotto passa subito nella sezione "Nel carrello" in basso */
 export const Scene5: React.FC<SceneProps> = (p) => {
   const L = useLayout()
-  const frame = useCurrentFrame()
-  const pts: [number, number, number][] = [[71, 312, 24], [194, 312, 48], [318, 312, 72]]
-  const sw = fade(frame, 80, 10)
   return (
     <SceneShell {...p}>
       <Headline text="Preso? Un tocco|ed è nel *carrello.*" />
-      <Phone {...L.phone} delay={0}>
-        {(k) => (
-          <>
-            <Screen src="s05-lista-corsia.png" k={k} />
-            <Screen src="s06-carrello.png" k={k} opacity={sw} />
-            {pts.map((t, i) => <Tap key={i} x={t[0]} y={t[1]} at={t[2]} k={k} />)}
-          </>
-        )}
-      </Phone>
-      {pts.map((t, i) => <Sfx key={i} at={t[2]} name="tic2" />)}
+      <Phone {...L.phone} delay={0}>{(k) => <PhoneClip name="carrello" k={k} lead={0.5} sfx="tic2" />}</Phone>
     </SceneShell>
   )
 }
 
-/* 6. Spesa finita + coriandoli */
+/* 6. Spesa finita + coriandoli (clip vera: bottone, conferma, messaggio) */
 export const Scene6: React.FC<SceneProps> = (p) => {
   const L = useLayout()
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
-  const tapAt = 28
-  const done = 40
-  const sw = fade(frame, done, 6)
+  const f = clipInfo('finita')
+  const lead = 0.5
+  const s0 = f.taps[0].t - lead
+  const done = Math.round((f.taps[1].t - s0) * 30) + 6
   const pop = spring({ frame: frame - done, fps, config: { damping: 8, stiffness: 120 } })
   const mw = L.land ? 440 : 560
   return (
     <SceneShell {...p}>
       <div style={{ position: 'absolute', left: L.title.x, width: L.title.w, top: L.land ? undefined : 250, ...(L.land ? { top: 0, bottom: 0, display: 'flex', alignItems: 'center' } : {}) }}>
-        <div style={{ width: '100%', textAlign: L.title.align, fontFamily: FONT_TITLE, fontWeight: 700, fontSize: L.land ? 130 : 150, lineHeight: 1.05, color: C.inchiostro, transform: `scale(${0.6 + 0.4 * Math.min(1.1, pop)})`, transformOrigin: L.land ? 'left center' : 'center', opacity: fade(frame, 6) }}>
+        <div style={{ width: '100%', textAlign: L.title.align, fontFamily: FONT_TITLE, fontWeight: 700, fontSize: L.land ? 130 : 150, lineHeight: 1.05, color: C.inchiostro, transform: `scale(${0.6 + 0.4 * Math.min(1.1, fade(frame, 6) * (frame > done ? pop : 1))})`, transformOrigin: L.land ? 'left center' : 'center', opacity: fade(frame, 6) }}>
           Spesa <span style={{ fontStyle: 'italic', color: C.mattone }}>finita</span>
         </div>
       </div>
-      <Phone {...L.phone} delay={0}>
-        {(k) => (
-          <>
-            <Screen src="s07-spesa-finita.png" k={k} />
-            <Screen src="s07b-spesa-finita-toast.png" k={k} opacity={sw} />
-            <Tap x={195} y={805} at={tapAt} k={k} />
-          </>
-        )}
-      </Phone>
+      <Phone {...L.phone} delay={0}>{(k) => <PhoneClip name="finita" k={k} lead={lead} />}</Phone>
       <Mascot kind="contenta" w={mw} x={L.land ? 700 : 600} y={L.land ? L.h - mw - 20 : 1260} delay={done + 4} from={L.land ? 'bottom' : 'right'} />
       <Confetti at={done} cx={L.land ? 960 : 540} cy={L.land ? 420 : 760} />
-      <Sfx at={tapAt} name="tic" />
       <Sfx at={done} name="tada" volume={0.8} />
     </SceneShell>
   )
 }
 
-/* 7. Più liste, più persone */
+/* 7. Più liste, più persone (clip vera: cambio lista) */
 export const Scene7: React.FC<SceneProps> = (p) => {
   const L = useLayout()
-  const frame = useCurrentFrame()
-  const sw = fade(frame, 56, 10)
-  const colors = [C.teal, C.arancio, C.ocra]
-  const base = L.land ? { x: 960, y: 700 } : { x: 540 - 110, y: 470 }
   return (
     <SceneShell {...p}>
       <Headline text="Per conto tuo|o in *compagnia.*" top={250} />
-      <Phone {...L.phone} delay={0}>
-        {(k) => (
-          <>
-            <Screen src="s08-cambia-lista.png" k={k} />
-            <Screen src="s09-lista-coinquilini.png" k={k} opacity={sw} />
-            <Tap x={150} y={664} at={46} k={k} />
-          </>
-        )}
-      </Phone>
-      {colors.map((c, i) => {
-        const s = spring({ frame: frame - (60 + i * 6), fps: 30, config: { damping: 9 } })
-        return (
-          <div key={i} style={{ position: 'absolute', left: (L.land ? 960 : 540 - 130) + i * 80, top: L.land ? 740 : 480, width: 100, height: 100, borderRadius: '50%', background: c, border: `6px solid ${C.cremaFondo}`, overflow: 'hidden', transform: `scale(${Math.max(0, s)})`, boxShadow: '0 10px 20px rgba(58,44,33,0.25)' }}>
-            <Img src={staticFile('img/mascot-avatar.webp')} style={{ width: '100%', height: '100%' }} />
-          </div>
-        )
-      })}
-      <Sfx at={46} name="tic" />
+      <Phone {...L.phone} delay={0}>{(k) => <PhoneClip name="liste" k={k} lead={0.6} />}</Phone>
+    </SceneShell>
+  )
+}
+
+/* 7b. Analitiche (clip vera: spese per mese e andamento) */
+export const Scene7b: React.FC<SceneProps> = (p) => {
+  const L = useLayout()
+  return (
+    <SceneShell {...p}>
+      <Headline text="Le tue spese,|*mese per mese.*" top={250} />
+      <Phone {...L.phone} delay={0}>{(k) => <PhoneClip name="analitiche" k={k} lead={0.5} />}</Phone>
+    </SceneShell>
+  )
+}
+
+/* 7c. Temi (clip vera: scelta del colore nelle Impostazioni) */
+export const Scene7c: React.FC<SceneProps> = (p) => {
+  const L = useLayout()
+  return (
+    <SceneShell {...p}>
+      <Headline text="Sei colori,|scegli il *tuo.*" top={250} />
+      <Phone {...L.phone} delay={0}>{(k) => <PhoneClip name="temi" k={k} lead={0.5} themeStrip />}</Phone>
     </SceneShell>
   )
 }
@@ -241,7 +163,7 @@ export const Scene8: React.FC<SceneProps> = (p) => {
           <>
             {/* pagina nel browser */}
             <div style={{ position: 'absolute', inset: 0, background: C.cremaFondo }}>
-              <div style={{ position: 'absolute', left: 16 * k, right: 16 * k, top: 52 * k, height: 40 * k, borderRadius: 14 * k, background: C.crema, border: `${1 * k}px solid ${C.sabbia}`, fontFamily: FONT_TEXT, fontWeight: 700, fontSize: 15 * k, color: C.inchiostro2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>frigolo.dascanfe.com</div>
+              <div style={{ position: 'absolute', left: 16 * k, right: 16 * k, top: 58 * k, height: 40 * k, borderRadius: 14 * k, background: C.crema, border: `${1 * k}px solid ${C.sabbia}`, fontFamily: FONT_TEXT, fontWeight: 700, fontSize: 15 * k, color: C.inchiostro2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>frigolo.dascanfe.com</div>
               <Img src={staticFile('img/frigolo-classica.png')} style={{ position: 'absolute', left: 95 * k, top: 150 * k, width: 200 * k }} />
               <div style={{ position: 'absolute', left: 0, right: 0, top: 360 * k, textAlign: 'center', fontFamily: FONT_TITLE, fontWeight: 700, fontSize: 44 * k, color: C.inchiostro }}>Frigolo</div>
               <div style={{ position: 'absolute', left: 30 * k, right: 30 * k, top: 425 * k, textAlign: 'center', fontFamily: FONT_TEXT, fontSize: 17 * k, color: C.inchiostro2 }}>La lista della spesa sempre in tasca.</div>
@@ -272,6 +194,7 @@ export const Scene8: React.FC<SceneProps> = (p) => {
                 </div>
               </div>
             </div>
+            <Img src={staticFile('img/overlay.png')} style={{ position: 'absolute', left: 0, top: 0, width: 390 * k, height: 844 * k }} />
           </>
         )}
       </Phone>

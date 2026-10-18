@@ -1,6 +1,6 @@
 # Video di lancio: piano e storyboard
 
-Stato: **storyboard approvato, video realizzato** (vedi `README.md`, `musica.md`). Scena 7 mostra il cambio lista e gli avatar; le analitiche non sono nella versione da 40 s (si possono aggiungere come scena in più).
+Stato: **versione 2 realizzata** (clip vere dell'app, tema Lampone, 44,5 s, musica Fun Day; scene in più: analitiche e temi). Storyboard originale qui sotto (vedi `README.md`, `musica.md`). Scena 7 mostra il cambio lista e gli avatar; le analitiche non sono nella versione da 40 s (si possono aggiungere come scena in più).
 
 ## In breve
 
@@ -26,7 +26,7 @@ resta a schermo almeno 2 secondi.
 | --- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------- | --------------------- |
 | 1   | 0:00-0:03 | Fondo crema. Frigolo (pensierosa) entra dal basso con un piccolo rimbalzo, nuvoletta.                                                       | **Chi compra il latte?**                                               | -                           | parte la musica       |
 | 2   | 0:03-0:08 | Telefono al centro sul catalogo. Il dito tocca Latte, Pane, Mele: le tessere si colorano di arancio.                                        | Tocca un prodotto: è in lista.                                         | S2 catalogo                 | "tic" a ogni tocco    |
-| 3   | 0:08-0:14 | Due telefoni affiancati. A sinistra "Sara" aggiunge Yogurt, a destra (al supermercato) Yogurt compare in lista con il suo pallino colorato. | Chi fa la spesa con te lo vede subito.                                 | S3 lista A, S4 lista B      | "plin" quando compare |
+| 3   | 0:08-0:14 | Due telefoni affiancati. A sinistra Giulia aggiunge l'Ananas dal catalogo, sul telefono di Lele l'Ananas compare in lista (registrazione vera). | Chi fa la spesa con te lo vede subito.                                 | S3 lista A, S4 lista B      | "plin" quando compare |
 | 4   | 0:14-0:19 | Zoom sulla lista: le sezioni scorrono in ordine, Frutta e verdura in alto, Surgelati in fondo. Etichetta del supermercato in alto.          | In ordine di corsia: i surgelati alla fine.                            | S5 lista per corsia         | scorrimento           |
 | 5   | 0:19-0:24 | Il dito tocca 3 prodotti: scendono in "Nel carrello" e diventano verde salvia.                                                              | Preso? Un tocco ed è nel carrello.                                     | S6 carrello                 | "tic" più acuto       |
 | 6   | 0:24-0:28 | Tocco su "Spesa finita". Coriandoli arancio e menta, Frigolo (contenta) salta dentro dal lato.                                              | **Spesa finita**                                                       | S7 spesa finita             | piccolo "tadà"        |

@@ -5,9 +5,9 @@
 --     -v ON_ERROR_STOP=1 -f marketing/demo/dati_demo.sql
 --
 -- Rilanciabile: cancella e ricrea tutto ciò che crea. Persone e liste inventate:
---   sara@frigolo.test / luca@frigolo.test / marta@frigolo.test / ale@frigolo.test
+--   giulia@frigolo.test / luca@frigolo.test / marta@frigolo.test / lele@frigolo.test
 --   password (solo database locale): frigolo-demo-1
---   liste "Casa" (Sara, Ale) e "Coinquilini" (Sara, Luca, Marta)
+--   liste "Casa" (Giulia, Lele) e "Coinquilini" (Giulia, Luca, Marta)
 --
 -- Per rimuovere i dati demo: marketing/demo/rimuovi_demo.sql
 -- Si rifiuta di girare su un database con account diversi da *.test.
@@ -34,10 +34,10 @@ select
   '{"provider":"email","providers":["email"]}', u.meta, now(), now(),
   '', '', '', ''
 from (values
-  ('d0000000-0000-4000-8000-000000000001'::uuid, 'sara@frigolo.test', '{"display_name":"Sara","color":"c-teal"}'::jsonb),
+  ('d0000000-0000-4000-8000-000000000001'::uuid, 'giulia@frigolo.test', '{"display_name":"Giulia","color":"c-teal"}'::jsonb),
   ('d0000000-0000-4000-8000-000000000002'::uuid, 'luca@frigolo.test', '{"display_name":"Luca","color":"c-burnt"}'::jsonb),
-  ('d0000000-0000-4000-8000-000000000003'::uuid, 'marta@frigolo.test', '{"display_name":"Marta","color":"c-ochre"}'::jsonb),
-  ('d0000000-0000-4000-8000-000000000004'::uuid, 'ale@frigolo.test', '{"display_name":"Ale","color":"c-terracotta"}'::jsonb)
+  ('d0000000-0000-4000-8000-000000000003'::uuid, 'marta@frigolo.test', '{"display_name":"Marta","color":"c-olive-deep"}'::jsonb),
+  ('d0000000-0000-4000-8000-000000000004'::uuid, 'lele@frigolo.test', '{"display_name":"Lele","color":"c-ochre"}'::jsonb)
 ) as u(id, email, meta);
 
 insert into auth.identities (id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
@@ -63,7 +63,7 @@ insert into public.household_members (household_id, user_id) values
 -- prodotti creati dalla lista
 insert into public.items (household_id, category_id, name, icon, default_unit, created_by)
 select 'd1000000-0000-4000-8000-000000000001', c.id, v.name, v.icon, 'pz', 'd0000000-0000-4000-8000-000000000001'
-from (values ('Biscotti della nonna', 'Snack e dolci', 'Cookie'), ('Pesto di Ale', 'Dispensa e secco', 'Leaf')) v(name, cat, icon)
+from (values ('Biscotti della nonna', 'Snack e dolci', 'Cookie'), ('Pesto di Lele', 'Dispensa e secco', 'Leaf')) v(name, cat, icon)
 join public.categories c on c.name = v.cat;
 
 -- lista "Casa": da comprare
@@ -105,8 +105,8 @@ select setseed(0.42);
 do $$
 declare
   v_hh constant uuid := 'd1000000-0000-4000-8000-000000000001';
-  v_sara constant uuid := 'd0000000-0000-4000-8000-000000000001';
-  v_ale constant uuid := 'd0000000-0000-4000-8000-000000000004';
+  v_giulia constant uuid := 'd0000000-0000-4000-8000-000000000001';
+  v_lele constant uuid := 'd0000000-0000-4000-8000-000000000004';
   v_trip uuid;
   v_day int;
   v_n int;
@@ -119,7 +119,7 @@ begin
   foreach v_day in array v_days loop
     k := k + 1;
     v_when := date_trunc('day', now()) - (v_day || ' days')::interval + interval '17 hours';
-    v_by := case when k % 3 = 0 then v_ale else v_sara end;
+    v_by := case when k % 3 = 0 then v_lele else v_giulia end;
     v_n := 8 + (k * 7) % 13;
     insert into public.shopping_trips (household_id, store, started_at, completed_at, completed_by)
     values (v_hh, v_stores[1 + k % 3], v_when - interval '40 minutes', v_when, v_by)
@@ -127,7 +127,7 @@ begin
     -- prodotti ricorrenti (spesso) + a rotazione (poche volte)
     insert into public.purchases (household_id, trip_id, item_id, category_id, quantity, unit, purchased_at, purchased_by, added_by)
     select v_hh, v_trip, i.id, i.category_id, 1 + (random() * 2)::int, i.default_unit, v_when, v_by,
-           case when random() < 0.5 then v_sara else v_ale end
+           case when random() < 0.5 then v_giulia else v_lele end
     from (
       select i.* from public.items i
       where i.household_id is null and i.is_archived = false
