@@ -1,0 +1,1809 @@
+/* ============================================================
+   Cruscotto di Frigolo
+
+   Rifatto sul cruscotto delle statistiche di dascanfe.com: stessa
+   impostazione, stessi grafici, stesso tempo reale, con i caratteri
+   e i colori di Frigolo. Due sezioni:
+
+   - Landing: le stesse tre tabelle del sito (visite, pagine,
+     eventi) nel progetto delle statistiche, filtrate sulle pagine
+     sotto /sub/frigolo (colonna pagine.sito). Le leggono solo le
+     regole gia' in vigore: solo l'account di Daniele.
+   - App: gli aggregati d'uso dal progetto di Frigolo (metrics_app).
+
+   Un solo modulo d'accesso entra in tutti e due i progetti; ognuno
+   tiene la sua sessione. Se una manca, si chiude solo la sua sezione.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var opzioniClient = { auth: { persistSession: true, autoRefreshToken: true } };
+  var sb    = supabase.createClient(window.CONFIG.analitiche.url, window.CONFIG.analitiche.anon, opzioniClient);
+  var sbApp = supabase.createClient(window.CONFIG.frigolo.url, window.CONFIG.frigolo.anon, opzioniClient);
+
+  /* I link che portano all'app: il pulsante Apri Frigolo e quelli
+     dentro le istruzioni di installazione. */
+  var VERSO_APP = /^https?:\/\/(frigolo\.dascanfe\.com|frigolo-app\.vercel\.app)(\/|$)/i;
+  function versoApp(e) {
+    return VERSO_APP.test(e.destinazione || '') || /^frigolo:(apri-app|installa-)/.test(e.nome || '');
+  }
+
+  var stato = {
+    giorni: 0,          // 0 = oggi
+    tutto: false,
+    visite: [],
+    pagine: [],
+    eventi: [],
+    download: null,
+    prima: null,
+    ora: null,
+    sistema: null,
+    percorsoScelto: null,
+    canale: null,
+    ricarica: null,
+    sezione: 'landing',
+    finto: false,
+    app: null,
+    appPrima: null
+  };
+
+  try {
+    var sezioneSalvata = localStorage.getItem('frigolo-stat.sezione');
+    if (sezioneSalvata === 'app' || sezioneSalvata === 'landing') stato.sezione = sezioneSalvata;
+  } catch (e) {}
+
+  /* ---------- aiuti ---------- */
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function testo(el, t) { el.textContent = t; }
+
+  function numero(n) {
+    return n >= 10000 ? (n / 1000).toFixed(1).replace('.0', '') + 'K' : String(n);
+  }
+
+  function durata(ms) {
+    if (!ms || ms < 1000) return '0 s';
+    var s = Math.round(ms / 1000);
+    if (s < 60) return s + ' s';
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return r ? m + 'm ' + r + 's' : m + ' min';
+  }
+
+  function mediana(v) {
+    if (!v.length) return 0;
+    var a = v.slice().sort(function (x, y) { return x - y; });
+    var i = Math.floor(a.length / 2);
+    return a.length % 2 ? a[i] : Math.round((a[i - 1] + a[i]) / 2);
+  }
+
+  function ora(iso) {
+    var d = new Date(iso);
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function quantoFa(iso) {
+    var s = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
+    if (s < 10) return 'adesso';
+    if (s < 60) return s + ' s fa';
+    var m = Math.floor(s / 60);
+    if (m < 60) return m + ' min fa';
+    var h = Math.floor(m / 60);
+    if (h < 24) return h + ' h fa';
+    return Math.floor(h / 24) + ' g fa';
+  }
+
+  function conta(righe, chiave) {
+    var m = {};
+    for (var i = 0; i < righe.length; i++) {
+      var k = typeof chiave === 'function' ? chiave(righe[i]) : righe[i][chiave];
+      if (k === null || k === undefined || k === '') continue;
+      m[k] = (m[k] || 0) + 1;
+    }
+    return Object.keys(m)
+      .map(function (k) { return { nome: k, valore: m[k] }; })
+      .sort(function (a, b) { return b.valore - a.valore; });
+  }
+
+  /* La finestra del periodo scelto, e quella immediatamente prima,
+     della stessa lunghezza: e' quella che rende leggibile un numero.
+     "90 visite" non dice niente; "90 visite, il 18 per cento in piu'
+     dei trenta giorni prima" dice qualcosa. */
+  function finestra() {
+    if (stato.tutto) {
+      return { da: new Date(2020, 0, 1), a: new Date(Date.now() + 86400000) };
+    }
+    var a = new Date();
+    var da = new Date();
+    if (stato.giorni === 0) { da.setHours(0, 0, 0, 0); }
+    else { da.setDate(da.getDate() - stato.giorni); da.setHours(0, 0, 0, 0); }
+    return { da: da, a: a };
+  }
+
+  function finestraPrima() {
+    if (stato.tutto) return null;
+    var f = stato.giorni === 0 ? 1 : stato.giorni;
+    var a = new Date(); a.setHours(0, 0, 0, 0);
+    if (stato.giorni !== 0) { a.setDate(a.getDate() - stato.giorni); }
+    var da = new Date(a);
+    da.setDate(da.getDate() - f);
+    return { da: da, a: a };
+  }
+
+  function daInizio() { return finestra().da.toISOString(); }
+
+  /* ---------- suggerimento al passaggio ---------- */
+
+  var tip = $('tip');
+
+  function mostraTip(html, x, y) {
+    tip.innerHTML = html;
+    tip.classList.add('visibile');
+    var r = tip.getBoundingClientRect();
+    var sx = Math.min(Math.max(8, x + 14), window.innerWidth - r.width - 8);
+    var sy = y - r.height - 12;
+    if (sy < 8) sy = y + 18;
+    tip.style.left = sx + 'px';
+    tip.style.top = sy + 'px';
+  }
+  function nascondiTip() { tip.classList.remove('visibile'); }
+
+  document.addEventListener('mouseover', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-tip]') : null;
+    if (el) mostraTip(el.getAttribute('data-tip'), e.clientX, e.clientY);
+  });
+  document.addEventListener('mousemove', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-tip]') : null;
+    if (el) mostraTip(el.getAttribute('data-tip'), e.clientX, e.clientY);
+    else nascondiTip();
+  });
+  document.addEventListener('mouseleave', nascondiTip);
+  window.addEventListener('scroll', nascondiTip, { passive: true });
+
+  /* ---------- disegno delle barre ---------- */
+
+  function barre(contenitore, voci, opzioni) {
+    opzioni = opzioni || {};
+    var el = $(contenitore);
+    el.innerHTML = '';
+
+    if (!voci.length) {
+      el.innerHTML = '<div class="vuoto">Ancora niente in questo periodo.</div>';
+      return;
+    }
+
+    var max = opzioni.max || voci[0].valore || 1;
+    voci.slice(0, opzioni.quante || 8).forEach(function (v) {
+      var riga = document.createElement('div');
+      riga.className = 'barra' + (opzioni.click ? ' cliccabile' : '') +
+                       (opzioni.scelto === v.nome ? ' scelta' : '');
+      if (v.tip) riga.setAttribute('data-tip', v.tip);
+
+      var etichetta = opzioni.etichetta ? opzioni.etichetta(v) : v.nome;
+      var cifra = opzioni.cifra ? opzioni.cifra(v) : numero(v.valore);
+
+      riga.innerHTML =
+        '<span class="testo"></span>' +
+        '<span class="cifra">' + cifra + '</span>' +
+        '<span class="pista"><i style="width:' + Math.max(1.5, (v.valore / max) * 100) + '%"></i></span>';
+      riga.querySelector('.testo').textContent = etichetta;
+
+      if (opzioni.click) {
+        riga.tabIndex = 0;
+        riga.addEventListener('click', function () { opzioni.click(v); });
+        riga.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); opzioni.click(v); }
+        });
+      }
+      el.appendChild(riga);
+    });
+  }
+
+  function tabella(contenitore, intestazioni, righe) {
+    var el = $(contenitore);
+    if (!righe.length) { el.innerHTML = '<div class="vuoto">Niente da mostrare.</div>'; return; }
+    var h = '<table><thead><tr>' +
+      intestazioni.map(function (t) { return '<th>' + t + '</th>'; }).join('') +
+      '</tr></thead><tbody>';
+    righe.forEach(function (r) {
+      h += '<tr>' + r.map(function (c, i) {
+        return '<td' + (i ? ' class="v"' : '') + '>' + c + '</td>';
+      }).join('') + '</tr>';
+    });
+    el.innerHTML = h + '</tbody></table>';
+  }
+
+  function fuga(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* ---------- la sessione ---------- */
+
+  /* Il punto piu' insidioso di tutto il cruscotto.
+
+     Quando il gettone d'accesso scade e non si riesce a rinnovarlo (il
+     telefono era in tasca, il portatile chiuso, la rete non ancora
+     pronta all'avvio), la libreria di Supabase non protesta: torna a
+     usare la chiave pubblica come se niente fosse. E le regole di
+     accesso del database non rispondono "non puoi", rispondono
+     "niente": arriva un 200 con zero righe.
+
+     Il risultato e' il peggiore possibile: un cruscotto che sembra
+     funzionare e racconta che non e' passato nessuno. Per questo prima
+     di ogni lettura si controlla che la sessione ci sia davvero, e se
+     non c'e' si torna alla schermata d'accesso invece di disegnare il
+     vuoto. */
+  var SCADUTA = 'sessione-scaduta';
+  var MUTO    = 'server-muto';
+
+  /* Attenzione a `getSession`: se il gettone e' scaduto prova a
+     rinnovarlo, e se la rete non risponde ci riprova a oltranza senza
+     mai chiudere la promessa. Provato: dopo dodici secondi era ancora
+     li'. Sull'iPhone che si sveglia, con la rete non ancora pronta,
+     vuol dire restare appesi.
+
+     Quindi le si da' un tempo massimo, oltre il quale si risponde
+     "non lo so". Non lo so non e' "sessione scaduta": si tengono i
+     numeri che c'erano e si dice che non si e' potuto aggiornare. */
+  function sessioneViva() {
+    var scadenza = new Promise(function (ok) {
+      setTimeout(function () { ok(MUTO); }, 8000);
+    });
+    var domanda = sb.auth.getSession().then(function (r) {
+      var s = r && r.data && r.data.session;
+      if (!s || !s.access_token) return null;
+      // gia' scaduto e non rinnovato: vale come se non ci fosse
+      if (s.expires_at && s.expires_at * 1000 <= Date.now()) return null;
+      return s;
+    }, function () { return null; });
+    return Promise.race([domanda, scadenza]);
+  }
+
+  /* La riga di servizio in alto: la usa anche il collegamento dal vivo,
+     quindi ognuno cancella solo il proprio messaggio. */
+  function nota(testo) {
+    var el = $('stato-nota');
+    if (el) el.textContent = testo || '';
+  }
+
+  /* Si torna alla schermata d'accesso: si ferma tutto quello che gira
+     in sottofondo, altrimenti continuerebbe a interrogare il database
+     a vuoto. */
+  function fuoriSessione(motivo) {
+    chiudiSezione('landing', motivo || 'La sessione e\' scaduta. Rientra per continuare.');
+    if (orologio) { clearInterval(orologio); orologio = null; }
+    if (stato.canale) { sb.removeChannel(stato.canale); stato.canale = null; }
+  }
+
+  /* ---------- lettura dei dati ---------- */
+
+  function carica() {
+    if (stato.finto) { finteLanding(); disegna(); disegnaConfronti(); return Promise.resolve(); }
+    return sessioneViva().then(function (viva) {
+      if (viva === MUTO) throw new Error(MUTO);
+      if (!viva) throw new Error(SCADUTA);
+      apriSezione('landing');
+      return leggi();
+    });
+  }
+
+  function leggi() {
+    var da = daInizio();
+
+    /* Solo la landing: le pagine con sito = 'frigolo', le visite che
+       ne hanno almeno una e i gesti fatti su quelle pagine. Il filtro
+       sulle tabelle collegate lo fa il database (!inner). */
+    return Promise.all([
+      sb.from('visite').select('*, pagine!inner(sito)').eq('pagine.sito', 'frigolo')
+        .gte('iniziata', da).order('iniziata', { ascending: false }).limit(5000),
+      sb.from('pagine').select('*').eq('sito', 'frigolo')
+        .gte('aperta', da).order('aperta', { ascending: false }).limit(10000),
+      sb.from('eventi').select('*, pagine!inner(sito)').eq('pagine.sito', 'frigolo')
+        .gte('quando', da).order('quando', { ascending: false }).limit(2000),
+      /* Lo stato del battito notturno, per accorgersi se il progetto
+         si e' addormentato. */
+      sb.from('stato_sistema').select('*').limit(1)
+    ]).then(function (r) {
+      /* L'ultima richiesta, quella del battito, puo' fallire senza
+         conseguenze. Le prime tre no. */
+      var errore = r.slice(0, 3).find(function (x) { return x.error; });
+      if (errore) throw errore.error;
+
+      nota('');
+      stato.visite = r[0].data || [];
+      stato.pagine = r[1].data || [];
+      stato.eventi = r[2].data || [];
+      stato.download = null;
+      stato.sistema = (r[3] && r[3].data && r[3].data[0]) ? r[3].data[0] : null;
+
+      disegna();
+      caricaPrima();
+    });
+  }
+
+  /* Il periodo precedente si chiede dopo aver gia' disegnato: i numeri
+     principali compaiono subito, il confronto si aggiunge un attimo
+     dopo. Meglio che aspettare per avere tutto insieme. */
+  function caricaPrima() {
+    var f = finestraPrima();
+    if (!f) { stato.prima = null; disegnaConfronti(); return; }
+
+    var da = f.da.toISOString(), a = f.a.toISOString();
+
+    Promise.all([
+      sb.from('visite').select('id,impronta,bot, pagine!inner(sito)').eq('pagine.sito', 'frigolo')
+        .gte('iniziata', da).lt('iniziata', a).limit(5000),
+      sb.from('pagine').select('*').eq('sito', 'frigolo').gte('aperta', da).lt('aperta', a).limit(10000),
+      sb.from('eventi').select('visita_id,nome,destinazione, pagine!inner(sito)').eq('pagine.sito', 'frigolo')
+        .gte('quando', da).lt('quando', a).limit(5000)
+    ]).then(function (r) {
+      if (r.some(function (x) { return x.error; })) { stato.prima = null; disegnaConfronti(); return; }
+
+      var visite = (r[0].data || []).filter(function (v) { return !v.bot; });
+      var buone = {};
+      visite.forEach(function (v) { buone[v.id] = 1; });
+      // stesso criterio del periodo in corso, altrimenti il confronto
+      // metterebbe a paragone due misure diverse
+      var pagine = (r[1].data || []).filter(function (p) {
+        return buone[p.visita_id] && (p.stato || 200) === 200;
+      });
+
+      var impronte = {};
+      visite.forEach(function (v) { impronte[v.impronta] = 1; });
+
+      var perVisita = {};
+      pagine.forEach(function (p) { (perVisita[p.visita_id] || (perVisita[p.visita_id] = [])).push(p); });
+      var conPagine = Object.keys(perVisita);
+      var rimbalzi = conPagine.filter(function (id) {
+        var g = perVisita[id];
+        return g.length === 1 && g[0].ms_attivi < 10000;
+      });
+
+      stato.prima = {
+        visitatori: Object.keys(impronte).length,
+        visite: visite.length,
+        pagine: pagine.length,
+        tempo: mediana(pagine.map(function (p) { return p.ms_attivi; }).filter(function (n) { return n > 0; })),
+        scroll: mediana(pagine.map(function (p) { return p.scroll_max; }).filter(function (n) { return n > 0; })),
+        rimbalzo: conPagine.length ? Math.round((rimbalzi.length / conPagine.length) * 100) : null,
+        download: (function () {
+          var v = {};
+          (r[2].data || []).forEach(function (e) { if (buone[e.visita_id] && versoApp(e)) v[e.visita_id] = 1; });
+          return Object.keys(v).length;
+        })()
+      };
+      disegnaConfronti();
+    }).catch(function () { stato.prima = null; disegnaConfronti(); });
+  }
+
+  /* Il confronto: il colore dice se il movimento e' buono, non se il
+     numero sale. Sul rimbalzo salire e' una brutta notizia. */
+  function confronto(id, ora, prima, opzioni) {
+    opzioni = opzioni || {};
+    var el = $(id);
+    if (!el) return;
+
+    if (prima === null || prima === undefined || stato.prima === null) {
+      el.textContent = '';
+      el.className = 'delta';
+      return;
+    }
+
+    if (prima === 0) {
+      el.className = 'delta';
+      el.textContent = ora > 0 ? 'prima non c\'era niente' : 'come prima: zero';
+      return;
+    }
+
+    var scarto = Math.round(((ora - prima) / prima) * 100);
+    if (scarto === 0) {
+      el.className = 'delta';
+      el.textContent = 'uguale al periodo prima';
+      return;
+    }
+
+    var sale = scarto > 0;
+    var bene = opzioni.saleEBene === false ? !sale : sale;
+    el.className = 'delta ' + (bene ? 'bene' : 'male');
+    el.innerHTML = '<span class="freccia">' + (sale ? '\u25b2' : '\u25bc') + '</span>' +
+                   Math.abs(scarto) + '% ' + (opzioni.etichetta || 'sul periodo prima');
+  }
+
+  function disegnaConfronti() {
+    var p = stato.prima;
+    var o = stato.ora || {};
+    if (!p) {
+      ['d-visitatori','d-visite','d-pagine','d-tempo','d-scroll','d-rimbalzo','d-download']
+        .forEach(function (id) { var el = $(id); if (el) { el.textContent = ''; el.className = 'delta'; } });
+      return;
+    }
+    confronto('d-visitatori', o.visitatori, p.visitatori);
+    confronto('d-visite',     o.visite,     p.visite);
+    confronto('d-pagine',     o.pagine,     p.pagine);
+    confronto('d-tempo',      o.tempo,      p.tempo);
+    confronto('d-scroll',     o.scroll,     p.scroll);
+    confronto('d-rimbalzo',   o.rimbalzo,   p.rimbalzo, { saleEBene: false });
+    confronto('d-download',   o.download,   p.download);
+  }
+
+  /* ---------- calcolo e disegno ---------- */
+
+  function disegna() {
+    var robot = stato.visite.filter(function (v) { return v.bot; });
+    var visite = stato.visite.filter(function (v) { return !v.bot; });
+
+    var buone = {};
+    visite.forEach(function (v) { buone[v.id] = v; });
+
+    /* La pagina d'errore porta il tracciante come tutte le altre,
+       altrimenti non si saprebbe quali vecchi indirizzi la gente cerca
+       ancora. Ma le sue aperture non sono pagine del sito: se restano
+       in mezzo, i conteggi si gonfiano con pagine che non esistono. */
+    var pagine = stato.pagine.filter(function (p) {
+      return buone[p.visita_id] && (p.stato || 200) === 200;
+    });
+
+    /* --- numeri chiave --- */
+
+    var impronte = {};
+    visite.forEach(function (v) { impronte[v.impronta] = 1; });
+
+    var tempi   = pagine.map(function (p) { return p.ms_attivi; }).filter(function (n) { return n > 0; });
+    var scrolli = pagine.map(function (p) { return p.scroll_max; }).filter(function (n) { return n > 0; });
+
+    testo($('k-visitatori'), numero(Object.keys(impronte).length));
+    testo($('k-visite'), numero(visite.length));
+    testo($('k-pagine'), numero(pagine.length));
+    testo($('k-pagine-nota'), visite.length
+      ? (pagine.length / visite.length).toFixed(1) + ' pagine per visita'
+      : '-');
+    testo($('k-tempo'), durata(mediana(tempi)));
+    testo($('k-scroll'), scrolli.length ? mediana(scrolli) + '%' : '-');
+
+    /* Rimbalzo: una visita in cui si e' aperta una pagina sola, senza
+       fermarcisi almeno dieci secondi. Chi apre una pagina e la legge
+       due minuti non e' un rimbalzo, anche se non ne apre altre. */
+    var perVisita = {};
+    pagine.forEach(function (p) {
+      (perVisita[p.visita_id] || (perVisita[p.visita_id] = [])).push(p);
+    });
+    var conPagine = Object.keys(perVisita);
+    var rimbalzi = conPagine.filter(function (id) {
+      var g = perVisita[id];
+      return g.length === 1 && g[0].ms_attivi < 10000;
+    });
+    testo($('k-rimbalzo'), conPagine.length
+      ? Math.round((rimbalzi.length / conPagine.length) * 100) + '%'
+      : '-');
+    testo($('k-rimbalzo-nota'), conPagine.length
+      ? rimbalzi.length + ' visite su ' + conPagine.length
+      : 'entrano e se ne vanno subito');
+
+    /* Apri Frigolo: le visite con almeno un clic verso l'app. E' il
+       posto che nel cruscotto del sito ha il curriculum scaricato. */
+    var clicApp = stato.eventi.filter(function (e) { return buone[e.visita_id] && versoApp(e); });
+    var visiteApp = {};
+    clicApp.forEach(function (e) { visiteApp[e.visita_id] = 1; });
+    stato.visiteApp = visiteApp;
+    var quanti = Object.keys(visiteApp).length;
+    testo($('k-download'), numero(quanti));
+
+    stato.ora = {
+      visitatori: Object.keys(impronte).length,
+      visite: visite.length,
+      pagine: pagine.length,
+      tempo: mediana(tempi),
+      scroll: scrolli.length ? mediana(scrolli) : 0,
+      rimbalzo: conPagine.length ? Math.round((rimbalzi.length / conPagine.length) * 100) : null,
+      download: quanti
+    };
+    disegnaConfronti();
+    testo($('k-download-nota'), visite.length
+      ? Math.round((quanti / visite.length) * 100) + '% delle visite, ' + clicApp.length + ' clic'
+      : 'aprono l\'app');
+
+    /* --- adesso sul sito --- */
+
+    disegnaVivo(visite, pagine);
+
+    /* --- visite per giorno --- */
+
+    disegnaAndamento(visite);
+    disegnaOrari(visite);
+    disegnaRitorno(visite);
+    disegnaEntrataUscita(perVisita);
+
+    /* --- pagine --- */
+
+    var perPercorso = {};
+    pagine.forEach(function (p) {
+      var g = perPercorso[p.percorso] || (perPercorso[p.percorso] = {
+        nome: p.percorso, valore: 0, visitatori: {}, tempi: [], scrolli: [], titolo: p.titolo
+      });
+      g.valore++;
+      g.visitatori[p.visita_id] = 1;
+      if (p.ms_attivi > 0) g.tempi.push(p.ms_attivi);
+      if (p.scroll_max > 0) g.scrolli.push(p.scroll_max);
+    });
+
+    var elencoPagine = Object.keys(perPercorso).map(function (k) {
+      var g = perPercorso[k];
+      g.nVisitatori = Object.keys(g.visitatori).length;
+      g.tempoMediano = mediana(g.tempi);
+      g.scrollMediano = mediana(g.scrolli);
+      g.tip = '<b>' + fuga(g.nome) + '</b><div class="riga">' + g.valore + ' aperture · ' +
+              g.nVisitatori + ' visitatori</div><div class="riga">' + durata(g.tempoMediano) +
+              ' · scroll ' + g.scrollMediano + '%</div>';
+      return g;
+    }).sort(function (a, b) { return b.valore - a.valore; });
+
+    if (!stato.percorsoScelto && elencoPagine.length) stato.percorsoScelto = elencoPagine[0].nome;
+
+    barre('pagine', elencoPagine, {
+      quante: 10,
+      scelto: stato.percorsoScelto,
+      cifra: function (v) { return v.valore + ' · ' + durata(v.tempoMediano); },
+      click: function (v) { stato.percorsoScelto = v.nome; disegna(); }
+    });
+
+    tabella('pagine-tabella',
+      ['Pagina', 'Aperture', 'Visitatori', 'Tempo', 'Scroll'],
+      elencoPagine.map(function (g) {
+        return [fuga(g.nome), g.valore, g.nVisitatori, durata(g.tempoMediano), g.scrollMediano + '%'];
+      }));
+
+    /* --- sezioni e curva di lettura della pagina scelta --- */
+
+    disegnaSezioni(pagine);
+    disegnaCurva(pagine);
+
+    /* --- indirizzi che non esistono --- */
+
+    disegnaMancanti();
+
+    /* --- provenienza --- */
+
+    barre('canali', conta(visite, 'canale'), { quante: 6 });
+    barre('referenti', conta(visite, 'referente_host'), { quante: 6 });
+
+    /* --- regioni e lingua --- */
+
+    var regioni = conta(visite, function (v) {
+      if (v.regione) return v.regione;
+      return v.paese ? v.paese + ' (regione ignota)' : null;
+    });
+    var conRegione = regioni.reduce(function (a, r) { return a + r.valore; }, 0);
+    testo($('conta-regioni'), conRegione + ' visite su ' + visite.length + ' localizzate');
+    barre('regioni', regioni, { quante: 8 });
+
+    var lingue = conta(pagine, function (p) {
+      var l = (p.lingua || '').slice(0, 2).toLowerCase();
+      if (l === 'it') return 'Italiano';
+      if (l === 'en') return 'Inglese';
+      return l ? l.toUpperCase() : null;
+    });
+    testo($('conta-lingue'), pagine.length + ' pagine viste');
+    barre('lingue', lingue, { quante: 4 });
+
+    var citta = conta(visite, 'citta');
+    var conCitta = citta.reduce(function (a, r) { return a + r.valore; }, 0);
+    testo($('conta-citta'), conCitta + ' su ' + visite.length + ' con la citta\'');
+    barre('citta', citta, { quante: 8 });
+
+    /* --- paesi --- */
+
+    var paesi = conta(visite, 'paese');
+    var conPaese = paesi.reduce(function (a, r) { return a + r.valore; }, 0);
+    testo($('conta-paesi'), conPaese + ' su ' + visite.length + ' localizzate');
+    barre('paesi', paesi, { quante: 8 });
+
+    /* --- tecnologia --- */
+
+    barre('dispositivi', conta(visite, 'dispositivo'), { quante: 3 });
+    barre('sistemi', conta(visite, function (v) {
+      if (!v.sistema) return null;
+      return v.sistema + (v.browser ? ' · ' + v.browser : '');
+    }), { quante: 6 });
+    var reti = conta(visite, 'rete');
+    if (reti.length) {
+      var el = $('reti');
+      if (el) barre('reti', reti, { quante: 5 });
+    }
+
+    barre('schermi', conta(visite, function (v) {
+      var w = v.area_w || v.schermo_w;
+      if (!w) return null;
+      if (w < 480) return 'fino a 480';
+      if (w < 768) return '480 - 768';
+      if (w < 1100) return '768 - 1100';
+      if (w < 1500) return '1100 - 1500';
+      return 'oltre 1500';
+    }), { quante: 5 });
+
+    /* --- gesti --- */
+
+    var gesti = stato.eventi.filter(function (e) { return buone[e.visita_id]; });
+    testo($('conta-gesti'), gesti.length
+      ? gesti.length + ' in questo periodo' + (gesti.length > 50 ? ', mostro i 50 piu\' recenti' : '')
+      : '');
+    tabella('gesti', ['Quando', 'Tipo', 'Cosa', 'Verso'],
+      gesti.slice(0, 50).map(function (e) {
+        return [
+          ora(e.quando),
+          '<span class="tipo ' + fuga(e.tipo) + '">' + fuga(e.tipo) + '</span>',
+          fuga(e.nome || '-'),
+          fuga(e.destinazione || '-')
+        ];
+      }));
+
+    /* --- piede --- */
+
+    testo($('piede-periodo'), stato.tutto ? 'periodo: tutto lo storico'
+      : (stato.giorni === 0 ? 'periodo: oggi' : 'periodo: ultimi ' + stato.giorni + ' giorni'));
+    testo($('piede-robot'), robot.length + ' visite di robot escluse dai numeri');
+    testo($('piede-agg'), 'aggiornato alle ' + ora(new Date().toISOString()));
+
+    var b = $('piede-battito');
+    if (b) {
+      if (!stato.sistema) {
+        b.textContent = '';
+      } else {
+        var giorni = Math.floor((Date.now() - new Date(stato.sistema.battito).getTime()) / 86400000);
+        b.textContent = giorni <= 1
+          ? 'battito regolare'
+          : 'ultimo battito ' + giorni + ' giorni fa, da controllare';
+
+        /* Anche i database geografici invecchiano. Se passano piu' di
+           45 giorni vuol dire che l'aggiornamento automatico si e'
+           inceppato, e conviene saperlo prima che le citta' comincino
+           a sbagliare. */
+        var g = $('piede-geo');
+        if (g) {
+          if (!stato.sistema.geo_aggiornato) {
+            g.textContent = 'database geografici: mai aggiornati da qui';
+          } else {
+            var gg = Math.floor((Date.now() - new Date(stato.sistema.geo_aggiornato).getTime()) / 86400000);
+            g.textContent = gg <= 45
+              ? 'database geografici aggiornati ' + (gg === 0 ? 'oggi' : gg + ' giorni fa')
+              : 'database geografici fermi da ' + gg + ' giorni, da controllare';
+          }
+        }
+      }
+    }
+  }
+
+  function disegnaVivo(visite, pagine) {
+    var limite = Date.now() - 5 * 60 * 1000;
+    var attivi = visite.filter(function (v) {
+      return new Date(v.vista_ultima).getTime() > limite;
+    });
+
+    /* L'indicazione in alto dice quante persone ci sono, non
+       "dal vivo" a vuoto: se non c'e' nessuno lo dice. */
+    var box = $('stato-vivo');
+    if (box) box.classList.toggle('attivo', attivi.length > 0);
+    testo($('stato-testo'), attivi.length
+      ? (attivi.length === 1 ? '1 persona sulla landing' : attivi.length + ' persone sulla landing')
+      : 'nessuno sulla landing');
+
+    testo($('conta-vivo'), attivi.length
+      ? attivi.length + (attivi.length === 1 ? ' persona' : ' persone') + ', ultimi 5 minuti'
+      : 'ultimi 5 minuti');
+
+    var ultimaPagina = {};
+    pagine.forEach(function (p) {
+      var a = ultimaPagina[p.visita_id];
+      if (!a || new Date(p.aperta) > new Date(a.aperta)) ultimaPagina[p.visita_id] = p;
+    });
+
+    var el = $('vivo-lista');
+    if (!attivi.length) {
+      el.innerHTML = '<div class="vuoto">Nessuno sulla landing in questo momento. ' +
+                     'Quando entra qualcuno compare qui da solo.</div>';
+      return;
+    }
+
+    el.innerHTML = '';
+    attivi.slice(0, 12).forEach(function (v) {
+      var p = ultimaPagina[v.id];
+
+      var luogo = [v.citta, v.regione].filter(Boolean).join(', ') || v.paese || 'luogo ignoto';
+      var sezione = p && p.sezione_ora ? p.sezione_ora : null;
+
+      var riga = document.createElement('div');
+      riga.className = 'vivo-riga';
+      riga.setAttribute('data-tip',
+        '<b>' + fuga(luogo) + '</b>' +
+        '<div class="riga">' + fuga(v.dispositivo || '?') + ' - ' + fuga(v.sistema || '?') +
+        ' - ' + fuga(v.browser || '?') + '</div>' +
+        '<div class="riga">arrivo: ' + fuga(v.canale || '?') +
+        (v.referente_host ? ' da ' + fuga(v.referente_host) : '') + '</div>' +
+        (p ? '<div class="riga">' + durata(p.ms_attivi) + ' su questa pagina</div>' : ''));
+
+      var segno = document.createElement('span');
+      segno.className = 'segno';
+
+      var dove = document.createElement('span');
+      dove.className = 'dove';
+      dove.textContent = p ? p.percorso : '-';
+
+      var quando = document.createElement('span');
+      quando.className = 'quando';
+      quando.textContent = quantoFa(v.vista_ultima);
+
+      var sotto = document.createElement('span');
+      sotto.className = 'sotto';
+      if (sezione) {
+        var b = document.createElement('b');
+        b.textContent = sezione;
+        sotto.appendChild(b);
+        sotto.appendChild(document.createTextNode('  -  ' + luogo));
+      } else {
+        sotto.textContent = luogo;
+      }
+
+      riga.appendChild(segno);
+      riga.appendChild(dove);
+      riga.appendChild(quando);
+      riga.appendChild(sotto);
+      el.appendChild(riga);
+    });
+  }
+
+  /* Nuove e di ritorno.
+
+     Attenzione a cosa si puo' dire davvero: l'impronta del visitatore
+     cambia ogni notte, apposta, perche' cosi' non e' un pedinamento.
+     Quindi "gia' visto prima" vuol dire "gia' passato oggi", non
+     "tornato dopo una settimana". */
+  function disegnaRitorno(visite) {
+    var giorni = stato.tutto ? 30 : (stato.giorni || 1);
+    if (giorni < 1) giorni = 1;
+    if (giorni > 60) giorni = 60;
+
+    var caselle = [];
+    var oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+    for (var i = giorni - 1; i >= 0; i--) {
+      var d = new Date(oggi);
+      d.setDate(d.getDate() - i);
+      caselle.push({ data: d, nuove: 0, ritorno: 0 });
+    }
+
+    // in ordine di tempo: la prima volta che vedo un'impronta e' una visita nuova
+    var viste = {};
+    var ordinate = visite.slice().sort(function (a, b) {
+      return new Date(a.iniziata) - new Date(b.iniziata);
+    });
+
+    var totNuove = 0, totRitorno = 0;
+    ordinate.forEach(function (v) {
+      var diRitorno = viste[v.impronta] === true;
+      viste[v.impronta] = true;
+      if (diRitorno) totRitorno++; else totNuove++;
+
+      var d = new Date(v.iniziata); d.setHours(0, 0, 0, 0);
+      for (var i = 0; i < caselle.length; i++) {
+        if (caselle[i].data.getTime() === d.getTime()) {
+          if (diRitorno) caselle[i].ritorno++; else caselle[i].nuove++;
+          break;
+        }
+      }
+    });
+
+    var max = Math.max.apply(null, caselle.map(function (c) { return c.nuove + c.ritorno; }).concat([1]));
+    testo($('conta-ritorno'), totNuove + ' nuove, ' + totRitorno + ' di ritorno');
+
+    var el = $('ritorno');
+    el.innerHTML = '';
+    caselle.forEach(function (c) {
+      var tot = c.nuove + c.ritorno;
+      var col = document.createElement('div');
+      col.className = 'colonna' + (tot === 0 ? ' vuota' : '');
+      col.setAttribute('data-tip',
+        '<b>' + tot + (tot === 1 ? ' visita' : ' visite') + '</b>' +
+        '<div class="riga">' + c.nuove + ' alla prima volta</div>' +
+        '<div class="riga">' + c.ritorno + ' gia\' passate</div>' +
+        '<div class="riga">' + c.data.toLocaleDateString('it-IT',
+          { weekday: 'long', day: 'numeric', month: 'long' }) + '</div>');
+
+      if (tot === 0) {
+        col.innerHTML = '<i style="height:2px"></i>';
+      } else {
+        var altezza = Math.max(6, Math.round((tot / max) * 100));
+        var pila = document.createElement('div');
+        pila.className = 'pila';
+        pila.style.height = altezza + '%';
+        if (c.ritorno) {
+          var r = document.createElement('i');
+          r.className = 'ritorno';
+          r.style.flex = c.ritorno;
+          pila.appendChild(r);
+        }
+        if (c.nuove) {
+          var n = document.createElement('i');
+          n.className = 'nuove';
+          n.style.flex = c.nuove;
+          pila.appendChild(n);
+        }
+        col.appendChild(pila);
+      }
+      el.appendChild(col);
+    });
+
+    asseGiorni('ritorno-asse', caselle);
+
+    testo($('ritorno-nota'),
+      'Un visitatore viene riconosciuto da un\'impronta che cambia ogni notte, ' +
+      'apposta, per non essere un pedinamento. Percio\' "gia\' passate" vuol dire ' +
+      'nella stessa giornata: chi torna dopo una settimana risulta di nuovo nuovo.');
+  }
+
+  /* A che ora del giorno arrivano. Ventiquattro colonne, con l'ora
+     del fuso di chi guarda il cruscotto. */
+  function disegnaOrari(visite) {
+    var caselle = [];
+    for (var h = 0; h < 24; h++) caselle.push({ h: h, n: 0 });
+
+    visite.forEach(function (v) {
+      caselle[new Date(v.iniziata).getHours()].n++;
+    });
+
+    var max = Math.max.apply(null, caselle.map(function (c) { return c.n; }).concat([1]));
+    var picco = caselle.reduce(function (a, c) { return c.n > a.n ? c : a; }, caselle[0]);
+    testo($('conta-orari'), picco.n
+      ? 'picco alle ' + String(picco.h).padStart(2, '0') + ':00'
+      : '');
+
+    var el = $('orari');
+    el.innerHTML = '';
+    caselle.forEach(function (c) {
+      var col = document.createElement('div');
+      col.className = 'colonna' + (c.n === 0 ? ' vuota' : '');
+      col.setAttribute('data-tip',
+        '<b>' + c.n + (c.n === 1 ? ' visita' : ' visite') + '</b>' +
+        '<div class="riga">fra le ' + String(c.h).padStart(2, '0') + ':00 e le ' +
+        String((c.h + 1) % 24).padStart(2, '0') + ':00</div>');
+      col.innerHTML = '<i style="height:' +
+        (c.n === 0 ? '2px' : Math.max(4, Math.round((c.n / max) * 100)) + '%') + '"></i>';
+      el.appendChild(col);
+    });
+
+    var asse = $('orari-asse');
+    asse.innerHTML = '';
+    caselle.forEach(function (c) {
+      var x = document.createElement('span');
+      x.textContent = (c.h % 6 === 0) ? String(c.h) : '';
+      asse.appendChild(x);
+    });
+  }
+
+  /* Fin dove leggono: per ogni decimo di pagina, quante aperture ci
+     sono arrivate almeno fino li'. Parte da 100 e scende; il punto
+     in cui crolla e' dove si perdono le persone. */
+  function disegnaCurva(pagine) {
+    var scelto = stato.percorsoScelto;
+    var titolo = $('titolo-curva');
+
+    var mie = scelto
+      ? pagine.filter(function (p) { return p.percorso === scelto; })
+      : pagine;
+
+    var validi = mie.map(function (p) { return p.scroll_max; })
+                    .filter(function (n) { return n > 0; });
+
+    if (titolo) {
+      // Solo il testo: l'icona delle info sta nello stesso h2 e va lasciata stare.
+      titolo.querySelector('.t').textContent =
+        scelto ? 'Fin dove leggono ' + scelto : 'Fin dove leggono';
+    }
+    testo($('conta-curva'), validi.length
+      ? validi.length + (validi.length === 1 ? ' apertura' : ' aperture')
+      : 'nessun dato');
+
+    var el = $('curva');
+    var asse = $('curva-asse');
+    el.innerHTML = '';
+    asse.innerHTML = '';
+
+    if (!validi.length) {
+      el.innerHTML = '<div class="vuoto">Ancora nessuna apertura di questa pagina.</div>';
+      return;
+    }
+
+    for (var soglia = 10; soglia <= 100; soglia += 10) {
+      var quanti = validi.filter(function (n) { return n >= soglia; }).length;
+      var quota = Math.round((quanti / validi.length) * 100);
+
+      var col = document.createElement('div');
+      col.className = 'colonna' + (quota === 0 ? ' vuota' : '');
+      col.setAttribute('data-tip',
+        '<b>' + quota + '% delle aperture</b>' +
+        '<div class="riga">arriva almeno al ' + soglia + '% della pagina</div>' +
+        '<div class="riga">' + quanti + ' su ' + validi.length + '</div>');
+      col.innerHTML = '<i style="height:' + (quota === 0 ? '2px' : Math.max(4, quota) + '%') + '"></i>';
+      el.appendChild(col);
+
+      var x = document.createElement('span');
+      x.textContent = soglia + '%';
+      asse.appendChild(x);
+    }
+  }
+
+  /* Prima e ultima pagina di ogni visita: la porta d'ingresso e il
+     punto in cui il percorso finisce. */
+  function disegnaEntrataUscita(perVisita) {
+    var entrate = {}, uscite = {}, quante = 0;
+
+    Object.keys(perVisita).forEach(function (id) {
+      var g = perVisita[id].slice().sort(function (a, b) {
+        return new Date(a.aperta) - new Date(b.aperta);
+      });
+      if (!g.length) return;
+      quante++;
+      var e = g[0].percorso, u = g[g.length - 1].percorso;
+      entrate[e] = (entrate[e] || 0) + 1;
+      uscite[u]  = (uscite[u]  || 0) + 1;
+    });
+
+    var inLista = function (m) {
+      return Object.keys(m).map(function (k) {
+        return {
+          nome: k,
+          valore: m[k],
+          tip: '<b>' + fuga(k) + '</b><div class="riga">' + m[k] + ' visite su ' + quante +
+               ' (' + Math.round((m[k] / quante) * 100) + '%)</div>'
+        };
+      }).sort(function (a, b) { return b.valore - a.valore; });
+    };
+
+    testo($('conta-entrata'), quante + (quante === 1 ? ' visita' : ' visite'));
+    testo($('conta-uscita'), quante + (quante === 1 ? ' visita' : ' visite'));
+    barre('entrata', inLista(entrate), { quante: 8 });
+    barre('uscita',  inLista(uscite),  { quante: 8 });
+  }
+
+  function asseGiorni(contenitore, caselle) {
+    var asse = $(contenitore);
+    asse.innerHTML = '';
+    var passo = caselle.length > 14 ? Math.ceil(caselle.length / 7) : (caselle.length > 7 ? 2 : 1);
+    caselle.forEach(function (c, i) {
+      var s = document.createElement('span');
+      s.textContent = (i % passo === 0 || i === caselle.length - 1) ? String(c.data.getDate()) : '';
+      asse.appendChild(s);
+    });
+  }
+
+  /* L'andamento e' un'area con la linea morbida (come nei grafici
+     di Frigolo), non a colonne: un punto per giorno, o per ora quando
+     il periodo e' oggi. La linea tratteggiata sono le visite che
+     aprono l'app. */
+  function disegnaAndamento(visite) {
+    var app = stato.visiteApp || {};
+    var punti = [];
+    var oraAdesso = new Date();
+
+    if (!stato.tutto && stato.giorni === 0) {
+      for (var h = 0; h <= oraAdesso.getHours(); h++) {
+        punti.push({ giorno: iso(oraAdesso), ora: h, visite: 0, apri_app: 0 });
+      }
+      visite.forEach(function (v) {
+        var d = new Date(v.iniziata);
+        var p = punti[d.getHours()];
+        if (p) { p.visite++; if (app[v.id]) p.apri_app++; }
+      });
+      testo($('titolo-andamento'), 'Visite per ora');
+    } else {
+      var giorni = stato.tutto ? 30 : stato.giorni;
+      if (giorni > 60) giorni = 60;
+      var oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+      var indice = {};
+      for (var i = giorni - 1; i >= 0; i--) {
+        var d = new Date(oggi);
+        d.setDate(d.getDate() - i);
+        indice[iso(d)] = punti.length;
+        punti.push({ giorno: iso(d), visite: 0, apri_app: 0 });
+      }
+      visite.forEach(function (v) {
+        var k = indice[iso(new Date(v.iniziata))];
+        if (k !== undefined) { punti[k].visite++; if (app[v.id]) punti[k].apri_app++; }
+      });
+      testo($('titolo-andamento'), 'Visite per giorno');
+    }
+
+    var max = Math.max.apply(null, punti.map(function (p) { return p.visite; }).concat([0]));
+    testo($('conta-andamento'), 'massimo ' + max);
+    area('andamento', punti, [
+      { chiave: 'visite', nome: 'Visite' },
+      { chiave: 'apri_app', nome: 'Aprono Frigolo', classe: 'seconda' }
+    ]);
+  }
+
+  /* Gli indirizzi cercati che sul sito non esistono.
+
+     Qui dentro i robot NON si tolgono, ed e' voluto: quasi tutti gli
+     indirizzi morti li cercano loro, e togliendoli il pannello
+     resterebbe sempre vuoto. Quello che serve sapere e' se un vecchio
+     indirizzo torna spesso, e se qualche volta lo cerca una persona:
+     in quel caso vale un reindirizzamento. La riga sopra l'elenco dice
+     quanti sono di robot. */
+  function disegnaMancanti() {
+    var riquadro = $('riquadro-mancanti');
+    if (!riquadro) return;
+
+    var diRobot = {};
+    stato.visite.forEach(function (v) { if (v.bot) diRobot[v.id] = 1; });
+
+    var morte = stato.pagine.filter(function (p) { return (p.stato || 200) !== 200; });
+    if (!morte.length) { riquadro.hidden = true; return; }
+    riquadro.hidden = false;
+
+    var quanteRobot = morte.filter(function (p) { return diRobot[p.visita_id]; }).length;
+    var persone = morte.length - quanteRobot;
+
+    testo($('conta-mancanti'), morte.length + ' aperture, ' +
+      (quanteRobot ? quanteRobot + ' di robot' : 'nessuna di robot') +
+      (persone ? ', ' + persone + ' no' : ''));
+
+    var per = {};
+    morte.forEach(function (p) {
+      var g = per[p.percorso] || (per[p.percorso] = { nome: p.percorso, valore: 0, robot: 0 });
+      g.valore++;
+      if (diRobot[p.visita_id]) g.robot++;
+    });
+
+    var elenco = Object.keys(per).map(function (k) {
+      var g = per[k];
+      g.tip = '<b>' + fuga(g.nome) + '</b><div class="riga">' + g.valore + ' aperture' +
+              (g.robot ? ', ' + g.robot + ' di robot' : '') + '</div>' +
+              (g.valore > g.robot
+                ? '<div class="riga">Cercato anche da persone: vale un reindirizzamento.</div>'
+                : '');
+      return g;
+    }).sort(function (a, b) { return b.valore - a.valore; });
+
+    barre('mancanti', elenco, {
+      quante: 10,
+      cifra: function (v) {
+        return v.valore + (v.robot === v.valore ? ' · solo robot' : '');
+      }
+    });
+  }
+
+  function disegnaSezioni(pagine) {
+    var scelto = stato.percorsoScelto;
+    var titolo = $('titolo-sezioni');
+    titolo.querySelector('.t').textContent = scelto ? 'Sezioni di ' + scelto : 'Tempo per sezione';
+
+    if (!scelto) { barre('sezioni', []); testo($('conta-sezioni'), ''); return; }
+
+    var mie = pagine.filter(function (p) { return p.percorso === scelto; });
+    var somma = {}, quante = {};
+
+    mie.forEach(function (p) {
+      var s = p.sezioni || {};
+      Object.keys(s).forEach(function (k) {
+        somma[k] = (somma[k] || 0) + s[k];
+        quante[k] = (quante[k] || 0) + 1;
+      });
+    });
+
+    var voci = Object.keys(somma).map(function (k) {
+      var medio = Math.round(somma[k] / quante[k]);
+      return {
+        nome: k,
+        valore: medio,
+        letture: quante[k],
+        tip: '<b>' + fuga(k) + '</b><div class="riga">' + durata(medio) + ' in media</div>' +
+             '<div class="riga">letta in ' + quante[k] + ' aperture su ' + mie.length + '</div>'
+      };
+    }).sort(function (a, b) { return b.valore - a.valore; });
+
+    testo($('conta-sezioni'), mie.length + (mie.length === 1 ? ' apertura' : ' aperture'));
+    barre('sezioni', voci, {
+      quante: 12,
+      cifra: function (v) { return durata(v.valore); }
+    });
+  }
+
+  /* ---------- tempo reale ---------- */
+
+  function ascolta() {
+    // riaprendo il canale al risveglio, il vecchio va chiuso prima
+    if (stato.canale) { sb.removeChannel(stato.canale); stato.canale = null; }
+    var canale = sb.channel('statistiche')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'visite' }, arrivo)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pagine' }, arrivo)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'eventi' }, arrivo)
+      .subscribe(function (s) {
+        /* Il collegamento si nota solo quando manca: se tutto va,
+           la riga in alto e' libera di dire quante persone ci sono. */
+        var riga = $('stato-nota');
+        if (!riga) return;
+        var mio = 'aggiornamento dal vivo scollegato';
+        if (s === 'SUBSCRIBED') {
+          if (riga.textContent === mio) riga.textContent = '';
+        } else if (s === 'CLOSED' || s === 'CHANNEL_ERROR' || s === 'TIMED_OUT') {
+          riga.textContent = mio;
+        }
+      });
+    stato.canale = canale;
+    return canale;
+  }
+
+  /* Un messaggio in tempo reale non porta tutto quello che serve ai
+     conteggi, quindi lo usiamo come sveglia: ricarichiamo, ma non piu'
+     di una volta ogni due secondi, cosi' una raffica di battiti non
+     diventa una raffica di interrogazioni. */
+  function arrivo() {
+    if (stato.ricarica) return;
+    stato.ricarica = setTimeout(function () {
+      stato.ricarica = null;
+      carica().catch(function (e) { console.warn('ricarica fallita', e); });
+    }, 2000);
+  }
+
+  /* ---------- accesso ---------- */
+
+  $('modulo-accesso').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = $('btn-entra');
+    var err = $('errore-accesso');
+    err.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Un attimo...';
+
+    var email = $('email').value.trim();
+    var password = $('password').value;
+    Promise.all([entra(sb, email, password), entra(sbApp, email, password)]).then(function (esiti) {
+      btn.disabled = false;
+      btn.textContent = 'Entra';
+      $('password').value = '';
+      if (!esiti[0] && !esiti[1]) { err.textContent = 'Email o password non corrette.'; return; }
+      stato.email = email;
+      avvia();
+    });
+  });
+
+  function entra(client, email, password) {
+    return client.auth.signInWithPassword({ email: email, password: password })
+      .then(function (r) { return !r.error; }, function () { return false; });
+  }
+
+  /* La sezione chiusa chiede solo la password del suo progetto. */
+  [['landing', function () { return sb; }], ['app', function () { return sbApp; }]].forEach(function (x) {
+    $('accesso-' + x[0]).addEventListener('submit', function (e) {
+      e.preventDefault();
+      var campo = $('password-' + x[0]);
+      var email = stato.email || $('email').value.trim();
+      if (!email) { scrivi('errore-' + x[0], 'Esci e rientra con email e password.'); return; }
+      entra(x[1](), email, campo.value).then(function (ok) {
+        campo.value = '';
+        if (!ok) { scrivi('errore-' + x[0], 'Password non corretta.'); return; }
+        caricaSezione();
+      });
+    });
+  });
+
+  $('sezioni-scelta').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b) mostraSezione(b.getAttribute('data-sezione'));
+  });
+
+  function mostraSezione(chi) {
+    stato.sezione = chi;
+    try { localStorage.setItem('frigolo-stat.sezione', chi); } catch (e) {}
+    [].forEach.call(document.querySelectorAll('#sezioni-scelta button'), function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-sezione') === chi));
+    });
+    $('sezione-landing').hidden = chi !== 'landing';
+    $('sezione-app').hidden = chi !== 'app';
+    // chi c'e' adesso riguarda solo la landing
+    var vivo = $('stato-vivo');
+    if (vivo) vivo.style.visibility = chi === 'landing' ? '' : 'hidden';
+    return caricaSezione();
+  }
+
+  function caricaSezione() {
+    if (stato.sezione === 'app') return caricaApp();
+    return carica().then(function () {
+      if (stato.finto) return;
+      var c = stato.canale;
+      if (!c || c.state !== 'joined') ascolta();
+    }).catch(mostraGuasto);
+  }
+
+  $('btn-esci').addEventListener('click', function () {
+    Promise.all([sb.auth.signOut(), sbApp.auth.signOut()])
+      .then(function () { location.reload(); }, function () { location.reload(); });
+  });
+
+  $('periodi').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    [].forEach.call(this.querySelectorAll('button'), function (x) {
+      x.setAttribute('aria-pressed', String(x === b));
+    });
+    stato.giorni = parseInt(b.getAttribute('data-giorni'), 10) || 0;
+    stato.tutto = b.hasAttribute('data-tutto');
+    stato.percorsoScelto = null;
+    caricaSezione();
+  });
+
+  function mostraGuasto(e) {
+    if (e && e.message === SCADUTA) { fuoriSessione(); return; }
+    if (e && e.message === MUTO) {
+      nota('non riesco ad aggiornare, controlla la rete');
+      return;
+    }
+    console.error(e);
+    var el = $('vivo-lista');
+    if (el) el.innerHTML = '<div class="vuoto">Non riesco a leggere i dati: ' + fuga(e.message || e) + '</div>';
+  }
+
+  /* ---------- tema ---------- */
+
+  /* I due interruttori sono lo stesso comando in due posti: in barra
+     su schermo largo, in fondo alla pagina su schermo stretto. */
+  function interruttori() {
+    return [$('btn-tema'), $('btn-tema-2')].filter(Boolean);
+  }
+
+  /* Chiaro di serie. La scelta resta in questo browser e non
+     tocca il database, quindi ogni dispositivo puo' avere il suo. */
+  function applicaTema(t) {
+    var scuro = t === 'scuro';
+    if (scuro) document.documentElement.setAttribute('data-tema', 'scuro');
+    else document.documentElement.removeAttribute('data-tema');
+
+    // I due interruttori dicono lo stesso, e lo dicono anche a chi
+    // usa un lettore di schermo.
+    interruttori().forEach(function (b) {
+      b.setAttribute('aria-checked', scuro ? 'true' : 'false');
+      b.setAttribute('aria-label', scuro ? 'Tema scuro' : 'Tema chiaro');
+      b.title = scuro ? 'Passa al tema chiaro' : 'Passa al tema scuro';
+    });
+
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', scuro ? '#1a0f13' : '#f8eef0');
+
+    try { localStorage.setItem('frigolo-stat.tema', scuro ? 'scuro' : 'chiaro'); } catch (e) {}
+  }
+
+  function temaSalvato() {
+    try {
+      var v = localStorage.getItem('frigolo-stat.tema');
+      return v === 'chiaro' ? 'chiaro' : 'scuro';   // di serie: scuro
+    } catch (e) { return 'scuro'; }
+  }
+
+  applicaTema(temaSalvato());
+
+  function cambiaTema() {
+    applicaTema(document.documentElement.getAttribute('data-tema') === 'scuro' ? 'chiaro' : 'scuro');
+    scattoIcone();
+  }
+
+  /* Lo scatto dell'icona lo fa il foglio di stile: qui si toglie e si
+     rimette la classe, leggendo una misura in mezzo per costringere il
+     browser a far ripartire l'animazione anche a click ravvicinati.
+     Solo al click, mai all'apertura della pagina. */
+  function scattoIcone() {
+    interruttori().forEach(function (b) {
+      b.classList.remove('scatta');
+      void b.offsetWidth;
+      b.classList.add('scatta');
+    });
+  }
+
+  interruttori().forEach(function (b) { b.addEventListener('click', cambiaTema); });
+
+  /* ---------- avvio ---------- */
+
+  var orologio = null;
+
+  function avvia() {
+    document.body.classList.add('dentro');
+    var err = $('errore-accesso');
+    if (err) err.textContent = '';
+    mostraSezione(stato.sezione);
+    // i "quanto fa" invecchiano da soli
+    if (!orologio) orologio = setInterval(function () {
+      var v = stato.visite.filter(function (x) { return !x.bot; });
+      disegnaVivo(v, stato.pagine);
+    }, 20000);
+  }
+
+
+  /* ============================================================
+     SEZIONE APP: uso di Frigolo, dal progetto di Frigolo.
+     Solo aggregati, dalla funzione metrics_app (risponde solo agli
+     account in metrics.admins). Stessi riquadri, stessi confronti e
+     stesse barre della sezione delle visite; gli andamenti sono
+     aree con la linea morbida.
+     ============================================================ */
+
+  function scrivi(id, t) { var el = $(id); if (el) el.textContent = t; }
+  function numeroA(n) {
+    if (n === null || n === undefined || isNaN(n)) return '-';
+    n = Number(n);
+    return n >= 10000 ? (n / 1000).toFixed(1).replace('.0', '') + 'K' : String(n);
+  }
+  function quota(a, b) { return b ? Math.round((a / b) * 100) + '%' : '-'; }
+  function byte(n) {
+    if (!n && n !== 0) return '-';
+    if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
+    if (n >= 1024 * 1024 * 1024) return (n / 1024 / 1024 / 1024).toFixed(1).replace('.0', '') + ' GB';
+    return (n / 1024 / 1024).toFixed(n < 100 * 1024 * 1024 ? 1 : 0) + ' MB';
+  }
+  function iso(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function dataLunga(s) {
+    var p = String(s).split('-');
+    return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
+  /* Il periodo: gli ultimi N giorni compreso oggi, e gli N giorni
+  /* ---------- barre ---------- */
+
+  function barreA(id, voci, o) {
+    o = o || {};
+    var el = $(id);
+    if (!el) return;
+    el.innerHTML = '';
+    if (!voci || !voci.length) { el.innerHTML = '<div class="vuoto">Ancora niente in questo periodo.</div>'; return; }
+    var max = o.max || Math.max.apply(null, voci.map(function (v) { return v.valore; }).concat([1]));
+    voci.slice(0, o.quante || 8).forEach(function (v) {
+      var riga = document.createElement('div');
+      riga.className = 'barra';
+      if (v.tip) riga.setAttribute('data-tip', v.tip);
+      riga.innerHTML = '<span class="testo"></span><span class="cifra"></span>' +
+        '<span class="pista"><i style="width:' + Math.max(1.5, (v.valore / max) * 100) + '%"></i></span>';
+      riga.querySelector('.testo').textContent = v.etichetta || v.nome;
+      riga.querySelector('.cifra').textContent = v.cifra || numeroA(v.valore);
+      el.appendChild(riga);
+    });
+  }
+
+  /* ---------- andamento: area con linea morbida ----------
+
+     La curva passa per tutti i punti senza mai superarli (spline
+     monotona di Fritsch e Carlson): una curva qualsiasi, fra un giorno
+     a zero e uno a dieci, scenderebbe sotto lo zero o salirebbe oltre
+     il massimo, e racconterebbe giorni che non ci sono stati. */
+
+  function curva(xs, ys) {
+    var n = xs.length;
+    if (n === 1) return 'M' + xs[0] + ',' + ys[0];
+    var d = [], m = [];
+    for (var i = 0; i < n - 1; i++) d.push((ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]));
+    m.push(d[0]);
+    for (i = 1; i < n - 1; i++) m.push(d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2);
+    m.push(d[n - 2]);
+    for (i = 0; i < n - 1; i++) {
+      if (d[i] === 0) { m[i] = 0; m[i + 1] = 0; continue; }
+      var a = m[i] / d[i], b = m[i + 1] / d[i], h = a * a + b * b;
+      if (h > 9) { var t = 3 / Math.sqrt(h); m[i] = t * a * d[i]; m[i + 1] = t * b * d[i]; }
+    }
+    var p = 'M' + xs[0] + ',' + ys[0];
+    for (i = 0; i < n - 1; i++) {
+      var dx = (xs[i + 1] - xs[i]) / 3;
+      p += 'C' + (xs[i] + dx) + ',' + (ys[i] + m[i] * dx) + ' ' +
+           (xs[i + 1] - dx) + ',' + (ys[i + 1] - m[i + 1] * dx) + ' ' + xs[i + 1] + ',' + ys[i + 1];
+    }
+    return p;
+  }
+
+  var gradienti = 0;
+
+  /* serie: [{ chiave, nome, classe ('' | 'seconda' | 'avviso'), scalaPropria }]
+     La prima e' l'area, le altre sono linee. */
+  function area(id, giorni, serie) {
+    var el = $(id);
+    if (!el) return;
+    var W = 1000, H = 100, n = giorni.length;
+    var xs = giorni.map(function (_, i) { return n === 1 ? W / 2 : (i / (n - 1)) * W; });
+    var maxComune = Math.max.apply(null, [1].concat.apply([], serie.filter(function (s) { return !s.scalaPropria; })
+      .map(function (s) { return giorni.map(function (g) { return +g[s.chiave] || 0; }); })));
+
+    var g = 'g' + (++gradienti);
+    var svg = '<svg viewBox="0 -4 ' + W + ' ' + (H + 4) + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<defs><linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="currentColor" stop-opacity=".32"/>' +
+      '<stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>' +
+      '<line class="griglia-y" x1="0" x2="' + W + '" y1="0" y2="0"/>' +
+      '<line class="griglia-y" x1="0" x2="' + W + '" y1="50" y2="50"/>';
+
+    serie.forEach(function (s, k) {
+      var max = s.scalaPropria
+        ? Math.max.apply(null, [1].concat(giorni.map(function (d) { return +d[s.chiave] || 0; })))
+        : maxComune;
+      var ys = giorni.map(function (d) { return H - ((+d[s.chiave] || 0) / max) * (H - 2); });
+      var p = curva(xs, ys);
+      if (k === 0 && n > 1) {
+        svg += '<path d="' + p + 'L' + W + ',' + H + 'L0,' + H + 'Z" fill="url(#' + g + ')" stroke="none"/>';
+      }
+      svg += '<path class="linea ' + (s.classe || '') + '" d="' + p + '"/>';
+    });
+    svg += '<line class="base" x1="0" x2="' + W + '" y1="' + H + '" y2="' + H + '"/></svg>';
+
+    var bersagli = giorni.map(function (d) {
+      // il suggerimento sta in un attributo fra virgolette doppie: dentro
+      // solo apici singoli
+      var righe = serie.map(function (s) {
+        return "<div class='riga'>" + fuga(s.nome) + ': ' + numeroA(d[s.chiave] || 0) + '</div>';
+      }).join('');
+      return '<span data-tip="<b>' + fuga(d.ora !== undefined ? 'dalle ' + String(d.ora).padStart(2, '0') + ':00' : dataLunga(d.giorno)) + '</b>' + righe + '"></span>';
+    }).join('');
+
+    // il colore della sfumatura e' quello della prima serie
+    el.style.color = serie[0].classe === 'avviso' ? 'var(--warn)' : 'var(--acc)';
+    el.innerHTML = svg + '<div class="bersagli">' + bersagli + '</div>' +
+      '<span class="tetto">' + numeroA(maxComune) + '</span>';
+
+    var asse = $(id + '-asse');
+    if (asse) {
+      asse.innerHTML = '';
+      var passo = n > 14 ? Math.ceil(n / 7) : (n > 7 ? 2 : 1);
+      giorni.forEach(function (d, i) {
+        var sp = document.createElement('span');
+        var gg = String(d.giorno).split('-');
+        sp.textContent = (i % passo === 0 || i === n - 1) ? (d.ora !== undefined ? String(d.ora) : String(+gg[2]) + (n > 60 ? '/' + (+gg[1]) : '')) : '';
+        asse.appendChild(sp);
+      });
+    }
+  }
+
+  /* ---------- confronto con il periodo prima ---------- */
+
+  function confrontoA(id, ora, prima, o) {
+    o = o || {};
+    var el = $(id);
+    if (!el) return;
+    el.className = 'delta';
+    if (prima === null || prima === undefined || ora === null || ora === undefined) { el.textContent = ''; return; }
+    if (prima === 0) { el.textContent = ora > 0 ? 'prima non c\'era niente' : 'come prima: zero'; return; }
+    var scarto = Math.round(((ora - prima) / prima) * 100);
+    if (scarto === 0) { el.textContent = 'uguale al periodo prima'; return; }
+    var sale = scarto > 0;
+    var bene = o.saleEBene === false ? !sale : sale;
+    el.className = 'delta ' + (bene ? 'bene' : 'male');
+    el.innerHTML = '<span class="freccia">' + (sale ? '▲' : '▼') + '</span>' + Math.abs(scarto) + '% sul periodo prima';
+  }
+
+  /* ---------- APP ---------- */
+
+  function spese(t) { return t ? (t.spese_a_mano || 0) + (t.spese_automatiche || 0) : null; }
+
+  function disegnaApp() {
+    var d = stato.app, p = stato.appPrima;
+    if (!d) return;
+    var t = d.periodo_tot || {}, o = d.oggi || {}, q = p ? p.periodo_tot : null;
+
+    scrivi('a-registrazioni', numeroA(t.registrazioni));
+    scrivi('a-utenti', numeroA(o.utenti) + ' iscritti oggi in tutto');
+    confrontoA('da-registrazioni', t.registrazioni, q && q.registrazioni);
+
+    scrivi('a-profili', numeroA(t.profili_completati));
+    scrivi('a-profili-nota', t.registrazioni ? quota(t.profili_completati, t.registrazioni) + ' delle registrazioni' : 'nessuna registrazione nel periodo');
+    confrontoA('da-profili', t.profili_completati, q && q.profili_completati);
+
+    scrivi('a-attivi', numeroA(t.persone_attive));
+    scrivi('a-attivi-nota', 'oggi ' + numeroA(o.attivi_oggi) + ', in 7 giorni ' + numeroA(o.attivi_7g) + ', in 30 ' + numeroA(o.attivi_30g));
+    confrontoA('da-attivi', t.persone_attive, q && q.persone_attive);
+
+    scrivi('a-condivise', numeroA(o.liste_condivise));
+    scrivi('a-condivise-nota', 'su ' + numeroA(o.liste) + ' liste, ' + (o.persone_per_lista || 0) + ' persone per lista');
+
+    scrivi('a-prodotti', numeroA(t.prodotti_aggiunti));
+    scrivi('a-prodotti-nota', t.persone_attive ? Math.round(t.prodotti_aggiunti / t.persone_attive) + ' per persona attiva' : '-');
+    confrontoA('da-prodotti', t.prodotti_aggiunti, q && q.prodotti_aggiunti);
+
+    scrivi('a-spese', numeroA(spese(t)));
+    scrivi('a-spese-nota', (t.spese_a_mano || 0) + ' a mano, ' + (t.spese_automatiche || 0) + ' automatiche');
+    confrontoA('da-spese', spese(t), spese(q));
+
+    scrivi('a-inviti', numeroA(t.inviti_usati));
+    scrivi('a-inviti-nota', numeroA(t.liste_create) + ' liste create, ' + numeroA(t.liste_eliminate) + ' eliminate');
+    confrontoA('da-inviti', t.inviti_usati, q && q.inviti_usati);
+
+    var falliti = t.inviti_falliti || 0;
+    var piccoFalliti = Math.max.apply(null, (d.giorni || []).map(function (g) { return g.inviti_falliti; }).concat([0]));
+    scrivi('a-falliti', numeroA(falliti));
+    $('a-falliti').classList.toggle('avviso', piccoFalliti >= 30);
+    scrivi('a-falliti-nota', piccoFalliti >= 30 ? 'picco di ' + piccoFalliti + ' in un giorno, da guardare' : 'nella norma');
+    confrontoA('da-falliti', falliti, q && q.inviti_falliti, { saleEBene: false });
+
+    area('a-andamento-attivi', d.giorni || [], [
+      { chiave: 'attivi', nome: 'Attivi nel giorno' },
+      { chiave: 'attivi_7g', nome: 'Attivi in 7 giorni', classe: 'seconda' }
+    ]);
+    scrivi('conta-a-attivi', 'oggi ' + numeroA(o.attivi_oggi));
+    area('a-andamento-prodotti', d.giorni || [], [
+      { chiave: 'prodotti', nome: 'Prodotti aggiunti' },
+      { chiave: 'registrazioni', nome: 'Registrazioni', classe: 'seconda', scalaPropria: true }
+    ]);
+    scrivi('conta-a-prodotti', numeroA(t.prodotti_aggiunti) + ' prodotti');
+    area('a-andamento-falliti', d.giorni || [], [
+      { chiave: 'inviti_falliti', nome: 'Inviti sbagliati', classe: 'avviso' }
+    ]);
+    scrivi('conta-a-falliti', 'massimo ' + piccoFalliti + ' al giorno');
+
+    var r = d.retention || {};
+    barreA('a-retention', [
+      ['r1', 'Il giorno dopo'], ['r7', 'Seconda settimana'], ['r30', 'Secondo mese']
+    ].map(function (x) {
+      var v = r[x[0]] || { base: 0, tornati: 0 };
+      return {
+        nome: x[1],
+        valore: v.base ? Math.round((v.tornati / v.base) * 100) : 0,
+        cifra: v.base ? quota(v.tornati, v.base) + ' · ' + v.tornati + ' su ' + v.base : 'ancora presto',
+        tip: '<b>' + x[1] + '</b><div class="riga">' + (v.base
+          ? v.tornati + ' persone su ' + v.base + ' registrate abbastanza tempo fa'
+          : 'nessuno registrato nel periodo da abbastanza tempo') + '</div>'
+      };
+    }), { max: 100 });
+
+    var sp = d.spazio || {};
+    metro('a-db', sp.db_byte, sp.db_limite);
+    metro('a-storage', sp.storage_byte, sp.storage_limite);
+
+    scrivi('piede-app-dati', d.dati_dal ? 'contatori attivi dal ' + new Date(d.dati_dal).toLocaleDateString('it-IT') + ' (prima: ricostruiti dai dati presenti)' : '');
+  }
+
+  function metro(id, usato, limite) {
+    var q = limite ? usato / limite : 0;
+    scrivi(id, byte(usato) + ' di ' + byte(limite) + ' (' + Math.round(q * 100) + '%)');
+    var m = $(id + '-metro');
+    m.className = 'metro' + (q >= 0.9 ? ' pieno' : (q >= 0.8 ? ' avviso' : ''));
+    m.querySelector('i').style.width = Math.max(0.5, Math.min(100, q * 100)) + '%';
+  }
+
+
+  function chiudiSezione(chi, motivo) {
+    $('chiusa-' + chi).hidden = false;
+    $('aperta-' + chi).hidden = true;
+    scrivi('lucchetto-' + chi, 'chiusa');
+    if (motivo) scrivi('errore-' + chi, motivo);
+  }
+
+  function apriSezione(chi) {
+    $('chiusa-' + chi).hidden = true;
+    $('aperta-' + chi).hidden = false;
+    scrivi('lucchetto-' + chi, '');
+    scrivi('errore-' + chi, '');
+  }
+
+  /* Il periodo in date (ora italiana, estremi inclusi): oggi, gli
+     ultimi 7 o 30 giorni, oppure "sempre" (un anno, il massimo che la
+     funzione accetta e' 400 giorni). E lo stesso intervallo subito
+     prima, per il confronto. */
+  function periodoApp(indietro) {
+    var n = stato.tutto ? 365 : (stato.giorni || 1);
+    var a = new Date(); a.setHours(0, 0, 0, 0);
+    a.setDate(a.getDate() - indietro * n);
+    var da = new Date(a); da.setDate(da.getDate() - n + 1);
+    return { p_from: iso(da), p_to: iso(a) };
+  }
+
+  function sessioneApp() {
+    var scadenza = new Promise(function (ok) { setTimeout(function () { ok(MUTO); }, 8000); });
+    var domanda = sbApp.auth.getSession().then(function (r) {
+      var x = r && r.data && r.data.session;
+      if (!x || !x.access_token) return null;
+      if (x.expires_at && x.expires_at * 1000 <= Date.now()) return null;
+      return x;
+    }, function () { return null; });
+    return Promise.race([domanda, scadenza]);
+  }
+
+  function caricaApp() {
+    if (stato.finto) { finteApp(); apriSezione('app'); disegnaApp(); piedeApp(); return Promise.resolve(); }
+    return sessioneApp().then(function (viva) {
+      if (viva === MUTO) { nota('non riesco ad aggiornare, controlla la rete'); return; }
+      if (!viva) { chiudiSezione('app'); return; }
+      return sbApp.rpc('metrics_app', periodoApp(0)).then(function (r) {
+        if (r.error) {
+          if (r.error.code === '42501') chiudiSezione('app', 'Questo account non e\' autorizzato a leggere i dati di Frigolo.');
+          else nota('errore da Frigolo: ' + (r.error.message || r.error.code));
+          return;
+        }
+        apriSezione('app');
+        nota('');
+        stato.app = r.data;
+        stato.appPrima = null;
+        disegnaApp(); piedeApp();
+        return sbApp.rpc('metrics_app', periodoApp(1)).then(function (r2) {
+          stato.appPrima = r2.error ? null : r2.data;
+          disegnaApp();
+        });
+      });
+    }).catch(function (e) { console.error(e); nota('non riesco a leggere i dati di Frigolo'); });
+  }
+
+  function piedeApp() {
+    scrivi('piede-app-periodo', stato.tutto ? 'periodo: ultimo anno'
+      : (stato.giorni === 0 ? 'periodo: oggi' : 'periodo: ultimi ' + stato.giorni + ' giorni'));
+    scrivi('piede-app-agg', 'aggiornato alle ' + ora(new Date().toISOString()));
+  }
+
+  function casuale(seme) {
+    return function () { seme = (seme * 9301 + 49297) % 233280; return seme / 233280; };
+  }
+
+  function finteApp() {
+    var n = stato.tutto ? 365 : (stato.giorni || 1);
+    var rnd = casuale(n * 7 + 3);
+    var giorni = [];
+    var oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+    for (var i = 0; i < n; i++) {
+      var d = new Date(oggi); d.setDate(d.getDate() - n + 1 + i);
+      giorni.push({ giorno: iso(d), onda: 1 + Math.sin(i / 3) * 0.4 + i / n });
+    }
+    stato.giorni_ = n;
+    var wau = 0;
+    giorni = giorni.map(function (g, i) {
+      var a = Math.round(6 * g.onda + rnd() * 4);
+      wau = Math.round(a * 2.6);
+      return {
+        giorno: g.giorno, attivi: a, attivi_7g: wau, registrazioni: Math.round(rnd() * 4 * g.onda),
+        prodotti: Math.round(a * (4 + rnd() * 3)), spese: Math.round(a / 3), liste: Math.round(rnd() * 2),
+        inviti: Math.round(rnd() * 1.4), inviti_falliti: i === Math.floor(n * 0.6) ? 34 : Math.round(rnd() * 2)
+      };
+    });
+    var somma = function (k) { return giorni.reduce(function (a, g) { return a + g[k]; }, 0); };
+    stato.app = {
+      oggi: { utenti: 4 + somma('registrazioni'), profili_completi: 3 + somma('registrazioni'), liste: 20, liste_condivise: 9,
+              persone_per_lista: 1.8, attivi_oggi: giorni[giorni.length - 1].attivi, attivi_7g: wau, attivi_30g: Math.round(wau * 1.7) },
+      periodo_tot: { registrazioni: somma('registrazioni'), profili_completati: Math.round(somma('registrazioni') * 0.85),
+                     liste_create: somma('liste'), liste_eliminate: 2, prodotti_aggiunti: somma('prodotti'),
+                     spese_a_mano: Math.round(somma('spese') * 0.7), spese_automatiche: Math.round(somma('spese') * 0.3),
+                     inviti_usati: somma('inviti'), inviti_falliti: somma('inviti_falliti'), account_eliminati: 1,
+                     persone_attive: Math.round(wau * 1.9) },
+      retention: { r1: { base: 30, tornati: 17 }, r7: { base: 22, tornati: 9 }, r30: { base: 0, tornati: 0 } },
+      giorni: giorni,
+      spazio: { db_byte: 31 * 1024 * 1024, db_limite: 500 * 1024 * 1024, storage_byte: 6 * 1024 * 1024, storage_limite: 1024 * 1024 * 1024 },
+      dati_dal: new Date().toISOString()
+    };
+    stato.appPrima = { periodo_tot: { registrazioni: Math.round(somma('registrazioni') * 0.6), profili_completati: 10,
+      persone_attive: Math.round(wau * 1.5), prodotti_aggiunti: Math.round(somma('prodotti') * 1.1), spese_a_mano: 5,
+      spese_automatiche: 3, inviti_usati: somma('inviti'), inviti_falliti: 4 } };
+  }
+  /* ---------- dati finti, solo in locale ----------
+
+     Con ?finto su localhost il cruscotto si disegna senza accesso e
+     senza rete, con righe inventate che passano per gli stessi
+     calcoli dei dati veri. In rete la condizione e' falsa. */
+  var locale = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  stato.finto = locale && /[?&]finto\b/.test(location.search);
+
+  function finteLanding() {
+    var rnd = casuale(17 + stato.giorni);
+    var pesca = function (a) { return a[Math.floor(rnd() * a.length)]; };
+    var giorni = stato.tutto ? 30 : (stato.giorni || 1);
+    var adesso = Date.now();
+    var visite = [], pagine = [], eventi = [];
+    var luoghi = [['Italia', 'Veneto', 'Venezia'], ['Italia', 'Lombardia', 'Milano'], ['Italia', 'Lazio', 'Roma'],
+                  ['Italia', 'Emilia-Romagna', 'Bologna'], ['Italia', 'Veneto', 'Padova'], ['Svizzera', 'Ticino', 'Lugano']];
+    var canali = [['social', 'instagram.com'], ['social', 'instagram.com'], ['diretto', null], ['campagna', 'instagram.com'],
+                  ['organico', 'google.com'], ['referral', 'reddit.com'], ['social', 'linkedin.com']];
+    var tech = [['mobile', 'iOS', 'Safari', 390], ['mobile', 'iOS', 'Safari', 430], ['mobile', 'Android', 'Chrome', 412],
+                ['desktop', 'macOS', 'Chrome', 1440], ['desktop', 'Windows', 'Edge', 1280]];
+    var sezioni = ['inizio', 'come-funziona', 'installa', 'domande', 'caffe'];
+    var n = 0;
+    for (var g = giorni - 1; g >= 0; g--) {
+      var quante = Math.round((giorni === 1 ? 40 : 14) * (1 + Math.sin(g / 3) * 0.4 + (giorni - g) / giorni) + rnd() * 6);
+      for (var k = 0; k < quante; k++) {
+        var inizio = adesso - g * 86400000 - Math.floor(rnd() * (g === 0 ? Math.min(86400000, (new Date().getHours() * 60 + new Date().getMinutes()) * 60000) : 86400000));
+        if (giorni === 1 && k < 2) inizio = adesso - (k + 1) * 60000;
+        var c = pesca(canali), l = pesca(luoghi), t = pesca(tech);
+        var id = 'v' + (++n);
+        var v = {
+          id: id, impronta: 'i' + Math.floor(n * 0.85), iniziata: new Date(inizio).toISOString(),
+          vista_ultima: new Date(inizio + 90000).toISOString(), canale: c[0], referente_host: c[1],
+          paese: l[0], regione: l[1], citta: l[2], dispositivo: t[0], sistema: t[1], browser: t[2],
+          area_w: t[3], rete: pesca(['Vodafone', 'TIM', 'Fastweb', 'Iliad', 'WindTre']), bot: rnd() < 0.06
+        };
+        visite.push(v);
+        var lunga = rnd() > 0.35;
+        var sez = {};
+        sezioni.forEach(function (x, i) { if (lunga || i === 0) sez[x] = Math.round(2000 + rnd() * 30000 / (i + 1)); });
+        var pid = 'p' + n;
+        pagine.push({
+          id: pid, visita_id: id, percorso: '/sub/frigolo', titolo: 'Frigolo', lingua: 'it',
+          aperta: v.iniziata, ms_attivi: lunga ? Math.round(15000 + rnd() * 90000) : Math.round(rnd() * 9000),
+          scroll_max: lunga ? Math.round(40 + rnd() * 60) : Math.round(rnd() * 25), sezioni: sez,
+          sezione_ora: pesca(sezioni), stato: 200
+        });
+        if (rnd() < 0.08) {
+          pagine.push({ id: pid + 'b', visita_id: id, percorso: pesca(['/sub/frigolo/privacy.html', '/sub/frigolo/termini.html']),
+            titolo: 'Privacy', lingua: 'it', aperta: new Date(inizio + 60000).toISOString(),
+            ms_attivi: Math.round(rnd() * 60000), scroll_max: Math.round(rnd() * 100), sezioni: {}, stato: 200 });
+        }
+        if (lunga && rnd() < 0.55) {
+          var nome = pesca(['apri-app', 'apri-app', 'installa-ios', 'installa-android']);
+          eventi.push({ visita_id: id, pagina_id: pid, quando: new Date(inizio + 50000).toISOString(),
+            tipo: 'uscita', nome: 'frigolo:' + nome, destinazione: 'https://frigolo.dascanfe.com/' });
+        }
+        if (lunga && rnd() < 0.04) {
+          eventi.push({ visita_id: id, pagina_id: pid, quando: new Date(inizio + 70000).toISOString(),
+            tipo: 'uscita', nome: 'frigolo:caffe', destinazione: 'https://paypal.me/DanieleScanferlato' });
+        }
+        if (rnd() < 0.05) {
+          eventi.push({ visita_id: id, pagina_id: pid, quando: new Date(inizio + 30000).toISOString(),
+            tipo: 'uscita', nome: 'frigolo:github', destinazione: 'https://github.com/dascanfe/frigolo' });
+        }
+      }
+    }
+    eventi.sort(function (a, b) { return a.quando < b.quando ? 1 : -1; });
+    stato.visite = visite;
+    stato.pagine = pagine;
+    stato.eventi = eventi;
+    stato.sistema = { battito: new Date().toISOString(), geo_aggiornato: new Date(adesso - 9 * 86400000).toISOString() };
+    stato.prima = stato.tutto ? null : {
+      visitatori: Math.round(visite.length * 0.7), visite: Math.round(visite.length * 0.8),
+      pagine: Math.round(pagine.length * 0.78), tempo: 30000, scroll: 60, rimbalzo: 41,
+      download: Math.round(eventi.length * 0.5)
+    };
+  }
+
+  /* Se la libreria lascia cadere la sessione (rinnovo fallito, uscita
+     da un'altra scheda), lo dice qui. Prima non lo ascoltava nessuno,
+     e il cruscotto restava a schermo a leggere il vuoto. */
+  sb.auth.onAuthStateChange(function (evento, sessione) {
+    if (evento === 'INITIAL_SESSION') return;          // e' l'avvio, se ne occupa il blocco sotto
+    if (evento === 'SIGNED_OUT' || !sessione) {
+      if (document.body.classList.contains('dentro')) fuoriSessione();
+    }
+  });
+
+  /* Il cruscotto salvato sulla schermata dell'iPhone non viene chiuso
+     ma congelato: quando si riapre, la pagina e' ancora quella di
+     giorni prima, con il gettone scaduto e il canale caduto. Stessa
+     cosa sul portatile che si risveglia. Al ritorno in primo piano si
+     ricontrolla la sessione, si rileggono i dati e si riapre il
+     collegamento dal vivo. */
+  function alRisveglio() {
+    if (document.visibilityState !== 'visible') return;
+    if (!document.body.classList.contains('dentro')) return;
+    // caricaSezione riapre il canale solo se e' davvero caduto
+    caricaSezione();
+  }
+  document.addEventListener('visibilitychange', alRisveglio);
+  window.addEventListener('online', alRisveglio);
+  window.addEventListener('pageshow', function (e) { if (e.persisted) alRisveglio(); });
+
+  if (stato.finto) {
+    testo($('prova-banner'), 'Dati finti: ?finto in locale. Nessun accesso, nessuna rete.');
+    // per le prove: &chiaro o &scuro, &app per la sezione App, &giorni=7|30
+    var q = location.search;
+    if (/[?&]chiaro\b/.test(q)) applicaTema('chiaro');
+    if (/[?&]scuro\b/.test(q)) applicaTema('scuro');
+    if (/[?&]app\b/.test(q)) stato.sezione = 'app';
+    var gg = /[?&]giorni=(\d+)/.exec(q);
+    if (gg) {
+      stato.giorni = +gg[1];
+      [].forEach.call($('periodi').querySelectorAll('button'), function (x) {
+        x.setAttribute('aria-pressed', String(!x.hasAttribute('data-tutto') && +x.getAttribute('data-giorni') === stato.giorni));
+      });
+    }
+    avvia();
+    return;
+  }
+
+  /* All'apertura si entra se almeno uno dei due progetti ha gia' una
+     sessione valida; l'altra sezione, se serve, chiede la password. */
+  Promise.all([sessioneViva(), sessioneApp()]).then(function (s2) {
+    var vive = s2.filter(function (x) { return x && x !== MUTO; });
+    vive.forEach(function (x) { if (x.user && x.user.email) stato.email = x.user.email; });
+    if (vive.length) { avvia(); return; }
+    var viva = s2[0] === MUTO || s2[1] === MUTO ? MUTO : null;
+    if (viva === MUTO) {
+      var err = $('errore-accesso');
+      if (err) err.textContent = 'Non riesco a raggiungere il server. Controlla la rete e riprova.';
+    }
+    $('email').focus();
+  });
+})();

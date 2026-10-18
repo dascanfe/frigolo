@@ -370,6 +370,39 @@ for (const [name, title] of [
   )
 }
 
+// ---------------------------------------------------------------- cruscotto delle statistiche
+// landing/statistiche/ -> dist/<id casuale>/, non indicizzato e senza link dalla landing.
+// Le chiavi pubbliche dei due progetti Supabase arrivano dalle variabili d'ambiente:
+// senza, restano i segnaposto e il cruscotto non si collega (nessun errore di build).
+const STATS_DIR = '70ab0c479107f71a'
+const statsOut = join(dist, STATS_DIR)
+cpSync(join(here, 'statistiche'), statsOut, { recursive: true })
+mkdirSync(join(statsOut, 'fonts'), { recursive: true })
+mkdirSync(join(statsOut, 'lib'), { recursive: true })
+for (const [pkg, file] of [
+  ['lato', 'lato-latin-400-normal.woff2'],
+  ['lato', 'lato-latin-700-normal.woff2'],
+  ['lato', 'lato-latin-900-normal.woff2'],
+  ['playfair-display', 'playfair-display-latin-700-normal.woff2'],
+  ['playfair-display', 'playfair-display-latin-700-italic.woff2'],
+]) {
+  cpSync(join(root, 'node_modules/@fontsource', pkg, 'files', file), join(statsOut, 'fonts', file))
+}
+cpSync(
+  join(root, 'node_modules/@supabase/supabase-js/dist/umd/supabase.js'),
+  join(statsOut, 'lib/supabase.js'),
+)
+const statsKeys = {
+  __STATS_ANON_KEY__: process.env.STATS_SUPABASE_ANON_KEY,
+  __FRIGOLO_ANON_KEY__: process.env.VITE_SUPABASE_ANON_KEY,
+}
+let statsConfig = readFileSync(join(statsOut, 'config.js'), 'utf8')
+for (const [segnaposto, valore] of Object.entries(statsKeys)) {
+  if (valore) statsConfig = statsConfig.replace(segnaposto, valore)
+  else console.log(`cruscotto: manca la chiave ${segnaposto}, resta il segnaposto`)
+}
+writeFileSync(join(statsOut, 'config.js'), statsConfig)
+
 const copyTo = argValue('--copy-to')
 if (copyTo) {
   cpSync(dist, copyTo, { recursive: true })
