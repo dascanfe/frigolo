@@ -1,6 +1,6 @@
 // Rende le immagini Instagram di marketing/kit/modelli/instagram.html, copia i video,
 // scrive i didascalia.txt e docs/comunicazione/piano-instagram.md dai dati in instagram-dati.mjs.
-//   node marketing/kit/scripts/instagram.mjs [--solo S1-02] [--no-piano]
+//   node marketing/kit/scripts/instagram.mjs [--solo S1-03] [--no-piano]
 // Cartella di uscita: variabile PACCHETTO (default: Frigolo published/pacchetto-instagram).
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
@@ -10,6 +10,17 @@ import os from 'node:os'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import sharp from 'sharp'
 import { CONTENUTI, CREDITO } from './instagram-dati.mjs'
+import { SEZIONE_STORIE } from './storie-pagina-dati.mjs'
+
+const MESI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre']
+const quando = (c) => {
+  const [, m, g] = c.data.split('-').map(Number)
+  return `${c.giorno} ${g} ${MESI[m - 1]} 2026 alle ${c.ora}`
+}
+const breve = (c) => {
+  const [, m, g] = c.data.split('-').map(Number)
+  return `${c.giorno.slice(0, 3)} ${g} ${MESI[m - 1].slice(0, 3)} ore ${c.ora}`
+}
 
 const run = promisify(execFile)
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
@@ -51,6 +62,7 @@ for (const c of CONTENUTI) {
   for (const [src, name] of c.video || []) copyFileSync(path.join(root, src), path.join(dir, name))
   writeFileSync(path.join(dir, 'didascalia.txt'), testoDidascalia(c))
   writeFileSync(path.join(dir, 'testo-alternativo.txt'), c.alt + '\n')
+  writeFileSync(path.join(dir, 'quando.txt'), quando(c) + '\n')
 }
 // qualche rendering in parallelo
 for (let i = 0; i < jobs.length; i += 4) {
@@ -61,12 +73,12 @@ for (let i = 0; i < jobs.length; i += 4) {
 // ---------- piano in Markdown ----------
 if (!solo && !args.includes('--no-piano')) {
   const { BIO_LINK, utm, PAGINA } = await import('./instagram-dati.mjs')
-  const cal = CONTENUTI.map((c) => `| ${c.sett} | ${c.giorno} ${c.ora} | ${c.id.slice(0, 5)} | ${c.titolo} | ${c.formato} |`).join('\n')
+  const cal = CONTENUTI.map((c) => `| ${c.sett} | ${breve(c)} | ${c.id.slice(0, 5)} | ${c.titolo} | ${c.formato} |`).join('\n')
   const sezioni = CONTENUTI.map((c, i) => {
     const files = [...(c.video || []).map(([, n]) => n), ...c.immagini.map((im, k) => (Array.isArray(im) ? im[0] : `${String(k + 1).padStart(2, '0')}-slide.png`))]
     return `### ${i + 1}. ${c.titolo} (${c.id.slice(0, 5)})
 
-- **Quando:** settimana ${c.sett}, ${c.giorno.toLowerCase()} alle ${c.ora}
+- **Quando:** ${quando(c).toLowerCase()} (settimana ${c.sett})
 - **Formato:** ${c.formato}
 - **Obiettivo:** ${c.obiettivo}
 - **File:** \`pacchetto-instagram/${c.id}/\` (${files.join(', ')})${c.note ? `\n- **Nota:** ${c.note}` : ''}
@@ -83,7 +95,7 @@ ${testoDidascalia(c).trimEnd()}
 `
   }).join('\n')
 
-  const md = `# Piano Instagram: le prime 4 settimane
+  const md = `# Piano Instagram: le prime 4 settimane (18 ottobre - 14 novembre 2026)
 
 A cura di Paprika (contenuti) e Zenzero (testi). Per il profilo personale di Daniele. Si parte dal
 lancio: ogni contenuto è già pronto in \`pacchetto-instagram/\` (fuori dal repo e dal sito, nella
@@ -92,13 +104,15 @@ Il tono è quello di [tono.md](tono.md): frasi brevi, tu, una sola emoji e solo 
 posizionamento è in [../strategia/posizionamento.md](../strategia/posizionamento.md) e il piano
 di lancio in [../strategia/lancio.md](../strategia/lancio.md).
 
-## Come è fatto il piano
+${SEZIONE_STORIE}## Come è fatto il piano
 
-- **12 contenuti in 4 settimane**, 3 a settimana: martedì sera, giovedì a pranzo, sabato mattina.
+- **13 contenuti in 4 settimane.** Si parte **domenica 18 ottobre 2026 alle 19:30** con il post di
+  lancio; poi 3 a settimana: martedì sera, giovedì a pranzo, sabato mattina (la settimana del
+  lancio ne ha 4 perché comincia di domenica). Il Reel di lancio esce martedì 20 alle 19:30.
   Gli orari sono un punto di partenza: dopo 2 settimane si guardano le statistiche di Instagram
   (Pubblico, "Quando i tuoi follower sono online") e si spostano.
-- **Tra i 12 ci sono:** 2 Reel (lancio e tempo reale), 5 caroselli, 3 post singoli, 1 set di storie
-  e 1 post con storie per il feedback.
+- **Tra i 13 ci sono:** 2 Reel (lancio e tempo reale), 6 caroselli (compreso il post di lancio),
+  3 post singoli, 1 set di storie e 1 post con storie per il feedback.
 - **Storie:** una o due al giorno nei giorni di pubblicazione, con gli sticker indicati. Le storie
   senza immagine dedicata condividono il post del giorno.
 - **Una cosa per volta, nessun invito a donare fuori dal post del caffè** (tono.md: niente
@@ -192,7 +206,7 @@ Immagini, didascalie e questo piano nascono da \`marketing/kit/scripts/instagram
 
 \`\`\`sh
 node marketing/kit/scripts/instagram.mjs            # tutto
-node marketing/kit/scripts/instagram.mjs --solo S1-02   # un solo contenuto
+node marketing/kit/scripts/instagram.mjs --solo S1-03   # un solo contenuto
 \`\`\`
 
 Cartella di uscita: \`PACCHETTO=/percorso\` (default: \`Frigolo published/pacchetto-instagram\`).
