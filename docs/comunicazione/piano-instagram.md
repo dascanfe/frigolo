@@ -194,6 +194,7 @@ Musica: Fun Day di AShamaluevMusic
 - **Formato:** Carosello 4:5, 7 slide
 - **Obiettivo:** Spiegare in un minuto cosa fa Frigolo. Salvataggi e invii a chi fa la spesa con te.
 - **File:** `pacchetto-instagram/S1-03-carosello-come-funziona/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png, 07-slide.png)
+- **Nota:** Formato 4:5: prima di "Seleziona più" tocca l'icona del formato per passare a verticale.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **In evidenza su @frigolo.app:** salva la storia di questo contenuto nella raccolta "Come funziona"
 - **Sticker e storie:** Storia del giorno: condividi la slide 4 con uno sticker Domanda "Chi fa la spesa a casa tua?" e, nella storia dopo, lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s1-03.
@@ -247,6 +248,7 @@ Storia 3: sticker link "Provala" verso https://www.dascanfe.com/sub/frigolo/?utm
 - **Formato:** Carosello 4:5, 6 slide
 - **Obiettivo:** Far riconoscere ogni persona nel suo caso e spingere a girare il post: il condividere è il motore di Frigolo.
 - **File:** `pacchetto-instagram/S2-01-carosello-per-chi-e/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png)
+- **Nota:** Formato 4:5: prima di "Seleziona più" tocca l'icona del formato per passare a verticale.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: condividi il post con lo sticker Quiz "Quante persone in casa tua?" (1 / 2 / 3 / 4 o più) e lo sticker link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s2-01.
 
@@ -273,6 +275,7 @@ Mandalo a chi fa la spesa con te. Link nella bio.
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Mostrare la funzione più concreta e visiva di Frigolo.
 - **File:** `pacchetto-instagram/S2-02-post-ordine-corsia/` (01-ordine-di-corsia.png)
+- **Nota:** Formato 4:5: prima di "Seleziona più" tocca l'icona del formato per passare a verticale.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: condividi il post con lo sticker Sondaggio "Giri per il supermercato a caso?" (Sì / No, ho un ordine).
 
@@ -324,6 +327,7 @@ Musica: Fun Day di AShamaluevMusic
 - **Formato:** Carosello 4:5, 6 slide
 - **Obiettivo:** Raccontare il progetto con la voce di un UX/UI designer: design, mascotte, perché è gratis e open source.
 - **File:** `pacchetto-instagram/S3-01-carosello-dietro-le-quinte/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png, 05-slide.png, 06-slide.png)
+- **Nota:** Formato 4:5: prima di "Seleziona più" tocca l'icona del formato per passare a verticale.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: sticker Domande "Cosa vuoi sapere di come è fatta?" e un secondo sticker con link al repository pubblico (https://github.com/dascanfe/frigolo).
 
@@ -351,6 +355,7 @@ Perché è gratis e il codice è pubblico? Perché una lista della spesa non dov
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Rispondere al dubbio "e se in negozio non prende?". Funzione che toglie un freno.
 - **File:** `pacchetto-instagram/S3-02-post-offline/` (01-offline.png)
+- **Nota:** Formato 4:5: prima di "Seleziona più" tocca l'icona del formato per passare a verticale.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **In evidenza su @frigolo.app:** salva la storia di questo contenuto nella raccolta "Come funziona"
 - **Sticker e storie:** Storia: condividi il post con lo sticker Sondaggio "Il segnale nel tuo supermercato?" (Ottimo / A volte sparisce).
@@ -375,6 +380,7 @@ Link nella bio 🛒
 - **Formato:** Carosello 4:5, 4 slide
 - **Obiettivo:** Mostrare la profondità: cosa compri, chi mette in lista, e i colori da scegliere.
 - **File:** `pacchetto-instagram/S3-03-carosello-analitiche-temi/` (01-slide.png, 02-slide.png, 03-slide.png, 04-slide.png)
+- **Nota:** Formato 4:5: prima di "Seleziona più" tocca l'icona del formato per passare a verticale.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **Sticker e storie:** Storia: condividi la slide 4 con uno sticker Sondaggio "Quale tema?" (Lampone / Basilico / Mare / Altro).
 
@@ -400,6 +406,7 @@ Niente cookie, niente pubblicità, il codice è pubblico 💚 Link nella bio.
 - **Formato:** Post singolo 4:5 + 2 storie
 - **Obiettivo:** Raccogliere idee e problemi veri. Le risposte alimentano la roadmap.
 - **File:** `pacchetto-instagram/S4-01-feedback/` (01-post-cosa-manca.png, 02-storia-domanda.png, 03-storia-sondaggio.png)
+- **Nota:** Formato 4:5: prima di "Seleziona più" tocca l'icona del formato per passare a verticale.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **In evidenza su @frigolo.app:** salva la storia di questo contenuto nella raccolta "Domande"
 - **Sticker e storie:** Storia 1: sticker Domande "Cosa vorresti in più?". Storia 2: Sondaggio "La usi ancora?" (Sì, spesso / A volte / No). Link a https://www.dascanfe.com/sub/frigolo/?utm_source=instagram&utm_medium=social&utm_campaign=lancio&utm_content=storie-s4-01 nella storia dopo.
@@ -426,6 +433,7 @@ Link nella bio 💚
 - **Formato:** Post singolo 4:5
 - **Obiettivo:** Dire come si regge Frigolo e dare, con garbo, un modo per ringraziare. Nessuna insistenza.
 - **File:** `pacchetto-instagram/S4-02-offrimi-un-caffe/` (01-offrimi-un-caffe.png)
+- **Nota:** Formato 4:5: prima di "Seleziona più" tocca l'icona del formato per passare a verticale.
 - **Come pubblicarlo:** Post in collaborazione: pubblicalo dal tuo profilo e, prima di condividere, Tagga persone > Invita collaboratore > @frigolo.app. Dalla pagina @frigolo.app accetta l'invito (Attività o messaggi): il post compare su tutti e due i profili con gli stessi like e commenti.
 - **In evidenza su @frigolo.app:** salva la storia di questo contenuto nella raccolta "Caffè"
 - **Sticker e storie:** Storia: condividi il post con lo sticker link a https://paypal.me/DanieleScanferlato (testo del bottone "Offrimi un caffè"). Una sola storia, senza ripeterla.
@@ -479,11 +487,15 @@ Link nella bio.
 
 ## Prima di pubblicare, ogni volta
 
+- [ ] **Formato 4:5 per post e caroselli:** + > Post, poi PRIMA di "Seleziona più" tocca l'icona del
+      formato in basso a sinistra sull'anteprima finché la foto diventa verticale; solo dopo
+      seleziona le altre slide nell'ordine (il formato della prima vale per tutte). Dopo la
+      pubblicazione non si può più cambiare.
 - [ ] Didascalia incollata da `didascalia.txt` (il credito musicale c'è nei Reel)
 - [ ] Testo alternativo inserito (Impostazioni avanzate, Testo alternativo)
 - [ ] Link nella bio ancora quello giusto, con i parametri UTM
 - [ ] Per i Reel: copertina scelta dal file `02-copertina-reel.png`, musica "Fun Day"
-- [ ] Solo trattino corto, al massimo una emoji
+- [ ] Solo trattino corto
 - [ ] Ho letto i commenti del post precedente e risposto
 
 ## Rigenerare i materiali
