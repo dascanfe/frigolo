@@ -4,3 +4,5 @@ dev-dist
 pnpm-lock.yaml
 src/types/database.ts
 supabase/templates
+# cruscotto: stesso stile del cruscotto delle statistiche del sito, scritto a mano
+landing/statistiche
