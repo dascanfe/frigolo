@@ -41,3 +41,4 @@ coverage
 .claude/*
 !.claude/agents/
 pacchetto-ftp/
+pacchetto-instagram/
