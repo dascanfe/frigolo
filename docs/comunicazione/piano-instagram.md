@@ -179,6 +179,8 @@ Ho fatto Frigolo: una lista della spesa da condividere. Tocchi un prodotto ed è
 📱 Si apre da un link e si installa dal browser, senza store
 💚 È gratis, senza pubblicità, con il codice pubblico
 
+Il bello arriva quando la condividi: invita chi fa la spesa con te 🛒 Uno aggiunge, l'altro lo vede subito sul suo telefono. Basta un link dalla lista, fino a 5 persone 🙌
+
 Provala: link nella bio ✨
 
 Musica: Fun Day di AShamaluevMusic
