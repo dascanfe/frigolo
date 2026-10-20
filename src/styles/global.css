@@ -707,4 +707,26 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  /* piccolo invito a toccare: un saltello, poi pausa */
+  @keyframes starter-nudge {
+    0%,
+    70%,
+    100% {
+      transform: translateY(0);
+    }
+    78% {
+      transform: translateY(-5px);
+    }
+    86% {
+      transform: translateY(0);
+    }
+    92% {
+      transform: translateY(-2px);
+    }
+  }
+
+  .starter-nudge {
+    animation: starter-nudge 3.2s ease-in-out 0.8s infinite;
+  }
 }

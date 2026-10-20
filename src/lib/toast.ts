@@ -6,6 +6,8 @@ export interface ToastItem {
   id: number
   kind: ToastKind
   message: string
+  /** Mascotte al posto dell'icona, per i momenti di festa */
+  mascot?: boolean
 }
 
 let toasts: ToastItem[] = []
@@ -27,9 +29,14 @@ export function getToasts() {
   return toasts
 }
 
-export function toast(message: string, kind: ToastKind = 'info', durationMs = 2800) {
+export function toast(
+  message: string,
+  kind: ToastKind = 'info',
+  durationMs = 2800,
+  mascot = false,
+) {
   const id = nextId++
-  toasts = [...toasts, { id, kind, message }]
+  toasts = [...toasts, { id, kind, message, mascot }]
   emit()
   window.setTimeout(() => {
     toasts = toasts.filter((t) => t.id !== id)
