@@ -32,6 +32,27 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-10-20 - Primo uso: più prodotti aggiunti e invito a condividere
+
+Dati: su 16 iscritti solo 9 (56%) aggiungono un prodotto; 1 lista su 17 è condivisa.
+Ipotesi sulla lista vuota di prima:
+
+1. L'unico bottone era "Apri il catalogo": portava via da dove si aggiunge in un tocco.
+2. "Per cominciare" era una riga di chip piccoli sotto un'icona grande, con il titolo a 12px:
+   sembravano filtri, non prodotti.
+3. Il sottotitolo diceva "Tocca un prodotto" ma in vista non c'era nessun prodotto, solo la ricerca.
+4. Solo 6 prodotti e senza icona: poco riconoscibili, poca scelta.
+5. Il primo prodotto non festeggiava nulla (comparivano il suggerimento "Tieni premuto..."
+   e poi il banner di installazione) e la condivisione stava solo nelle Impostazioni.
+
+Cambiato: 9 prodotti di partenza come tile con icona (stessa griglia della lista), "Tocca per
+aggiungere" con un saltello dei primi tre (spento con prefers-reduced-motion), catalogo ridotto
+a link; primo prodotto di chi parte da zero (lista vuota, nessuna spesa) con toast della
+mascotte al posto del suggerimento "added"; poi una scheda in pagina, una volta sola e
+chiudibile, "La spesa si fa in due?" che apre il pannello invito (`ShareNudge`, stato in
+`tips/shareNudge.ts`, `localStorage` `frigolo:share-nudge`). Non compare con altre persone in
+lista, con acquisti o a chi ha già prodotti. Toast con mascotte opzionale (`toast(..., true)`).
+
 ### 2026-10-11 - Landing rifatta con Bootstrap e motion design (PR #20)
 
 - Bootstrap 5.3 compilato con Sass (`landing/src/scss/`): solo reboot, griglia, bottoni e poche
