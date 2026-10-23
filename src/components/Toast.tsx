@@ -20,18 +20,29 @@ export function ToastHost() {
       role="status"
       aria-live="polite"
     >
-      {items.map(({ id, kind, message }) => {
+      {items.map(({ id, kind, message, mascot }) => {
         const IconComponent = ICONS[kind]
         return (
           <div
             key={id}
             className="flex max-w-md items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-bold text-cream shadow-sheet"
           >
-            <IconComponent
-              size={18}
-              className={kind === 'error' ? 'text-peach' : 'text-sage'}
-              aria-hidden="true"
-            />
+            {mascot ? (
+              <img
+                src="/mascot-avatar.webp"
+                alt=""
+                width={32}
+                height={32}
+                className="-my-1 -ml-2 size-8 shrink-0"
+                draggable={false}
+              />
+            ) : (
+              <IconComponent
+                size={18}
+                className={kind === 'error' ? 'text-peach' : 'text-sage'}
+                aria-hidden="true"
+              />
+            )}
             {message}
           </div>
         )

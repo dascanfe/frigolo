@@ -170,5 +170,50 @@ begin
 end $$;
 
 reset role;
+
+-- --- 0002: metriche dell'app inviate da Frigolo -----------------------------------
+\i migrations/0002_frigolo_app.sql
+\i migrations/0002_frigolo_app.sql
+insert into public.frigolo_app_chiave (hash) values (encode(sha256(convert_to('segreto-di-prova', 'UTF8')), 'hex'));
+
+select set_config('request.jwt.claims', '{"role":"anon"}', false);
+set role anon;
+do $$
+begin
+  begin
+    perform public.frigolo_app_ingest('sbagliato', '{"periodi":{}}');
+    assert false, 'segreto sbagliato accettato';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform 1 from public.frigolo_app_snapshot;
+    assert false, 'anon legge l istantanea';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform 1 from public.frigolo_app_chiave;
+    assert false, 'anon legge l hash';
+  exception when insufficient_privilege then null;
+  end;
+  perform public.frigolo_app_ingest('segreto-di-prova', '{"periodi":{"7":{"ora":{"oggi":{"utenti":3}}}}}');
+end $$;
+
+reset role;
+select set_config('request.jwt.claims', '{"role":"authenticated","email":"altro@example.test"}', false);
+set role authenticated;
+do $$
+begin
+  assert not exists (select 1 from public.frigolo_app_snapshot), 'un altro utente non vede l istantanea';
+end $$;
+
+reset role;
+select set_config('request.jwt.claims', '{"role":"authenticated","email":"proprietario@example.test"}', false);
+set role authenticated;
+do $$
+begin
+  assert (select dati #>> '{periodi,7,ora,oggi,utenti}' from public.frigolo_app_snapshot) = '3', 'il proprietario legge l istantanea';
+end $$;
+
+reset role;
 \o
 select 'landing_locale.sql: tutti i controlli passati' as esito;
