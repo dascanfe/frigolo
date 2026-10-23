@@ -47,14 +47,14 @@ const clean = () => sql(`delete from public.list_entries e using public.items i 
   await snap(pl, 's03-lista-lele')
   await close1(pg); await close1(pl); clean()
 }
-// lista in ordine di corsia, suggeriti, carrello, cambio lista
+// lista in ordine di corsia, ultimi acquisti, carrello, cambio lista
 {
   const p = await open('giulia', '/')
   await btn(p, /Supermercato sotto casa/).tap(); await sleep(500)
   await snap(p, 's05-lista-corsia')
   await p.reload(); await sleep(1800)
-  await scrollTo(p, (await yOf(p, 'Suggeriti')) - 80, 600)
-  await snap(p, 's14-suggeriti')
+  await scrollTo(p, (await yOf(p, 'Gli ultimi acquisti')) - 80, 600)
+  await snap(p, 's14-ultimi-acquisti')
   await p.reload(); await sleep(1800)
   for (const n of ['Mele', 'Zucchine', 'Pane']) { await btn(p, new RegExp('^' + n)).tap(); await sleep(600) }
   await scrollTo(p, 380, 500)

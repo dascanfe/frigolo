@@ -39,6 +39,7 @@ function run(argv) {
         if (c.centro) P('c', () => { rg.alignment = 'center' })
       })
       if (opz.check) P('ck', () => { tb.ranges[`A2:A${ultima}`].format = 'checkbox'; tb.ranges[`A2:A${ultima}`].alignment = 'center' })
+      if (opz.check) righe.forEach((r, i) => { if (r.fatto) P('fx', () => { tb.rows[i + 1].cells[0].value = true }) })
     }
     const s1 = doc.sheets()[0]
     s1.name = 'Piano'

@@ -73,8 +73,9 @@ for (let i = 0; i < jobs.length; i += 4) {
 // ---------- piano in Markdown ----------
 if (!solo && !args.includes('--no-piano')) {
   const { BIO_LINK, utm, PAGINA } = await import('./instagram-dati.mjs')
-  const cal = CONTENUTI.map((c) => `| ${c.sett} | ${breve(c)} | ${c.id.slice(0, 5)} | ${c.titolo} | ${c.formato} |`).join('\n')
-  const sezioni = CONTENUTI.map((c, i) => {
+  const ORD = [...CONTENUTI].sort((a, b) => (a.data + a.ora).localeCompare(b.data + b.ora))
+  const cal = ORD.map((c) => `| ${c.sett} | ${breve(c)} | ${c.id.slice(0, 5)} | ${c.titolo} | ${c.formato} |`).join('\n')
+  const sezioni = ORD.map((c, i) => {
     const files = [...(c.video || []).map(([, n]) => n), ...c.immagini.map((im, k) => (Array.isArray(im) ? im[0] : `${String(k + 1).padStart(2, '0')}-slide.png`))]
     return `### ${i + 1}. ${c.titolo} (${c.id.slice(0, 5)})
 
@@ -95,7 +96,7 @@ ${testoDidascalia(c).trimEnd()}
 `
   }).join('\n')
 
-  const md = `# Piano Instagram: le prime 4 settimane (18 ottobre - 14 novembre 2026)
+  const md = `# Piano Instagram: le prime 5 settimane (18 ottobre - 19 novembre 2026)
 
 A cura di Paprika (contenuti) e Zenzero (testi). Per il profilo personale di Daniele. Si parte dal
 lancio: ogni contenuto è già pronto in \`pacchetto-instagram/\` (fuori dal repo e dal sito, nella
@@ -104,13 +105,30 @@ Il tono è quello di [tono.md](tono.md): frasi brevi, tu, una sola emoji e solo 
 posizionamento è in [../strategia/posizionamento.md](../strategia/posizionamento.md) e il piano
 di lancio in [../strategia/lancio.md](../strategia/lancio.md).
 
-${SEZIONE_STORIE}## Come è fatto il piano
+${SEZIONE_STORIE}## Quando pubblichiamo e perché
 
-- **13 contenuti in 4 settimane.** Si parte **domenica 18 ottobre 2026 alle 19:30** con il post di
-  lancio; poi 3 a settimana: martedì sera, giovedì a pranzo, sabato mattina (la settimana del
-  lancio ne ha 4 perché comincia di domenica). Il Reel di lancio esce martedì 20 alle 19:30.
-  Gli orari sono un punto di partenza: dopo 2 settimane si guardano le statistiche di Instagram
-  (Pubblico, "Quando i tuoi follower sono online") e si spostano.
+Ripianificato dal 27 ottobre su dati di settore per l'Italia:
+
+- **Pranzo, 12:30-13:30:** caroselli e post singoli.
+- **Sera, 19:00-21:30:** i Reel (anche per Metricool la fascia 19-21 è la migliore per i Reel).
+- **Mattina presto, 7:30-9:00:** le storie della pagina, con una seconda spinta la sera.
+- **Martedì, mercoledì, giovedì:** sono i giorni migliori (il mercoledì sera tra i più forti); il
+  weekend è il più debole, quindi niente sabato e domenica.
+- **Reel distanziati di almeno 4-5 giorni:** circa il 70% delle visualizzazioni di un Reel arriva
+  nei primi 3 giorni, e un secondo Reel troppo vicino gli ruberebbe spazio.
+
+Fonti (siti di riferimento, dove si trovano le analisi sugli orari): [SchedPilot](https://www.schedpilot.com/),
+[Metricool](https://metricool.com/), [SocialPilot](https://www.socialpilot.co/), [Later](https://later.com/).
+Sono medie: **controlla il tuo pubblico in Instagram** (Dashboard professionale, Pubblico, "Quando
+i tuoi follower sono più attivi") e sposta gli orari se i tuoi follower sono online in altri momenti.
+
+## Come è fatto il piano
+
+- **13 contenuti in 5 settimane.** Si parte **domenica 18 ottobre 2026 alle 19:30** con il post di
+  lancio e martedì 20 alle 19:30 esce il Reel di lancio (già pubblicati). Poi 3 contenuti a
+  settimana su martedì, mercoledì e giovedì, da martedì 27 ottobre (la settimana 5 ne ha 2, perché i
+  contenuti finiscono). Caroselli e post a pranzo (12:30), il Reel la sera (20:00), le storie di
+  presentazione al mattino (8:00).
 - **Tra i 13 ci sono:** 2 Reel (lancio e tempo reale), 6 caroselli (compreso il post di lancio),
   3 post singoli, 1 set di storie e 1 post con storie per il feedback.
 - **Storie:** una o due al giorno nei giorni di pubblicazione, con gli sticker indicati. Le storie
