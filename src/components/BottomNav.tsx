@@ -2,6 +2,7 @@ import { ChartColumn, LayoutGrid, Settings, ShoppingBasket } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { NavLink } from 'react-router'
 import { it as t } from '@/i18n/it'
+import { useKeyboardOpen } from '@/lib/useKeyboardOpen'
 
 interface NavItem {
   to: string
@@ -20,12 +21,20 @@ const NAV_ITEMS: NavItem[] = [
 /**
  * Navigazione flottante in basso: pillola con effetto vetro, solo icone
  * (etichetta in aria-label), vicina al bordo sopra la safe area iOS.
+ * Sempre fissa; nascosta mentre si scrive.
  */
 export function BottomNav() {
+  // con la tastiera aperta la barra sparisce: su iOS la tastiera sposta il
+  // viewport visivo e una barra fissa in basso salirebbe con il contenuto
+  const keyboardOpen = useKeyboardOpen()
   return (
     <nav
       aria-label={t.nav.label}
-      className="pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4"
+      aria-hidden={keyboardOpen || undefined}
+      inert={keyboardOpen}
+      className={`pointer-events-none fixed inset-x-0 z-30 flex justify-center px-4 transition-[opacity,translate] duration-150 ${
+        keyboardOpen ? 'invisible translate-y-4 opacity-0' : ''
+      }`}
       style={{ bottom: 'calc(var(--nav-gap) + var(--safe-bottom))' }}
     >
       <ul

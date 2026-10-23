@@ -4,6 +4,9 @@
  * stesso stato senza contesto React.
  */
 import { registerSW } from 'virtual:pwa-register'
+import { detectInstallPlatform } from './installPlatform'
+import type { InstallPlatform } from './installPlatform'
+import { markInstalled, recordInstallOutcome } from './installNudge'
 
 /* ------------------------------------------------------------------------- */
 /* Service worker                                                            */
@@ -114,14 +117,12 @@ export interface InstallState {
   installed: boolean
   /** Il browser offre il prompt nativo (Chrome/Edge/Android) */
   canPrompt: boolean
-  /** iOS Safari: niente prompt, si spiega "Condividi > Aggiungi alla schermata Home" */
-  isIos: boolean
+  /** Browser: su iOS niente prompt, si spiega il gesto (Safari) o si rimanda a Safari */
+  platform: InstallPlatform
 }
 
-const DISMISSED_KEY = 'frigolo.install-dismissed'
-
 let deferredPrompt: BeforeInstallPromptEvent | null = null
-let installState: InstallState = { installed: false, canPrompt: false, isIos: false }
+let installState: InstallState = { installed: false, canPrompt: false, platform: 'other' }
 const installListeners = new Set<() => void>()
 
 function setInstallState(patch: Partial<InstallState>) {
@@ -139,9 +140,13 @@ export function isStandalone(): boolean {
 
 /** Da chiamare una volta all'avvio: cattura il prompt di installazione */
 export function setupInstallPrompt() {
-  const ua = navigator.userAgent
-  const isIos = /iphone|ipad|ipod/i.test(ua) && !/crios|fxios/i.test(ua)
-  setInstallState({ installed: isStandalone(), isIos })
+  // Debug in sviluppo: window.__frigoloPwa.setSwState({ needRefresh: true }) simula una
+  // versione nuova, setInstallState({ canPrompt: true }) il prompt di installazione
+  if (import.meta.env.DEV) Object.assign(window, { __frigoloPwa: { setSwState, setInstallState } })
+  setInstallState({
+    installed: isStandalone(),
+    platform: detectInstallPlatform(navigator.userAgent, navigator.maxTouchPoints),
+  })
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault()
@@ -150,6 +155,7 @@ export function setupInstallPrompt() {
   })
   window.addEventListener('appinstalled', () => {
     deferredPrompt = null
+    markInstalled()
     setInstallState({ installed: true, canPrompt: false })
   })
 }
@@ -166,33 +172,15 @@ export function getInstallState() {
 }
 
 /**
- * Il banner compare solo dopo il primo prodotto aggiunto (prima l'app deve
- * servire a qualcosa), se non è stato chiuso e non si è già installata.
+ * Mostra il prompt nativo e registra l'esito (localStorage, vedi
+ * installNudge). Ritorna true se l'utente ha accettato.
  */
-export function shouldOfferInstall(firstProductAdded: boolean): boolean {
-  try {
-    const dismissed = localStorage.getItem(DISMISSED_KEY) === '1'
-    return firstProductAdded && !dismissed && !installState.installed
-  } catch {
-    return false
-  }
-}
-
-export function dismissInstall() {
-  try {
-    localStorage.setItem(DISMISSED_KEY, '1')
-  } catch {
-    // ignorato
-  }
-  setInstallState({})
-}
-
-/** Mostra il prompt nativo; ritorna true se l'utente ha accettato */
 export async function promptInstall(): Promise<boolean> {
   if (!deferredPrompt) return false
   await deferredPrompt.prompt()
   const { outcome } = await deferredPrompt.userChoice
   deferredPrompt = null
   setInstallState({ canPrompt: false })
+  recordInstallOutcome(outcome)
   return outcome === 'accepted'
 }
