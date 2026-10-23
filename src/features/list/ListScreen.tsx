@@ -45,9 +45,15 @@ export function ListScreen() {
   const [sheetTarget, setSheetTarget] = useState<EntrySheetTarget | null>(null)
   const [query, setQuery] = useState('')
   const [createRequest, setCreateRequest] = useState<CreateItemRequest | null>(null)
-  const search = useSearch(query, catalog.items)
-  const { suggestions } = useSuggestions()
   const history = usePurchaseHistoryQuery(household.id)
+  const purchaseCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const purchase of history.data ?? [])
+      counts.set(purchase.item_id, (counts.get(purchase.item_id) ?? 0) + 1)
+    return counts
+  }, [history.data])
+  const search = useSearch(query, catalog.items, purchaseCounts)
+  const { suggestions } = useSuggestions()
   const [storeFilter, setStoreFilter] = useState<string | null>(null)
 
   /** Supermercati presenti tra i prodotti in lista, per i filtri */
