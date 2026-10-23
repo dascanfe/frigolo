@@ -2,7 +2,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { RouterProvider } from 'react-router/dom'
 import { ToastHost } from '@/components/Toast'
 import { AuthGate } from '@/features/auth/AuthGate'
-import { queryPersister } from '@/lib/offlineQueue'
+import { queryPersister, restorePendingMutations } from '@/lib/offlineQueue'
 import { queryClient } from '@/lib/queryClient'
 import { router } from '@/router'
 
@@ -19,7 +19,10 @@ export default function App() {
         buster: __APP_VERSION__,
       }}
       // ripristinata la cache, le modifiche fatte offline riprendono
-      onSuccess={() => queryClient.resumePausedMutations()}
+      onSuccess={async () => {
+        await restorePendingMutations(queryClient)
+        await queryClient.resumePausedMutations()
+      }}
     >
       <AuthGate>
         <RouterProvider router={router} />
