@@ -140,6 +140,9 @@ export function isStandalone(): boolean {
 
 /** Da chiamare una volta all'avvio: cattura il prompt di installazione */
 export function setupInstallPrompt() {
+  // Debug in sviluppo: window.__frigoloPwa.setSwState({ needRefresh: true }) simula una
+  // versione nuova, setInstallState({ canPrompt: true }) il prompt di installazione
+  if (import.meta.env.DEV) Object.assign(window, { __frigoloPwa: { setSwState, setInstallState } })
   setInstallState({
     installed: isStandalone(),
     platform: detectInstallPlatform(navigator.userAgent, navigator.maxTouchPoints),
@@ -181,7 +184,3 @@ export async function promptInstall(): Promise<boolean> {
   recordInstallOutcome(outcome)
   return outcome === 'accepted'
 }
-
-// Debug in sviluppo: window.__frigoloPwa.setSwState({ needRefresh: true }) simula una versione nuova,
-// setInstallState({ canPrompt: true }) il prompt di installazione
-if (import.meta.env.DEV) Object.assign(window, { __frigoloPwa: { setSwState, setInstallState } })
