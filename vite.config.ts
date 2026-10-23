@@ -20,7 +20,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      // "prompt": l'utente decide quando aggiornare (bottone in Impostazioni)
+      // "prompt": il plugin non ricarica mai la pagina da solo (lo fa pwa.ts, e solo quando
+      // l'app e' in background); il nuovo service worker si attiva comunque da solo (skipWaiting)
       registerType: 'prompt',
       includeAssets: ['favicon.png', 'mascot.png', 'mascot-avatar.webp', 'icons/*.png'],
       manifest: {
@@ -53,7 +54,9 @@ export default defineConfig({
         globIgnores: ['**/splash/*', '**/og-image.png'],
         navigateFallback: '/index.html',
         cleanupOutdatedCaches: true,
-        // prende il controllo della pagina gia' alla prima visita
+        // il nuovo worker si attiva appena installato e prende il controllo: alla riapertura
+        // successiva tutti hanno la versione nuova, senza azioni
+        skipWaiting: true,
         clientsClaim: true,
         runtimeCaching: [
           {
