@@ -317,6 +317,12 @@ export const it = {
     firstTrip: 'Prima spesa fatta 🥳 Nelle Analitiche vedi cosa compri di più.',
     ok: 'Ok',
   },
+  shareNudge: {
+    title: 'La spesa si fa in due?',
+    text: 'Invita chi la fa con te: vedete la stessa lista.',
+    button: 'Invita',
+    dismiss: 'Non ora',
+  },
   install: {
     title: 'Tienila sulla schermata Home',
     ios: 'Tocca Condividi e poi "Aggiungi alla schermata Home".',
@@ -326,10 +332,21 @@ export const it = {
   },
   emptyList: {
     title: 'Cosa manca?',
-    subtitle: 'Tocca un prodotto per metterlo in lista. Toccalo di nuovo per toglierlo.',
-    starters: 'Per cominciare',
-    starterNames: ['Latte fresco', 'Pane', 'Uova', 'Banane', 'Caffè macinato', 'Carta igienica'],
-    openCatalog: 'Apri il catalogo',
+    subtitle: 'Parti da qui: ti basta un tocco per metterli in lista.',
+    starters: 'Tocca per aggiungere',
+    starterNames: [
+      'Latte fresco',
+      'Pane',
+      'Uova',
+      'Banane',
+      'Caffè macinato',
+      'Pasta',
+      'Mele',
+      'Acqua naturale',
+      'Carta igienica',
+    ],
+    openCatalog: 'Cerca tra tutti i prodotti',
+    firstAdded: 'Il primo è in lista 🥳 Aggiungine quanti ne vuoi.',
   },
   donation: {
     label: 'Offrimi un caffè 💚',

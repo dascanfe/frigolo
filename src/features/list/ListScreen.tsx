@@ -1,7 +1,7 @@
-import { ChevronDown, History, LayoutGrid, SearchX, ShoppingBasket, Store } from 'lucide-react'
+import { ChevronDown, History, Pointer, SearchX, Store } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Avatar } from '@/components/Avatar'
-import { LinkButton } from '@/components/Button'
+import { Link } from 'react-router'
 import { EmptyState } from '@/components/EmptyState'
 import { AddTile, ProductTile } from '@/components/ProductTile'
 import type { TileState } from '@/components/ProductTile'
@@ -13,15 +13,18 @@ import { CreateItemSheet } from '@/features/catalog/CreateItemSheet'
 import type { CreateItemRequest } from '@/features/catalog/CreateItemSheet'
 import { useCatalog } from '@/features/catalog/useCatalog'
 import { ListSwitcherSheet } from '@/features/lists/ListSwitcherSheet'
-import { triggerTip } from '@/features/tips/tips'
+import { armShareNudge } from '@/features/tips/shareNudge'
+import { dismissTip, triggerTip } from '@/features/tips/tips'
 import { useSearch } from '@/features/search/useSearch'
 import { usePurchaseHistoryQuery, useSuggestions } from '@/features/suggestions/useSuggestions'
 import { it as t } from '@/i18n/it'
 import { badgeQuantity, capitalizeFirst, pluralize } from '@/lib/format'
+import { toast } from '@/lib/toast'
 import type { Item, ListEntryWithItem } from '@/types/domain'
 import { CompleteTripButton } from './CompleteTripButton'
 import { EntrySheet } from './EntrySheet'
 import type { EntrySheetTarget } from './EntrySheet'
+import { ShareNudge } from './ShareNudge'
 import { useList } from './useList'
 import { useListMutations } from './useToggleItem'
 
@@ -93,6 +96,23 @@ export function ListScreen() {
       .filter((item): item is Item => Boolean(item))
   }, [isEmpty, history.isPending, history.data, catalog.items])
 
+  /** Chi parte da zero: lista vuota e nessuna spesa fatta */
+  const firstUse = isEmpty && !history.isPending && (history.data?.length ?? 0) === 0
+
+  /**
+   * Aggiunge un prodotto. Il primissimo di chi parte da zero si festeggia con
+   * la mascotte (al posto del suggerimento "Fatto, è in lista") e prepara
+   * l'invito a condividere, che comparirà una volta sola nella lista.
+   */
+  function addItem(item: Item) {
+    if (firstUse) {
+      dismissTip('added')
+      toast(t.emptyList.firstAdded, 'success', 4200, true)
+      armShareNudge()
+    }
+    mutations.add(item)
+  }
+
   // primo prodotto che non c'è nel catalogo: si spiega come crearlo
   const noResultsCanCreate =
     search.query.length > 0 && search.results.length === 0 && search.canCreate
@@ -111,7 +131,7 @@ export function ListScreen() {
   function toggleResult(item: Item) {
     const entry = list.entryByItemId.get(item.id)
     if (entry) mutations.remove(entry.id)
-    else mutations.add(item)
+    else addItem(item)
     finishSearch()
   }
 
@@ -119,7 +139,7 @@ export function ListScreen() {
   function submitSearch() {
     const first = search.results.find((item) => !list.entryByItemId.has(item.id))
     if (first) {
-      mutations.add(first)
+      addItem(first)
       finishSearch()
     } else if (search.canCreate) {
       setCreateRequest({ name: query })
@@ -176,6 +196,8 @@ export function ListScreen() {
         onChange={(v) => setQuery(capitalizeFirst(v))}
         onSubmit={submitSearch}
       />
+
+      {!searching && !isEmpty && <ShareNudge />}
 
       {!searching && storesInList.length > 0 && (
         <div className="chip-row px-4 py-1" role="group" aria-label={t.list.filterByStore}>
@@ -263,43 +285,36 @@ export function ListScreen() {
         </>
       ) : isEmpty ? (
         <>
-          <EmptyState
-            icon={ShoppingBasket}
-            title={t.emptyList.title}
-            description={t.emptyList.subtitle}
-            action={
-              <LinkButton
-                to="/catalogo"
-                variant="secondary"
-                icon={<LayoutGrid size={18} aria-hidden="true" />}
-              >
-                {t.emptyList.openCatalog}
-              </LinkButton>
-            }
-          />
+          <div className="px-4 pt-6 pb-4 text-center">
+            <h2 className="font-display text-2xl font-bold text-primary">{t.emptyList.title}</h2>
+            <p className="mx-auto mt-1 max-w-xs text-sm text-secondary">{t.emptyList.subtitle}</p>
+          </div>
           {starterItems.length > 0 && (
-            <div className="flex flex-col gap-2 pb-4">
-              <p className="px-4 text-center text-xs font-bold text-secondary">
+            <>
+              <p className="flex items-center justify-center gap-1.5 pb-3 text-sm font-bold text-accent">
+                <Pointer size={16} strokeWidth={2.25} aria-hidden="true" />
                 {t.emptyList.starters}
               </p>
-              <div
-                className="flex flex-wrap justify-center gap-2 px-4"
-                role="group"
-                aria-label={t.emptyList.starters}
-              >
-                {starterItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="chip h-10 shrink-0 px-4"
-                    onClick={() => mutations.add(item)}
-                  >
-                    {item.name}
-                  </button>
+              <ProductGrid label={t.emptyList.starters}>
+                {starterItems.map((item, index) => (
+                  <div key={item.id} className={index < 3 ? 'starter-nudge' : undefined}>
+                    <ProductTile
+                      name={item.name}
+                      icon={item.icon}
+                      state="idle"
+                      onTap={() => addItem(item)}
+                    />
+                  </div>
                 ))}
-              </div>
-            </div>
+              </ProductGrid>
+            </>
           )}
+          <Link
+            to="/catalogo"
+            className="mx-auto mt-5 flex h-11 items-center px-4 text-sm font-bold text-secondary underline underline-offset-4"
+          >
+            {t.emptyList.openCatalog}
+          </Link>
         </>
       ) : (
         <>

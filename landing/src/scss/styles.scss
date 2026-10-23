@@ -1,0 +1,71 @@
+// Landing di Frigolo: Bootstrap 5.3 compilato con la palette del kit di Paprika
+// (marketing/kit/brand.md, tema Autunno) e i font dell'app. Solo le parti usate:
+// reboot, contenitori, griglia, bottoni e poche utility. Niente JavaScript di Bootstrap.
+
+$enable-dark-mode: false;
+$enable-shadows: false;
+$enable-smooth-scroll: false;
+$enable-rfs: false;
+$enable-grid-classes: true;
+$enable-cssgrid: false;
+
+// palette (tema Autunno): il testo bianco sul bottone mattone scurito passa AA
+$primary: #b4532f;
+$secondary: #6b5844;
+$body-bg: #f4ece2;
+$body-color: #3a2c21;
+$font-family-sans-serif:
+  'Lato',
+  system-ui,
+  -apple-system,
+  'Segoe UI',
+  sans-serif;
+$headings-font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+$font-size-base: 1.0625rem;
+$line-height-base: 1.6;
+$link-color: #a14a29;
+$btn-border-radius: 999px;
+$btn-border-radius-lg: 999px;
+$btn-padding-y: 0.8rem;
+$btn-padding-x: 1.7rem;
+$btn-font-weight: 900;
+$btn-font-size: 1.05rem;
+$container-padding-x: 1.25rem;
+$grid-gutter-width: 2rem;
+$grid-breakpoints: (
+  xs: 0,
+  md: 768px,
+  lg: 992px,
+);
+$container-max-widths: (
+  md: 720px,
+  lg: 960px,
+);
+
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+
+$utilities: map-get-multiple(
+  $utilities,
+  (
+    'align-items',
+    'display',
+    'flex-direction',
+    'flex-wrap',
+    'justify-content',
+    'order',
+    'text-align'
+  )
+);
+
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/utilities/api';
+
+@import 'landing';

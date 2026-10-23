@@ -185,6 +185,106 @@ begin
     'le registrazioni passate restano nello storico';
 end $$;
 
+-- -----------------------------------------------------------------------------
+-- 0025: esclusi, istantanea, invio senza segreti
+-- -----------------------------------------------------------------------------
+select pg_temp.as_postgres();
+insert into metrics.excluded (user_id) values ('d0000000-0000-0000-0000-000000000001') on conflict do nothing;
+create temp table prima2 as select pg_temp.conta('lists_created') as liste;
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000001');
+select public.create_household('Lista di chi e escluso');
+select pg_temp.as_postgres();
+do $$
+declare
+  v jsonb := metrics.snapshot();
+begin
+  assert pg_temp.conta('lists_created') = (select liste from prima2), 'le azioni di chi e escluso non contano';
+  assert not exists (select 1 from metrics.active_days where user_id = 'd0000000-0000-0000-0000-000000000001'),
+    'chi e escluso non risulta attivo';
+  assert (v -> 'periodi') ?& array['oggi', '7', '30', 'sempre'], 'quattro periodi';
+  assert jsonb_array_length(v -> 'periodi' -> '7' -> 'ora' -> 'giorni') = 7, 'sette giorni';
+  assert v::text !~* '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', 'nessun id nell istantanea';
+end $$;
+
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000001');
+do $$
+begin
+  begin
+    perform metrics.push_snapshot();
+    assert false, 'un utente lancia l invio';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
+-- -----------------------------------------------------------------------------
+-- 0026: sessioni, errori, distribuzione, percorso, iscrizioni
+-- -----------------------------------------------------------------------------
+select pg_temp.as_postgres();
+insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data, created_at, updated_at, email_confirmed_at)
+values ('d0000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+        'm9@example.test', '{"display_name":"Nove"}', now(), now(), now());
+create temp table s0 as select coalesce(sum(n), 0) as n from metrics.session_counts;
+create temp table e0 as select coalesce(sum(n), 0) as n from metrics.error_counts;
+
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000009');
+select public.metrics_record_session(95, '1.5.0', 'standalone', 'ios', 'lampone', false);
+select public.metrics_record_session(20, '1.5.0', 'browser', 'android', 'tema-strano', true);
+select public.metrics_record_session(0, '1.5.0', 'browser', 'android', 'mare', false);   -- ignorata
+select public.metrics_record_error('query',
+  'Errore per mario.rossi@example.com su 3f2b1c4d-1111-4222-8333-444455556666 codice 123456 https://x.it/a?token=segreto',
+  '1.5.0', '/invito/AbC123xyz789?x=1');
+select public.create_household('Lista di Nove');
+
+-- chi e' escluso non lascia traccia
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000001');
+select public.metrics_record_session(300, '1.5.0', 'standalone', 'ios', 'mare', false);
+select public.metrics_record_error('errore', 'non deve contare', '1.5.0', '/');
+
+select pg_temp.as_postgres();
+do $$
+declare
+  m text;
+  v jsonb;
+begin
+  assert (select coalesce(sum(n), 0) from metrics.session_counts) = (select n from s0) + 2, 'due sessioni contate';
+  assert exists (select 1 from metrics.session_counts where tema = 'altro' and offline and fascia = 1), 'tema sconosciuto -> altro';
+  assert (select coalesce(sum(n), 0) from metrics.error_counts) = (select n from e0) + 1, 'un errore contato';
+  select messaggio into m from metrics.error_counts where tipo = 'query' order by n desc limit 1;
+  assert m !~ '@' and m !~* '3f2b1c4d' and m !~ '123456' and m !~ 'segreto', 'messaggio ripulito: ' || m;
+  assert exists (select 1 from metrics.error_counts where pagina = '/invito/:id'), 'pagina ripulita';
+  assert metrics.ripulisci_pagina('/impostazioni') = '/impostazioni', 'le pagine normali restano';
+  assert not exists (select 1 from information_schema.columns
+                     where table_schema = 'metrics' and table_name in ('session_counts', 'error_counts')
+                       and column_name = 'user_id'), 'nessun user_id nelle tabelle aggregate';
+
+  v := metrics.periodo(metrics.today() - 6, metrics.today());
+  assert v ? 'uso' and v ? 'sessioni' and v ? 'errori' and v ? 'percorso' and v ? 'funzioni', 'dati v3 nel periodo';
+  assert (v -> 'percorso' ->> 'registrati')::int >= 1 and (v -> 'percorso' ->> 'confermati')::int >= 1, 'percorso';
+  assert (v -> 'sessioni' ->> 'mediana_s') is not null, 'mediana delle sessioni';
+  assert (metrics.iscrizioni() -> 'settimane') is not null and jsonb_array_length(metrics.iscrizioni() -> 'mesi') = 12, 'iscrizioni';
+  assert pg_column_size(metrics.snapshot()) < 600000, 'istantanea leggera';
+  assert v::text !~* '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', 'nessun id';
+end $$;
+
+-- limite per ora: oltre 60 sessioni non si conta piu'
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000009');
+select public.metrics_record_session(15, '1.5.0', 'browser', 'desktop', 'mare', false) from generate_series(1, 70);
+select pg_temp.as_postgres();
+do $$
+begin
+  assert (select sum(n) from metrics.session_counts where dispositivo = 'desktop') = 58, 'limite di 60 sessioni all ora';
+end $$;
+
+select pg_temp.as_anon();
+do $$
+begin
+  begin
+    perform public.metrics_record_error('errore', 'x', '1', '/');
+    assert false, 'anon registra errori';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
 \o
 select 'metriche.sql: tutti i controlli passati' as esito;
 rollback;

@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="it" data-tema="scuro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Statistiche Frigolo</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Frigolo dati">
+
+<meta name="theme-color" content="#1a0f13">
+
+<script>
+/* Il tema viene applicato prima del primo disegno, altrimenti si vede
+   un lampo di chiaro prima che parta app.js. Piccola ripetizione
+   voluta: qui serve che sia immediato. */
+(function () {
+  var t = 'scuro';
+  try { var v = localStorage.getItem('frigolo-stat.tema'); if (v === 'chiaro' || v === 'scuro') t = v; } catch (e) {}
+  document.documentElement.setAttribute('data-tema', t);
+  if (t === 'chiaro') document.documentElement.removeAttribute('data-tema');
+  var m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', t === 'scuro' ? '#1a0f13' : '#f8eef0');
+})();
+</script>
+
+<style>
+  /* i caratteri di Frigolo (Lato e Playfair Display, licenza OFL),
+     nella cartella del cruscotto: non dipende da nient'altro */
+  @font-face { font-family: 'Playfair Display'; src: url('fonts/playfair-display-latin-700-normal.woff2') format('woff2');
+               font-weight: 700; font-display: swap; }
+  @font-face { font-family: 'Playfair Display'; src: url('fonts/playfair-display-latin-700-italic.woff2') format('woff2');
+               font-weight: 700; font-style: italic; font-display: swap; }
+  @font-face { font-family: 'Lato'; src: url('fonts/lato-latin-400-normal.woff2') format('woff2');
+               font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Lato'; src: url('fonts/lato-latin-700-normal.woff2') format('woff2');
+               font-weight: 700; font-display: swap; }
+  @font-face { font-family: 'Lato'; src: url('fonts/lato-latin-900-normal.woff2') format('woff2');
+               font-weight: 900; font-display: swap; }
+
+  /* Il tema chiaro e' quello di serie. Lo scuro si sceglie con
+     l'interruttore in alto e resta memorizzato in questo browser.
+     I colori stanno tutti qui: i componenti li leggono e basta,
+     cosi' cambiare tema non richiede di toccare nient'altro. */
+  /* Tema Lampone di Frigolo (src/lib/theme.ts). Lo scuro e' la
+     stessa famiglia su fondo inchiostro, con l'accento schiarito
+     perche' resti leggibile. Scuro di serie, come il cruscotto del
+     sito; la scelta resta in questo browser. */
+  :root {
+    --bg:      #f8eef0;
+    --bg2:     #fdf7f8;
+    --bg3:     #f5e5e9;
+    --bg4:     #efd3da;
+    --fg:      #3b1d26;
+    --dim:     #6f4a55;
+    --dim2:    #85636d;
+    --acc:     #b02e50;
+    --acc-rgb: 176, 46, 80;
+    --acc2:    #4f8a78;   /* seconda serie: salvia */
+    --warn:    #b4651c;
+    --border:  rgba(59, 29, 38, 0.10);
+    --border2: rgba(59, 29, 38, 0.18);
+    --ombra:   0 1px 2px rgba(59, 29, 38, .05), 0 10px 30px -20px rgba(59, 29, 38, .35);
+    --su-acc:  #fdf7f8;
+    --buono:   #2f7a52;
+    --cattivo: #b4321f;
+  }
+
+  :root[data-tema="scuro"] {
+    --bg:      #1a0f13;
+    --bg2:     #221419;
+    --bg3:     #2a1920;
+    --bg4:     #3a242c;
+    --fg:      #fdf7f8;
+    --dim:     #dcbcc5;
+    --dim2:    #a98b94;
+    --acc:     #f2849f;
+    --acc-rgb: 242, 132, 159;
+    --acc2:    #8fc2b2;
+    --warn:    #e8b062;
+    --border:  rgba(253, 247, 248, 0.08);
+    --border2: rgba(253, 247, 248, 0.16);
+    --ombra:   none;
+    --su-acc:  #3b1d26;
+    --buono:   #8fd1a7;
+    --cattivo: #ff9c8a;
+  }
+
+  :root {
+    /* Frigolo ha due caratteri: le etichette in maiuscoletto usano
+       Lato pesante al posto del monospaziato del sito */
+    --mono: 'Lato', system-ui, sans-serif;
+    --head: 'Playfair Display', Georgia, serif;
+    --body: 'Lato', system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: var(--head); margin: 0; font-weight: 700; letter-spacing: -.02em; }
+
+  .etichetta {
+    font-weight: 700;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--dim2);
+  }
+
+  .num { font-variant-numeric: tabular-nums lining-nums; }
+
+  /* ---------- accesso ---------- */
+
+  #accesso {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+
+  .scheda-accesso {
+    width: 100%;
+    max-width: 380px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 36px 32px 32px;
+  }
+
+  .scheda-accesso h1 { font-size: 22px; margin-bottom: 6px; }
+  .scheda-accesso p.sotto { color: var(--dim); font-size: 14px; margin: 0 0 26px; }
+
+  label.campo { display: block; margin-bottom: 16px; }
+  label.campo span { display: block; margin-bottom: 6px; }
+
+  input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 11px 13px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 15px;
+  }
+  input:focus-visible { outline: 2px solid var(--acc); outline-offset: 1px; border-color: transparent; }
+
+  button {
+    font-family: var(--body);
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--fg);
+    padding: 9px 16px;
+    transition: border-color .15s, background .15s;
+  }
+  button:hover { border-color: var(--acc); }
+  button:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+  button.primario {
+    width: 100%;
+    background: var(--acc);
+    color: var(--su-acc);
+    border-color: var(--acc);
+    font-weight: 600;
+    padding: 12px 16px;
+    margin-top: 8px;
+  }
+  button.primario:hover { filter: brightness(1.08); }
+  button[disabled] { opacity: .5; cursor: default; }
+
+  .errore {
+    margin-top: 16px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    background: rgba(224, 123, 123, .1);
+    border: 1px solid rgba(224, 123, 123, .4);
+    color: #e07b7b;
+    font-size: 14px;
+  }
+  .errore:empty { display: none; }
+
+  /* ---------- struttura ---------- */
+
+  #cruscotto { display: none; }
+  body.dentro #accesso { display: none; }
+  body.dentro #cruscotto { display: block; }
+
+  .guscio { max-width: 1240px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* La barra resta in alto anche scorrendo, cosi' il filtro del
+     periodo e' sempre a portata mentre si guardano i dati piu' in
+     basso. Il fondo pieno va per tutta la larghezza della finestra,
+     altrimenti il contenuto le trasparirebbe sotto ai lati: per
+     questo la parte fissa e' un contenitore suo, e il guscio con il
+     margine massimo sta dentro. */
+  .barra-fissa {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .guscio-testa { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+  header.testa {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    padding: 18px 0 16px;
+  }
+  header.testa h1 { font-size: 19px; }
+  header.testa h1 .punto { color: var(--acc); }
+  .testa .spinta { margin-left: auto; }
+
+  /* filtri su una riga sola, sopra ai grafici */
+  .periodi { display: flex; gap: 2px; background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; padding: 3px; }
+  .periodi button {
+    border: none; background: transparent; color: var(--dim);
+    font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; padding: 7px 12px; border-radius: 3px;
+  }
+  .periodi button[aria-pressed="true"] { background: var(--bg); color: var(--acc); }
+  .periodi button:hover { color: var(--fg); }
+
+  /* ---------- interruttore del tema ----------
+
+     Una pillola con il sole a sinistra e la luna a destra. Il pomello
+     scorre sotto all'icona attiva, che si accende; l'altra resta
+     spenta. Le due misure stanno in due variabili perche' la corsa
+     del pomello si calcola da quelle: cambiandone una non si sfasa
+     piu' niente. */
+  .interruttore-tema {
+    --lato: 24px;
+    --spazio: 4px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spazio);
+    flex: none;
+    padding: 3px;
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    background: var(--bg4);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .interruttore-tema .pomello {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: var(--lato); height: var(--lato);
+    border-radius: 50%;
+    background: var(--acc);
+    transition: transform .32s cubic-bezier(.34, 1.32, .5, 1);
+  }
+  :root[data-tema="scuro"] .interruttore-tema .pomello {
+    transform: translateX(calc(var(--lato) + var(--spazio)));
+  }
+  .interruttore-tema .lato {
+    position: relative;      /* sopra al pomello */
+    z-index: 1;
+    display: grid; place-items: center;
+    width: var(--lato); height: var(--lato);
+  }
+  .interruttore-tema svg {
+    width: 14px; height: 14px;
+    color: var(--dim2);
+    transition: color .3s ease;
+  }
+  /* L'icona che il pomello ha sotto di se' e' quella accesa. */
+  :root:not([data-tema="scuro"]) .interruttore-tema .lato-sole svg,
+  :root[data-tema="scuro"]       .interruttore-tema .lato-luna svg { color: var(--su-acc); }
+
+  .interruttore-tema:hover svg { color: var(--dim); }
+  :root:not([data-tema="scuro"]) .interruttore-tema:hover .lato-sole svg,
+  :root[data-tema="scuro"]       .interruttore-tema:hover .lato-luna svg { color: var(--su-acc); }
+
+  .interruttore-tema:focus-visible {
+    outline: 2px solid var(--acc);
+    outline-offset: 2px;
+  }
+
+  /* Il piccolo scatto al click: l'icona che si accende arriva
+     ruotando e rimbalza un attimo oltre la sua misura. */
+  @keyframes scatto-sole {
+    0%   { transform: rotate(-90deg) scale(.55); }
+    55%  { transform: rotate(12deg)  scale(1.2); }
+    100% { transform: rotate(0)      scale(1); }
+  }
+  @keyframes scatto-luna {
+    0%   { transform: rotate(55deg)  scale(.55); }
+    55%  { transform: rotate(-12deg) scale(1.18); }
+    100% { transform: rotate(0)      scale(1); }
+  }
+  :root:not([data-tema="scuro"]) .interruttore-tema.scatta .lato-sole svg { animation: scatto-sole .5s cubic-bezier(.34, 1.3, .5, 1); }
+  :root[data-tema="scuro"]       .interruttore-tema.scatta .lato-luna svg { animation: scatto-luna .5s cubic-bezier(.34, 1.3, .5, 1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .interruttore-tema .pomello { transition: none; }
+    .interruttore-tema.scatta svg { animation: none; }
+  }
+
+  /* Su schermo largo l'uscita e' la parola "Esci"; su schermo stretto
+     diventa il segno di Lucide, in cima a destra. Il pulsante porta con
+     se' tutti e due e lascia decidere alla larghezza. */
+  #btn-esci .segno { display: none; width: 16px; height: 16px; }
+
+  .stato-vivo {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--dim2);
+  }
+  .pallino {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--dim2); flex: none;
+  }
+  .stato-vivo.attivo .pallino { background: var(--acc); animation: respiro 2.4s ease-in-out infinite; }
+  .stato-vivo.attivo { color: var(--acc); }
+  @keyframes respiro { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+
+  /* ---------- riquadri dei numeri ---------- */
+
+  /* Quattro per riga al massimo: i sette riquadri vanno quattro
+     sopra e tre sotto, invece di stringersi tutti su una riga sola. */
+  .riquadri {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .riquadro {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px 18px;
+    box-shadow: var(--ombra);
+  }
+  .riquadro .valore {
+    font-family: var(--head);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -.03em;
+    margin-top: 8px;
+  }
+  .riquadro .valore small { font-size: 15px; color: var(--dim2); font-weight: 400; letter-spacing: 0; }
+  .riquadro .nota { font-size: 12.5px; color: var(--dim2); margin-top: 4px; }
+
+  /* Confronto con lo stesso intervallo precedente. Il colore dice
+     se il movimento e' buono o cattivo, non se il numero sale: sul
+     rimbalzo salire e' una brutta notizia. */
+  .delta {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 6px;
+    font-family: var(--mono); font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--dim2);
+  }
+  .delta.bene  { color: var(--buono); }
+  .delta.male  { color: var(--cattivo); }
+  .delta .freccia { font-size: 10px; }
+
+  /* Icona che spiega cosa si sta guardando. */
+  .info {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 14px; height: 14px;
+    margin-left: 6px;
+    border: 1px solid var(--border2);
+    border-radius: 50%;
+    font-family: var(--mono); font-size: 9px; line-height: 1;
+    color: var(--dim2);
+    cursor: help;
+    vertical-align: 1px;
+    flex: none;
+    user-select: none;
+  }
+  .info:hover, .info:focus-visible { border-color: var(--acc); color: var(--acc); outline: none; }
+  .etichetta .info { vertical-align: 0; }
+
+  /* Il titoletto e la sua icona stanno sempre sulla stessa riga.
+     Se il titolo non ci sta viene accorciato con i puntini di
+     sospensione: e' il testo a cedere, mai l'icona, che altrimenti
+     su schermo stretto finisce a capo da sola. */
+  .titoletto {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+  .titoletto > .t {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---------- pannelli ---------- */
+
+  .griglia { display: grid; gap: 12px; margin-bottom: 12px; }
+  .g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .pannello {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 20px 20px;
+    min-width: 0;
+    box-shadow: var(--ombra);
+  }
+  .pannello > header {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .pannello > header h2 { font-size: 14px; letter-spacing: -.01em; }
+  .pannello > header .conta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--dim2); }
+
+  .vuoto { color: var(--dim2); font-size: 13.5px; padding: 6px 0 2px; }
+
+  /* La nota sotto a un grafico ha bisogno di aria sopra, e di finire
+     alla stessa distanza dal bordo del riquadro degli altri pannelli. */
+  .nota-sotto {
+    margin: 18px 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--dim2);
+    max-width: 88ch;
+  }
+
+  /* ---------- barre orizzontali ---------- */
+
+  .barre { display: flex; flex-direction: column; gap: 9px; }
+
+  .barra { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; }
+  .barra .testo {
+    font-size: 12px; font-weight: 400; color: var(--fg);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .barra .cifra { font-family: var(--mono); font-size: 11.5px; font-weight: 400; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .barra .pista {
+    grid-column: 1 / -1;
+    height: 8px;
+    background: var(--bg4);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .barra .pista i {
+    display: block; height: 100%;
+    background: var(--acc);
+    border-radius: 0 4px 4px 0;   /* estremita' arrotondata, quadrata alla base */
+    opacity: .85;
+    transition: width .35s ease;
+  }
+  .barra.cliccabile { cursor: pointer; border-radius: 3px; }
+  .barra.cliccabile:hover .testo { color: var(--acc); }
+  .barra.cliccabile:hover .pista i { opacity: 1; }
+  .barra.scelta .testo { color: var(--acc); }
+  .barra.scelta .pista i { opacity: 1; }
+
+  /* ---------- grafico a colonne ---------- */
+
+  .colonne {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;              /* lo stacco fra colonne vicine e' il fondo */
+    height: 132px;
+    padding-top: 8px;
+    /* la base del grafico: una riga sottile su cui poggiano le colonne */
+    border-bottom: 1px solid var(--border2);
+  }
+  .colonna { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; position: relative; }
+  .colonna i {
+    display: block;
+    width: 100%;
+    max-width: 24px;
+    margin: 0 auto;
+    background: var(--acc);
+    opacity: .85;
+    border-radius: 4px 4px 0 0;   /* arrotondata in cima, quadrata sulla base */
+    min-height: 2px;
+    transition: opacity .15s;
+  }
+  .colonna:hover i { opacity: 1; }
+  .colonna.vuota i { background: var(--bg4); opacity: 1; }
+
+  /* colonna divisa in due: sopra i visitatori di ritorno, sotto i nuovi.
+     I due pezzi sono separati da 2 px di fondo, non da un bordo. */
+  .colonna .pila { display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; height: 100%; }
+  .colonna .pila i.ritorno { background: var(--acc2); border-radius: 4px 4px 0 0; }
+  .colonna .pila i.nuove   { background: var(--acc); border-radius: 0; }
+  .colonna .pila i.nuove:first-child { border-radius: 4px 4px 0 0; }
+
+  .legenda { display: flex; gap: 18px; margin-top: 12px; }
+  .legenda span {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--dim);
+  }
+  .legenda i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+  .legenda i.nuove { background: var(--acc); }
+  .legenda i.ritorno { background: var(--acc2); }
+  .asse-x {
+    display: flex; gap: 2px; margin-top: 8px;
+    font-family: var(--mono); font-size: 10px; color: var(--dim2);
+  }
+  .asse-x span { flex: 1 1 0; text-align: center; overflow: hidden; }
+
+  /* ---------- suggerimento al passaggio ---------- */
+
+  #tip {
+    position: fixed;
+    z-index: 50;
+    pointer-events: none;
+    background: var(--bg4);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--fg);
+    box-shadow: 0 8px 24px rgba(19, 28, 24, .28);
+    opacity: 0;
+    transition: opacity .12s;
+    max-width: 280px;
+  }
+  #tip.visibile { opacity: 1; }
+  #tip b { color: var(--acc); font-weight: 600; }
+  #tip .riga { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+
+  /* ---------- dal vivo ---------- */
+
+  .vivo-lista { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
+  .vivo-riga {
+    display: grid;
+    grid-template-columns: 8px minmax(0, 1fr) auto;
+    row-gap: 3px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    animation: entra .4s ease;
+  }
+  @keyframes entra { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .vivo-riga .segno { width: 8px; height: 8px; border-radius: 50%; background: var(--acc); }
+  .vivo-riga .dove { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vivo-riga .sotto {
+    grid-column: 2 / -1;
+    font-family: var(--mono); font-size: 10.5px; color: var(--dim2);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .vivo-riga .sotto b { color: var(--acc); font-weight: 400; }
+  .vivo-riga .quando { font-family: var(--mono); font-size: 11px; color: var(--dim2); white-space: nowrap; }
+
+  /* ---------- tabella ---------- */
+
+  .tabella-guscio { overflow-x: auto; margin: 0 -4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-top: 1px solid var(--border); vertical-align: top; }
+  thead th {
+    border-top: none; font-family: var(--mono); font-size: 10px;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--dim2); font-weight: 400;
+  }
+  td.v { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--dim); }
+  td .tipo {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 3px; border: 1px solid var(--border2); color: var(--dim);
+  }
+  td .tipo.uscita { color: var(--warn); border-color: rgba(224,165,87,.45); }
+  td .tipo.download { color: var(--acc); border-color: rgba(var(--acc-rgb), .45); }
+
+  /* ---------- vista tabellare dei grafici ---------- */
+
+  details.tavola { margin-top: 14px; }
+  details.tavola summary {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--dim2); cursor: pointer; list-style: none;
+  }
+  details.tavola summary::-webkit-details-marker { display: none; }
+  details.tavola summary:before { content: '+ '; }
+  details.tavola[open] summary:before { content: '- '; }
+  details.tavola summary:hover { color: var(--acc); }
+  details.tavola table { margin-top: 10px; }
+
+  /* Su schermo stretto l'interruttore scende qui, con la sua targhetta. */
+  .tema-in-fondo { display: none; align-items: center; gap: 12px; margin: 28px 0 0; }
+  @media (max-width: 720px) { .tema-in-fondo { display: flex; } }
+
+  footer.piede {
+    margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+    font-family: var(--mono); font-size: 11px; color: var(--dim2);
+    display: flex; flex-wrap: wrap; gap: 8px 20px;
+  }
+
+  @media (max-width: 1000px) {
+    .riquadri { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .g-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  /* Fra i 721 e gli 820 pixel (il tablet in verticale) il titolo, il
+     filtro, chi c'e' adesso, il tema e l'uscita non entrano su una riga
+     sola: la barra diventava alta 129px con l'uscita a capo. Il titolo
+     e' la cosa piu' sacrificabile, e sotto i 720 spariva gia'. */
+  @media (max-width: 820px) {
+    .barra-fissa h1 { display: none; }
+  }
+
+  @media (max-width: 720px) {
+    .guscio { padding: 0 16px 60px; }
+    .guscio-testa { padding: 0 16px; }
+
+    /* Su schermo stretto la barra fissa deve restare bassa, altrimenti
+       si mangia un quarto dello schermo per sempre. Resta quello che
+       serve mentre si scorre (il filtro del periodo e chi c'e' adesso);
+       il titolo sparisce, e il cambio tema scende in fondo alla pagina,
+       dove si usa una volta ogni tanto. */
+    .barra-fissa header.testa { gap: 0 12px; padding: 12px 0 10px; }
+    .barra-fissa h1 { display: none; }
+    .barra-fissa #btn-tema { display: none; }
+    .periodi { overflow-x: auto; }
+    /* Le etichette non vanno mai a capo: se lo spazio manca e' il
+       filtro a scorrere di lato, non "7 GIORNI" a spezzarsi in due. */
+    .periodi button { padding: 7px 9px; white-space: nowrap; flex: none; }
+    .stato-vivo { font-size: 10px; }
+
+    /* L'uscita sale sulla prima riga, all'estrema destra: da parola
+       finiva a capo su una riga tutta sua, in mezzo al nulla. Il filtro
+       cede lo spazio che serve (40px) e, se proprio non ci sta, scorre
+       di lato come faceva gia'. */
+    /* Il tetto di larghezza serve a garantire che il pulsante entri
+       sulla stessa riga: senza, il filtro occupa tutto e l'uscita va
+       a capo. I 52px sono l'icona piu' lo spazio fra le due cose. */
+    .barra-fissa .periodi { flex: 0 1 auto; min-width: 0; max-width: calc(100% - 54px); }
+    .barra-fissa #btn-esci { order: 1; margin-left: auto; }
+    /* Il divisore, che su schermo stretto non serviva piu', diventa
+       l'a capo: largo quanto la riga e alto zero, obbliga tutto quello
+       che viene dopo a scendere. Senza, fra i 500 e i 720 pixel "chi
+       c'e' adesso" restava sulla prima riga e l'icona non finiva piu'
+       a destra. Il margine negativo si riprende lo spazio fra le righe
+       che l'a capo aggiungerebbe. */
+    .barra-fissa .spinta { order: 2; width: 100%; height: 0; margin: 0; }
+    .barra-fissa .stato-vivo { order: 3; margin-top: 10px; }
+    .barra-fissa #stato-nota { order: 4; margin-top: 10px; }
+
+    #btn-esci {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      padding: 0;
+      flex: none;
+      color: var(--dim);
+    }
+    #btn-esci:hover { color: var(--acc); }
+    #btn-esci .parola { display: none; }
+    #btn-esci .segno  { display: block; }
+    .riquadri { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .g-2, .g-3 { grid-template-columns: minmax(0, 1fr); }
+    header.testa { padding-top: 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  /* ============================================================
+     Aggiunte del cruscotto di Frigolo. Tutto quello sopra e' lo
+     stesso foglio del cruscotto delle statistiche del sito.
+     ============================================================ */
+
+  /* le due sezioni: stessa pillola del filtro del periodo */
+  .sezioni-scelta { display: flex; gap: 2px; background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; padding: 3px; }
+  .sezioni-scelta button {
+    border: none; background: transparent; color: var(--dim);
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    padding: 6px 14px; border-radius: 3px;
+  }
+  .sezioni-scelta button[aria-pressed="true"] { background: var(--bg); color: var(--acc); }
+  .sezioni-scelta button:hover { color: var(--fg); }
+  .sezioni-scelta button .lucchetto { font-family: var(--mono); font-size: 10px; color: var(--dim2); margin-left: 6px; }
+
+  .sezione[hidden] { display: none; }
+
+  /* ---------- andamento: area con linea morbida ---------- */
+  .area { position: relative; height: 180px; }
+  .area svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .area .linea { fill: none; stroke: var(--acc); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .area .linea.seconda { stroke: var(--acc2); stroke-width: 1.6; stroke-dasharray: 4 3; }
+  .area .linea.avviso { stroke: var(--warn); }
+  .area .base { stroke: var(--border2); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .area .griglia-y { stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .area .bersagli { position: absolute; inset: 0; display: flex; }
+  .area .bersagli span { flex: 1 1 0; position: relative; }
+  .area .bersagli span:hover::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 50%;
+    border-left: 1px dashed var(--border2);
+  }
+  .area .tetto { position: absolute; top: -2px; left: 0; font-family: var(--mono); font-size: 10px; color: var(--dim2); }
+  .legenda i.seconda { background: var(--acc2); }
+  .legenda i.avviso { background: var(--warn); }
+
+  /* ---------- barra di riempimento (spazio sul database) ---------- */
+  .metro { height: 8px; background: var(--bg4); border-radius: 2px; overflow: hidden; margin-top: 12px; }
+  .metro i { display: block; height: 100%; background: var(--acc); border-radius: 0 4px 4px 0; }
+  .metro.avviso i { background: var(--warn); }
+  .metro.pieno i { background: var(--cattivo); }
+
+  /* ---------- sezione chiusa: accesso al singolo progetto ---------- */
+  .chiusa {
+    margin: 32px auto; max-width: 420px;
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 24px;
+  }
+  .chiusa h2 { font-size: 16px; margin-bottom: 6px; }
+  .chiusa p { color: var(--dim); font-size: 14px; margin: 0 0 16px; }
+
+  .riquadro .valore.avviso { color: var(--warn); }
+  .prova-banner {
+    margin: 16px 0 0; padding: 8px 12px; border-radius: 4px;
+    border: 1px dashed var(--warn); color: var(--warn);
+    font-family: var(--mono); font-size: 11px;
+  }
+  .prova-banner:empty { display: none; }
+
+  .riquadro .valore { font-variant-numeric: lining-nums; }
+  header.testa h1 em, .scheda-accesso h1 em { font-style: italic; }
+  .barra-fissa .sezioni-scelta { flex: none; }
+  @media (max-width: 720px) {
+    .barra-fissa .sezioni-scelta { order: 0; }
+    .barra-fissa .periodi { order: 0; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Le due icone di Lucide (lucide.dev, licenza ISC), definite una volta
+     sola e richiamate dai due interruttori del tema. -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <symbol id="i-sole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+  </symbol>
+  <symbol id="i-luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+  </symbol>
+  <symbol id="i-esci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M21 12H9"/><path d="m16 17 5-5-5-5"/>
+  </symbol>
+</svg>
+
+<!-- ============ ACCESSO ============ -->
+<section id="accesso">
+  <form class="scheda-accesso" id="modulo-accesso">
+    <h1>Frigolo <em style="color:var(--acc)">dati</em></h1>
+    <p class="sotto">landing e uso dell'app</p>
+
+    <label class="campo">
+      <span class="etichetta">Email</span>
+      <input type="email" id="email" autocomplete="username" required>
+    </label>
+    <label class="campo">
+      <span class="etichetta">Password</span>
+      <input type="password" id="password" autocomplete="current-password" required>
+    </label>
+
+    <button type="submit" class="primario" id="btn-entra">Entra</button>
+    <div class="errore" id="errore-accesso"></div>
+    <p class="sotto" style="margin:18px 0 0;font-size:12.5px">Le stesse credenziali del cruscotto delle visite del sito. Le metriche dell'app arrivano ogni ora dal database di Frigolo.</p>
+  </form>
+</section>
+
+<!-- ============ CRUSCOTTO ============ -->
+<div id="cruscotto">
+
+<div class="barra-fissa"><div class="guscio-testa">
+  <header class="testa">
+    <h1>Frigolo <em class="punto">dati</em></h1>
+
+    <div class="sezioni-scelta" id="sezioni-scelta" role="group" aria-label="Sezione">
+      <button data-sezione="landing" aria-pressed="true">Landing<span class="lucchetto" id="lucchetto-landing"></span></button>
+      <button data-sezione="app" aria-pressed="false">App<span class="lucchetto" id="lucchetto-app"></span></button>
+    </div>
+
+    <div class="periodi" id="periodi" role="group" aria-label="Periodo">
+      <button data-giorni="0"  aria-pressed="true">Oggi</button>
+      <button data-giorni="7"  aria-pressed="false">7 giorni</button>
+      <button data-giorni="30" aria-pressed="false">30 giorni</button>
+      <button data-giorni="0"  data-tutto="1" aria-pressed="false">Sempre</button>
+    </div>
+
+    <div class="spinta"></div>
+    <div class="stato-vivo" id="stato-vivo"><span class="pallino"></span><span id="stato-testo">collegamento</span></div>
+    <span class="conta" id="stato-nota" style="font-family:var(--mono);font-size:10.5px;color:var(--dim2)"></span>
+    <button type="button" id="btn-tema" class="interruttore-tema" role="switch" aria-checked="true" aria-label="Tema scuro"><span class="pomello"></span><span class="lato lato-sole"><svg><use href="#i-sole"></use></svg></span><span class="lato lato-luna"><svg><use href="#i-luna"></use></svg></span></button>
+    <button type="button" id="btn-esci" title="Esci" aria-label="Esci"><span class="parola">Esci</span><svg class="segno" aria-hidden="true"><use href="#i-esci"></use></svg></button>
+  </header>
+</div></div>
+
+<div class="guscio">
+
+  <div class="prova-banner" id="prova-banner"></div>
+
+  <!-- ==================== LANDING ==================== -->
+  <div class="sezione" id="sezione-landing">
+
+    <div class="chiusa" id="chiusa-landing" hidden>
+      <h2>Visite alla landing</h2>
+      <p>Servono le credenziali del progetto delle statistiche del sito (le stesse del cruscotto delle visite di dascanfe.com).</p>
+      <form id="accesso-landing">
+        <label class="campo"><span class="etichetta">Password</span>
+          <input type="password" id="password-landing" autocomplete="current-password" required></label>
+        <button type="submit" class="primario">Entra</button>
+        <div class="errore" id="errore-landing"></div>
+      </form>
+    </div>
+
+  <div id="aperta-landing">
+
+  <!-- numeri chiave -->
+  <div class="riquadri">
+    <div class="riquadro">
+      <div class="titoletto etichetta"><span class="t">Visitatori</span><span class="info" tabindex="0" data-tip="<b>Persone diverse</b><div class='riga'>Contate per impronta, non per visita: chi torna tre volte nella stessa giornata vale uno. Nessun cookie: l'impronta cambia ogni notte e l'indirizzo IP non viene salvato.</div>">i</span></div>
+      <div class="valore num" id="k-visitatori">-</div>
+      <div class="nota" id="k-visitatori-nota">persone diverse</div>
+      <div class="delta" id="d-visitatori"></div>
+    </div>
+    <div class="riquadro">
+      <div class="titoletto etichetta"><span class="t">Visite</span><span class="info" tabindex="0" data-tip="<b>Sessioni</b><div class='riga'>Una visita e' una serie di pagine aperte senza pause di piu' di trenta minuti. La stessa persona che torna la sera fa due visite.</div>">i</span></div>
+      <div class="valore num" id="k-visite">-</div>
+      <div class="nota">sessioni</div>
+      <div class="delta" id="d-visite"></div>
+    </div>
+    <div class="riquadro">
+      <div class="titoletto etichetta"><span class="t">Pagine viste</span><span class="info" tabindex="0" data-tip="<b>Pagine aperte in tutto</b><div class='riga'>Ricaricare la stessa pagina conta come una nuova apertura. Sotto trovi la media per visita: quante pagine guarda una persona prima di andarsene.</div>">i</span></div>
+      <div class="valore num" id="k-pagine">-</div>
+      <div class="nota" id="k-pagine-nota">-</div>
+      <div class="delta" id="d-pagine"></div>
+    </div>
+    <div class="riquadro">
+      <div class="titoletto etichetta"><span class="t">Tempo per pagina</span><span class="info" tabindex="0" data-tip="<b>Quanto restano davvero</b><div class='riga'>Il cronometro corre solo quando la scheda e' in primo piano: una pagina lasciata aperta in sottofondo non conta. E' la mediana, non la media, cosi' una singola sosta lunghissima non falsa tutto.</div>">i</span></div>
+      <div class="valore num" id="k-tempo">-</div>
+      <div class="nota">mediana, solo scheda in primo piano</div>
+      <div class="delta" id="d-tempo"></div>
+    </div>
+    <div class="riquadro">
+      <div class="titoletto etichetta"><span class="t">Scorrimento</span><span class="info" tabindex="0" data-tip="<b>Quanta parte della pagina percorrono</b><div class='riga'>Se una pagina e' lunga dieci schermate e in meta' delle aperture si arriva alla settima, qui leggi 70%.</div>">i</span></div>
+      <div class="valore num" id="k-scroll">-</div>
+      <div class="nota">quanta parte della pagina percorrono</div>
+      <div class="delta" id="d-scroll"></div>
+    </div>
+    <div class="riquadro">
+      <div class="titoletto etichetta"><span class="t">Rimbalzo</span><span class="info" tabindex="0" data-tip="<b>Chi entra e se ne va subito</b><div class='riga'>Visite finite sulla prima pagina, senza aprirne altre e senza fermarsi almeno dieci secondi. Chi legge un articolo per tre minuti non e' un rimbalzo, anche se non clicca altro.</div><div class='riga'>Piu' basso e' meglio.</div>">i</span></div>
+      <div class="valore num" id="k-rimbalzo">-</div>
+      <div class="nota" id="k-rimbalzo-nota">entrano e se ne vanno subito</div>
+      <div class="delta" id="d-rimbalzo"></div>
+    </div>
+    <div class="riquadro">
+      <div class="titoletto etichetta"><span class="t">Apri Frigolo</span><span class="info" tabindex="0" data-tip="<b>Visite che aprono l'app</b><div class='riga'>Visite con almeno un clic verso frigolo.dascanfe.com: il pulsante Apri Frigolo o i link nelle istruzioni di installazione. E' il gesto che conta sulla landing.</div>">i</span></div>
+      <div class="valore num" id="k-download">-</div>
+      <div class="nota" id="k-download-nota">aprono l'app</div>
+      <div class="delta" id="d-download"></div>
+    </div>
+  </div>
+
+  <!-- regione, citta', lingua -->
+  <div class="griglia g-3">
+    <section class="pannello">
+      <header><h2 class="titoletto"><span class="t">Paesi</span><span class="info" tabindex="0" data-tip="<b>Da che paese guardano</b><div class='riga'>Ricavato dall'indirizzo di rete sul server: l'indirizzo non arriva mai al database, ci arriva solo il nome del paese.</div>">i</span></h2><span class="conta" id="conta-paesi"></span></header>
+      <div class="barre" id="paesi"></div>
+    </section>
+    <section class="pannello">
+      <header><h2 class="titoletto"><span class="t">Regioni</span><span class="info" tabindex="0" data-tip="<b>Da che regione guardano</b><div class='riga'>Su rete fissa e' affidabile. Da telefono con la connessione dati puo' indicare la regione del nodo dell'operatore invece di quella vera.</div>">i</span></h2><span class="conta" id="conta-regioni"></span></header>
+      <div class="barre" id="regioni"></div>
+    </section>
+    <section class="pannello">
+      <header><h2 class="titoletto"><span class="t">Citta'</span><span class="info" tabindex="0" data-tip="<b>Da che citta' guardano</b><div class='riga'>Stessa avvertenza della regione: precisa da casa, approssimativa da telefono in mobilita'. Aspettati il capoluogo, mai il quartiere.</div>">i</span></h2><span class="conta" id="conta-citta"></span></header>
+      <div class="barre" id="citta"></div>
+    </section>
+  </div>
+
+  <!-- dal vivo + andamento -->
+  <div class="griglia g-2">
+    <section class="pannello">
+      <header>
+        <h2 class="titoletto"><span class="t">Adesso sulla landing</span><span class="info" tabindex="0" data-tip="<b>Chi c'e' in questo momento</b><div class='riga'>Chi ha dato segno di vita negli ultimi cinque minuti. Sotto a ogni riga: la sezione che sta guardando e da dove.</div><div class='riga'>Si aggiorna da solo, senza ricaricare.</div>">i</span></h2>
+        <span class="conta" id="conta-vivo">-</span>
+      </header>
+      <div class="vivo-lista" id="vivo-lista"></div>
+    </section>
+
+    <section class="pannello">
+      <header>
+        <h2 class="titoletto"><span class="t" id="titolo-andamento">Visite per giorno</span><span class="info" tabindex="0" data-tip="<b>Quante visite ogni giorno</b><div class='riga'>L'area sono le visite, la linea tratteggiata le visite che aprono Frigolo. Con il periodo Oggi, un punto per ora. Passaci sopra per il dettaglio.</div>">i</span></h2>
+        <span class="conta" id="conta-andamento"></span>
+      </header>
+      <div class="area" id="andamento"></div>
+      <div class="asse-x" id="andamento-asse"></div>
+      <div class="legenda"><span><i class="nuove"></i> Visite</span><span><i class="seconda"></i> Aprono Frigolo</span></div>
+    </section>
+  </div>
+
+  <!-- orario e ritorno -->
+  <div class="griglia g-2">
+    <section class="pannello">
+      <header>
+        <h2 class="titoletto"><span class="t">A che ora arrivano</span><span class="info" tabindex="0" data-tip="<b>L'ora del giorno in cui entrano</b><div class='riga'>Ventiquattro colonne, una per ora, con l'orario del tuo fuso. Dice quando ha senso pubblicare qualcosa e quando la gente ti legge davvero.</div>">i</span></h2>
+        <span class="conta" id="conta-orari"></span>
+      </header>
+      <div class="colonne" id="orari"></div>
+      <div class="asse-x" id="orari-asse"></div>
+    </section>
+
+  <!-- nuove e di ritorno -->
+  <section class="pannello">
+    <header>
+      <h2 class="titoletto"><span class="t">Nuove e di ritorno</span><span class="info" tabindex="0" data-tip="<b>Chi arriva per la prima volta e chi era gia' passato</b><div class='riga'>Attenzione: l'impronta del visitatore cambia ogni notte, apposta, per non essere un pedinamento. Quindi 'gia' passato' vuol dire nella stessa giornata.</div>">i</span></h2>
+      <span class="conta" id="conta-ritorno"></span>
+    </header>
+    <div class="colonne" id="ritorno"></div>
+    <div class="asse-x" id="ritorno-asse"></div>
+    <div class="legenda">
+      <span><i class="nuove"></i> Prima visita</span>
+      <span><i class="ritorno"></i> Gia' visto prima</span>
+    </div>
+    <p class="nota-sotto" id="ritorno-nota"></p>
+  </section>
+  </div>
+
+  <!-- pagine + sezioni -->
+  <div class="griglia g-2">
+    <section class="pannello">
+      <header>
+        <h2 class="titoletto"><span class="t">Pagine</span><span class="info" tabindex="0" data-tip="<b>Le pagine piu' aperte</b><div class='riga'>Accanto al numero di aperture c'e' il tempo mediano di lettura. Clicca una pagina per vedere le sue sezioni e la sua curva di lettura.</div>">i</span></h2>
+        <span class="conta">scegline una per vedere le sezioni</span>
+      </header>
+      <div class="barre" id="pagine"></div>
+      <details class="tavola"><summary>Vedi come tabella</summary><div class="tabella-guscio" id="pagine-tabella"></div></details>
+    </section>
+
+    <section class="pannello">
+      <header>
+        <h2 class="titoletto" id="titolo-sezioni"><span class="t">Tempo per sezione</span><span class="info" tabindex="0" data-tip="<b>Dove si fermano dentro la pagina</b><div class='riga'>Una volta al secondo si guarda cosa sta al centro dello sguardo e le si accredita quel secondo. Sulla landing si usano le sezioni, su privacy e termini i titoli.</div>">i</span></h2>
+        <span class="conta" id="conta-sezioni"></span>
+      </header>
+      <div class="barre" id="sezioni"></div>
+    </section>
+  </div>
+
+  <!-- curva di lettura -->
+  <section class="pannello">
+    <header>
+      <h2 class="titoletto" id="titolo-curva"><span class="t">Fin dove leggono</span><span class="info" tabindex="0" data-tip="<b>Dove si ferma la lettura</b><div class='riga'>Ogni colonna dice quanta parte delle aperture e' arrivata almeno fino a quel punto della pagina. Parte sempre da 100 e scende: il punto in cui crolla e' dove perdi le persone.</div>">i</span></h2>
+      <span class="conta" id="conta-curva"></span>
+    </header>
+    <div class="colonne" id="curva"></div>
+    <div class="asse-x" id="curva-asse"></div>
+  </section>
+
+  <!-- entrata e uscita -->
+  <div class="griglia g-2">
+    <section class="pannello">
+      <header>
+        <h2 class="titoletto"><span class="t">Da dove entrano</span><span class="info" tabindex="0" data-tip="<b>La prima pagina della visita</b><div class='riga'>La porta d'ingresso: quasi sempre la landing, a volte privacy o termini.</div>">i</span></h2>
+        <span class="conta" id="conta-entrata"></span>
+      </header>
+      <div class="barre" id="entrata"></div>
+    </section>
+    <section class="pannello">
+      <header>
+        <h2 class="titoletto"><span class="t">Da dove escono</span><span class="info" tabindex="0" data-tip="<b>L'ultima pagina della visita</b><div class='riga'>Dove finisce il percorso. Sulla landing un'uscita dopo Apri Frigolo e' proprio il risultato che si cerca.</div>">i</span></h2>
+        <span class="conta" id="conta-uscita"></span>
+      </header>
+      <div class="barre" id="uscita"></div>
+    </section>
+  </div>
+
+  <!-- indirizzi che non esistono -->
+  <section class="pannello" id="riquadro-mancanti" hidden>
+    <header>
+      <h2 class="titoletto"><span class="t">Indirizzi non trovati</span><span class="info" tabindex="0" data-tip="<b>Indirizzi cercati che sul sito non esistono</b><div class='riga'>La pagina d'errore conta come tutte le altre, ma le sue aperture stanno qui e non fra le pagine del sito, altrimenti gonfierebbero i numeri con pagine che non esistono.</div><div class='riga'>Se un vecchio indirizzo compare spesso, conviene fargli un reindirizzamento verso la pagina che l'ha sostituito.</div>">i</span></h2>
+      <span class="conta" id="conta-mancanti"></span>
+    </header>
+    <div class="barre" id="mancanti"></div>
+    <p class="nota-sotto">Quasi sempre sono vecchi indirizzi del sito precedente, cercati da programmi che girano per conto loro. Vale la pena guardarli quando lo stesso indirizzo torna piu' volte, o quando arriva da una ricerca: vuol dire che qualcuno lo trova ancora scritto da qualche parte.</p>
+  </section>
+
+  <!-- provenienza, luoghi, tecnologia -->
+  <div class="griglia g-3">
+    <section class="pannello">
+      <header><h2 class="titoletto"><span class="t">Da dove arrivano</span><span class="info" tabindex="0" data-tip="<b>Il canale di arrivo</b><div class='riga'>Organico vuol dire da un motore di ricerca, social da LinkedIn o simili, ia da ChatGPT o Perplexity, diretto da chi ha scritto l'indirizzo o l'aveva nei preferiti.</div><div class='riga'>Chi apre il link dentro l'app di LinkedIn spesso risulta diretto: lo fanno le app, non e' un errore.</div>">i</span></h2></header>
+      <div class="barre" id="canali"></div>
+      <div class="etichetta" style="margin:18px 0 10px">Siti di provenienza</div>
+      <div class="barre" id="referenti"></div>
+    </section>
+
+    <section class="pannello">
+      <header><h2 class="titoletto"><span class="t">Lingua guardata</span><span class="info" tabindex="0" data-tip="<b>Quale versione del sito guardano</b><div class='riga'>Contata sulle pagine aperte, non sulle visite: chi passa dall'italiano all'inglese conta in tutte e due.</div>">i</span></h2><span class="conta" id="conta-lingue"></span></header>
+      <div class="barre" id="lingue"></div>
+    </section>
+
+    <section class="pannello">
+      <header><h2 class="titoletto"><span class="t">Con cosa guardano</span><span class="info" tabindex="0" data-tip="<b>Dispositivo, sistema, browser e larghezza dello schermo</b><div class='riga'>La larghezza e' quella utile della finestra, non quella fisica dello schermo: e' il numero che conta per decidere come impaginare.</div>">i</span></h2></header>
+      <div class="barre" id="dispositivi"></div>
+      <div class="etichetta" style="margin:18px 0 10px">Sistema e browser</div>
+      <div class="barre" id="sistemi"></div>
+      <div class="etichetta" style="margin:18px 0 10px">Larghezza dello schermo</div>
+      <div class="barre" id="schermi"></div>
+      <div class="titoletto etichetta" style="margin:18px 0 10px"><span class="t">Rete di provenienza</span><span class="info" tabindex="0" data-tip="<b>Da che rete si collegano</b><div class='riga'>Fastweb, Vodafone, Telecom vuol dire una persona. Amazon, Hetzner, DigitalOcean vuol dire un programma su un server affittato: quelle visite vengono marcate come robot e tenute fuori dai numeri.</div>">i</span></div>
+      <div class="barre" id="reti"></div>
+    </section>
+  </div>
+
+  <!-- gesti -->
+  <section class="pannello">
+    <header>
+      <h2 class="titoletto"><span class="t">Ultimi gesti</span><span class="info" tabindex="0" data-tip="<b>Clic che contano e link in uscita</b><div class='riga'>Solo i gesti veri di una persona: i clic generati dal codice sono scartati. I nomi frigolo:... sono i pulsanti marcati della landing. Mostro i cinquanta piu' recenti.</div>">i</span></h2>
+      <span class="conta" id="conta-gesti"></span>
+    </header>
+    <div class="tabella-guscio" id="gesti"></div>
+  </section>
+
+
+  <footer class="piede">
+    <span id="piede-periodo"></span>
+    <span id="piede-robot"></span>
+    <span id="piede-agg"></span>
+    <span id="piede-battito"></span>
+    <span id="piede-geo"></span>
+  </footer>
+
+  </div>
+  </div>
+
+  <!-- ==================== APP ==================== -->
+  <div class="sezione" id="sezione-app" hidden>
+
+    <div class="chiusa" id="chiusa-app" hidden>
+      <h2>Uso dell'app</h2>
+      <p id="chiusa-app-testo">La sessione e' scaduta: servono di nuovo le credenziali del progetto delle statistiche.</p>
+      <form id="accesso-app">
+        <label class="campo"><span class="etichetta">Password</span>
+          <input type="password" id="password-app" autocomplete="current-password" required></label>
+        <button type="submit" class="primario">Entra</button>
+        <div class="errore" id="errore-app"></div>
+      </form>
+    </div>
+
+    <div id="aperta-app">
+      <div class="riquadri">
+        <div class="riquadro">
+          <div class="titoletto etichetta"><span class="t">Registrazioni</span><span class="info" tabindex="0" data-tip="<b>Account creati nel periodo</b><div class='riga'>Sotto, gli iscritti di oggi in tutto (chi ha chiuso l'account non c'e' piu').</div>">i</span></div>
+          <div class="valore num" id="a-registrazioni">-</div>
+          <div class="nota" id="a-utenti">-</div>
+          <div class="delta" id="da-registrazioni"></div>
+        </div>
+        <div class="riquadro">
+          <div class="titoletto etichetta"><span class="t">Profili completati</span><span class="info" tabindex="0" data-tip="<b>Hanno scelto il nome</b><div class='riga'>Profili completati nel periodo, sulle registrazioni dello stesso periodo. E' il primo passo dell'onboarding.</div>">i</span></div>
+          <div class="valore num" id="a-profili">-</div>
+          <div class="nota" id="a-profili-nota">-</div>
+          <div class="delta" id="da-profili"></div>
+        </div>
+        <div class="riquadro">
+          <div class="titoletto etichetta"><span class="t">Persone attive</span><span class="info" tabindex="0" data-tip="<b>Hanno fatto qualcosa</b><div class='riga'>Persone diverse che nel periodo hanno aggiunto, spuntato o tolto un prodotto, completato una spesa, o sono entrate in una lista. Solo guardare non conta.</div>">i</span></div>
+          <div class="valore num" id="a-attivi">-</div>
+          <div class="nota" id="a-attivi-nota">-</div>
+          <div class="delta" id="da-attivi"></div>
+        </div>
+        <div class="riquadro">
+          <div class="titoletto etichetta"><span class="t">Liste condivise</span><span class="info" tabindex="0" data-tip="<b>Liste con almeno due persone</b><div class='riga'>Oggi, sul totale delle liste. E' il segno che Frigolo fa quello per cui e' nato.</div>">i</span></div>
+          <div class="valore num" id="a-condivise">-</div>
+          <div class="nota" id="a-condivise-nota">-</div>
+        </div>
+        <div class="riquadro">
+          <div class="titoletto etichetta"><span class="t">Prodotti aggiunti</span><span class="info" tabindex="0" data-tip="<b>Prodotti messi in lista nel periodo</b><div class='riga'>Da tutte le liste insieme.</div>">i</span></div>
+          <div class="valore num" id="a-prodotti">-</div>
+          <div class="nota" id="a-prodotti-nota">-</div>
+          <div class="delta" id="da-prodotti"></div>
+        </div>
+        <div class="riquadro">
+          <div class="titoletto etichetta"><span class="t">Spese completate</span><span class="info" tabindex="0" data-tip="<b>Spesa finita</b><div class='riga'>A mano con il pulsante, piu' quelle salvate dal salvataggio notturno.</div>">i</span></div>
+          <div class="valore num" id="a-spese">-</div>
+          <div class="nota" id="a-spese-nota">-</div>
+          <div class="delta" id="da-spese"></div>
+        </div>
+        <div class="riquadro">
+          <div class="titoletto etichetta"><span class="t">Inviti usati</span><span class="info" tabindex="0" data-tip="<b>Persone entrate in una lista altrui</b><div class='riga'>Con il codice o con il link. Sotto, le liste create nel periodo.</div>">i</span></div>
+          <div class="valore num" id="a-inviti">-</div>
+          <div class="nota" id="a-inviti-nota">-</div>
+          <div class="delta" id="da-inviti"></div>
+        </div>
+        <div class="riquadro">
+          <div class="titoletto etichetta"><span class="t">Inviti sbagliati</span><span class="info" tabindex="0" data-tip="<b>Tentativi falliti di usare un invito</b><div class='riga'>Codici sbagliati o scaduti. Qualcuno ogni tanto e' normale; un picco vuol dire che qualcuno prova codici a caso.</div><div class='riga'>Piu' basso e' meglio.</div>">i</span></div>
+          <div class="valore num" id="a-falliti">-</div>
+          <div class="nota" id="a-falliti-nota">-</div>
+          <div class="delta" id="da-falliti"></div>
+        </div>
+      </div>
+
+      <section class="pannello">
+        <header>
+          <h2 class="titoletto"><span class="t">Persone attive</span><span class="info" tabindex="0" data-tip="<b>Ogni giorno e negli ultimi sette</b><div class='riga'>L'area sono le persone attive quel giorno, la linea tratteggiata quelle attive nei sette giorni fino a quel giorno.</div>">i</span></h2>
+          <span class="conta" id="conta-a-attivi"></span>
+        </header>
+        <div class="area" id="a-andamento-attivi"></div>
+        <div class="asse-x" id="a-andamento-attivi-asse"></div>
+        <div class="legenda"><span><i class="nuove"></i> Attivi nel giorno</span><span><i class="seconda"></i> Attivi in 7 giorni</span></div>
+      </section>
+
+      <div class="griglia g-2" style="margin-top:12px">
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Registrazioni e prodotti</span><span class="info" tabindex="0" data-tip="<b>Per giorno</b><div class='riga'>L'area sono i prodotti aggiunti, la linea tratteggiata le registrazioni (scala propria, vedi il dettaglio passandoci sopra).</div>">i</span></h2><span class="conta" id="conta-a-prodotti"></span></header>
+          <div class="area" id="a-andamento-prodotti"></div>
+          <div class="asse-x" id="a-andamento-prodotti-asse"></div>
+          <div class="legenda"><span><i class="nuove"></i> Prodotti</span><span><i class="seconda"></i> Registrazioni</span></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Inviti sbagliati per giorno</span><span class="info" tabindex="0" data-tip="<b>Allarme forza bruta</b><div class='riga'>Ogni utente ha un tetto di 10 tentativi falliti all'ora e 30 al giorno.</div>">i</span></h2><span class="conta" id="conta-a-falliti"></span></header>
+          <div class="area" id="a-andamento-falliti"></div>
+          <div class="asse-x" id="a-andamento-falliti-asse"></div>
+        </section>
+      </div>
+
+      <!-- v3: iscrizioni, percorso, uso, sessioni, errori -->
+      <div class="griglia g-2">
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Iscrizioni</span><span class="info" tabindex="0" data-tip="<b>Account creati</b><div class='riga'>Dai contatori: restano anche gli account poi cancellati. Escluso l'account di Daniele. Non dipende dal periodo scelto.</div>">i</span></h2><span class="conta" id="conta-iscrizioni"></span></header>
+          <div class="etichetta" style="margin:0 0 10px">Per settimana</div>
+          <div class="area" id="a-iscr-settimane" style="height:120px"></div>
+          <div class="asse-x" id="a-iscr-settimane-asse"></div>
+          <div class="etichetta" style="margin:18px 0 10px">Per mese</div>
+          <div class="area" id="a-iscr-mesi" style="height:120px"></div>
+          <div class="asse-x" id="a-iscr-mesi-asse"></div>
+          <div class="etichetta" style="margin:18px 0 10px">Per anno</div>
+          <div class="barre" id="a-iscr-anni"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Percorso di iscrizione</span><span class="info" tabindex="0" data-tip="<b>Dalla landing al primo prodotto</b><div class='riga'>Visite alla landing e visite che vanno all'app (progetto delle statistiche), poi chi si e' registrato nel periodo ed e' ancora iscritto: email confermata, profilo completato, almeno una lista, almeno un prodotto aggiunto. Accanto, la quota sul passo prima.</div>">i</span></h2></header>
+          <div class="barre" id="a-percorso"></div>
+          <p class="nota-sotto" id="a-percorso-nota">La landing e l'app non si possono collegare persona per persona (ed e' voluto): i primi due passi sono visite, gli altri persone.</p>
+        </section>
+      </div>
+
+      <div class="griglia g-2">
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Quanto la usano</span><span class="info" tabindex="0" data-tip="<b>Giorni d'uso per persona</b><div class='riga'>Fra le persone attive nel periodo: quante l'hanno usata in un solo giorno, in 2-5, 6-15 o 16 giorni e piu'. Solo conteggi, nessuna persona.</div>">i</span></h2><span class="conta" id="conta-uso"></span></header>
+          <div class="barre" id="a-uso"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Sessioni</span><span class="info" tabindex="0" data-tip="<b>Quanto resta aperta l'app</b><div class='riga'>Una sessione parte quando l'app si apre o torna in primo piano e finisce dopo 30 secondi in sottofondo. Solo chi ha fatto l'accesso. Mediana stimata sulle fasce di durata.</div>">i</span></h2><span class="conta" id="conta-sessioni"></span></header>
+          <div class="area" id="a-sessioni" style="height:120px"></div>
+          <div class="asse-x" id="a-sessioni-asse"></div>
+          <div class="legenda"><span><i class="nuove"></i> Sessioni</span><span><i class="seconda"></i> Durata media</span></div>
+          <div class="etichetta" style="margin:18px 0 10px">App installata o browser</div>
+          <div class="barre" id="a-modalita"></div>
+          <div class="etichetta" style="margin:18px 0 10px">Dispositivo</div>
+          <div class="barre" id="a-dispositivi"></div>
+        </section>
+      </div>
+
+      <div class="griglia g-3">
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Versioni in uso</span><span class="info" tabindex="0" data-tip="<b>Versioni dell'app</b><div class='riga'>Sessioni per versione: dice quanto ci mette un aggiornamento ad arrivare a tutti.</div>">i</span></h2></header>
+          <div class="barre" id="a-versioni"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Temi scelti</span><span class="info" tabindex="0" data-tip="<b>Tema dell'app</b><div class='riga'>Sessioni per tema in uso.</div>">i</span></h2></header>
+          <div class="barre" id="a-temi"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Funzioni</span><span class="info" tabindex="0" data-tip="<b>Cosa usano</b><div class='riga'>Spesa finita a mano, liste con piu' persone, codici di invito rinnovati, sessioni passate almeno in parte offline.</div>">i</span></h2></header>
+          <div class="barre" id="a-funzioni"></div>
+        </section>
+      </div>
+
+      <section class="pannello" style="margin-bottom:12px">
+        <header><h2 class="titoletto"><span class="t">Errori dell'app</span><span class="info" tabindex="0" data-tip="<b>Errori nel telefono delle persone</b><div class='riga'>Errori del codice e delle richieste al server, con il messaggio ripulito da email, codici e numeri. Al massimo 10 per apertura, senza doppioni. Offline non si contano.</div><div class='riga'>Piu' basso e' meglio.</div>">i</span></h2><span class="conta" id="conta-errori"></span></header>
+        <div class="area" id="a-errori" style="height:110px"></div>
+        <div class="asse-x" id="a-errori-asse"></div>
+        <div class="etichetta" style="margin:18px 0 10px">I piu' frequenti</div>
+        <div class="tabella-guscio" id="a-errori-tabella"></div>
+      </section>
+
+      <div class="griglia g-2">
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Tornano?</span><span class="info" tabindex="0" data-tip="<b>Retention</b><div class='riga'>Fra chi si e' registrato nel periodo: quanti hanno fatto qualcosa il giorno dopo (1 giorno), nella seconda settimana (giorni 7-13) e nel secondo mese (giorni 30-59). Conta solo chi si e' registrato abbastanza tempo fa da poterlo misurare.</div>">i</span></h2></header>
+          <div class="barre" id="a-retention"></div>
+        </section>
+        <section class="pannello">
+          <header><h2 class="titoletto"><span class="t">Spazio usato</span><span class="info" tabindex="0" data-tip="<b>Limiti del piano gratuito</b><div class='riga'>Database 500 MB, file (foto profilo) 1 GB. Oltre l'80% e' ora di pensarci.</div>">i</span></h2></header>
+          <div class="etichetta">Database</div>
+          <div class="valore num" style="font-family:var(--head);font-size:22px;font-weight:700;margin-top:4px" id="a-db">-</div>
+          <div class="metro" id="a-db-metro"><i style="width:0"></i></div>
+          <div class="etichetta" style="margin-top:20px">Foto profilo</div>
+          <div class="valore num" style="font-family:var(--head);font-size:22px;font-weight:700;margin-top:4px" id="a-storage">-</div>
+          <div class="metro" id="a-storage-metro"><i style="width:0"></i></div>
+        </section>
+      </div>
+      <footer class="piede">
+        <span id="piede-app-periodo"></span>
+        <span id="piede-app-dati"></span>
+        <span id="piede-app-agg"></span>
+      </footer>
+    </div>
+  </div>
+
+  <p class="tema-in-fondo"><span class="etichetta">Tema</span><button type="button" id="btn-tema-2" class="interruttore-tema" role="switch" aria-checked="true" aria-label="Tema scuro"><span class="pomello"></span><span class="lato lato-sole"><svg><use href="#i-sole"></use></svg></span><span class="lato lato-luna"><svg><use href="#i-luna"></use></svg></span></button></p>
+
+
+
+</div>
+</div>
+
+<div id="tip" role="tooltip"></div>
+
+<!-- Questa pagina non porta il tracciante della landing (track.js) ne'
+     quello del sito: chi la apre non viene contato. -->
+<script src="config.js"></script>
+<script src="lib/supabase.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
