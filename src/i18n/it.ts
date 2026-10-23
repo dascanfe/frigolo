@@ -325,12 +325,27 @@ export const it = {
     button: 'Aggiorna ora',
     dismiss: 'Più tardi',
   },
-  install: {
-    title: 'Tienila sulla schermata Home',
-    ios: 'Tocca Condividi e poi "Aggiungi alla schermata Home".',
-    android: "Si apre come un'app, anche senza rete.",
-    button: 'Installa',
-    dismiss: 'Non mostrare più',
+  installCard: {
+    text: 'Installala: si apre più veloce e funziona anche senza rete',
+    install: 'Installa Frigolo',
+    how: 'Come si fa',
+    dismiss: 'Non ora',
+  },
+  installGuide: {
+    title: 'Aggiungi Frigolo alla Home',
+    titleOther: 'Aprila con Safari',
+    subtitle: "Tre tocchi e si apre come un'app.",
+    close: 'Chiudi',
+    step1: 'Tocca Condividi, nella barra in basso di Safari.',
+    step2: 'Scorri e tocca "Aggiungi alla schermata Home".',
+    step3: 'Tocca "Aggiungi", in alto a destra.',
+    addShort: 'Aggiungi',
+    pointer: 'Condividi è qui sotto',
+    notSafari:
+      'Su iPhone si installa da Safari. Copia il link, aprilo con Safari e segui i tre passaggi.',
+    copyLink: 'Copia il link',
+    copied: 'Link copiato',
+    copyFailed: 'Non sono riuscito a copiare: aprilo con Safari a mano.',
   },
   emptyList: {
     title: 'Cosa manca?',

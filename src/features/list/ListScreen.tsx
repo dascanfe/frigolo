@@ -12,6 +12,7 @@ import { memberName, useHousehold } from '@/features/auth/useHousehold'
 import { CreateItemSheet } from '@/features/catalog/CreateItemSheet'
 import type { CreateItemRequest } from '@/features/catalog/CreateItemSheet'
 import { useCatalog } from '@/features/catalog/useCatalog'
+import { InstallCard } from '@/features/install/InstallCard'
 import { ListSwitcherSheet } from '@/features/lists/ListSwitcherSheet'
 import { armShareNudge } from '@/features/tips/shareNudge'
 import { dismissTip, triggerTip } from '@/features/tips/tips'
@@ -197,6 +198,7 @@ export function ListScreen() {
       />
 
       {!searching && !isEmpty && <ShareNudge />}
+      {!searching && !isEmpty && <InstallCard />}
 
       {!searching && storesInList.length > 0 && (
         <div className="chip-row px-4 py-1" role="group" aria-label={t.list.filterByStore}>
@@ -314,6 +316,7 @@ export function ListScreen() {
           >
             {t.emptyList.openCatalog}
           </Link>
+          <InstallCard />
         </>
       ) : (
         <>

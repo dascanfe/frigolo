@@ -5,7 +5,6 @@ import { useRealtimeSync } from '@/features/list/useRealtimeSync'
 import { TipBubble } from '@/features/tips/TipBubble'
 import { useSuppressTipsForExperienced } from '@/features/tips/useSuppressTipsForExperienced'
 import { BottomNav } from './BottomNav'
-import { InstallBanner } from './InstallBanner'
 import { OfflineBanner } from './OfflineBanner'
 import { UpdateBar } from './UpdateBar'
 
@@ -22,7 +21,6 @@ export function AppShell() {
       <Fragment key={household.id}>
         <Outlet />
       </Fragment>
-      <InstallBanner />
       <TipBubble />
       <BottomNav />
     </div>
