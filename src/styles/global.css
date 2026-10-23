@@ -708,6 +708,21 @@
     display: none;
   }
 
+  /* freccia della guida di installazione: rimbalza verso il basso */
+  @keyframes install-pointer {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(8px);
+    }
+  }
+
+  .install-pointer {
+    animation: install-pointer 1s ease-in-out infinite;
+  }
+
   /* barra "versione nuova": scende dall'alto */
   @keyframes update-bar-in {
     from {
