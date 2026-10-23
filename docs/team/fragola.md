@@ -99,6 +99,15 @@ lista, con acquisti o a chi ha già prodotti. Toast con mascotte opzionale (`toa
   Paprika, rigenerare con la chiave delle statistiche, caricare via FTP (lo fa il PM).
 - Aggiunte due domande alle FAQ (iPhone e Android, codice aperto): da far rivedere a Zenzero.
 
+### 2026-10-23 - Aggiornamenti automatici della PWA
+
+- `vite.config.ts`: `skipWaiting: true` (con `clientsClaim`), `registerType` resta `prompt` così il plugin non ricarica mai da solo. Il nuovo worker si attiva appena installato.
+- `src/lib/pwa.ts`: il `controllerchange` (con pagina già controllata) accende `needRefresh` e quindi `UpdateBar`. La pagina si ricarica da sola solo alla ripresa dopo 3 minuti o più in background (`shouldReloadOnResume`), mai mentre è visibile. `applyUpdate` ricarica subito se il worker nuovo è già attivo.
+- `setupChunkErrorReload`: `vite:preloadError` e import dinamici falliti ricaricano una volta sola (flag `frigolo-preload-reload` in sessionStorage, azzerato 10 s dopo il caricamento).
+- Coda offline: `savePendingMutations` / `restorePendingMutations` in `offlineQueue.ts` tengono una copia delle mutation in pausa su IndexedDB (chiave `frigolo-pending-mutations`), scritta a ogni cambio e prima di ogni ricarica; riletta in `App.tsx` prima di `resumePausedMutations`. Serve perché il `buster` (versione) scarta la cache principale a ogni release.
+- Provato in locale con due build di `pnpm preview` e Chrome vero: worker nuovo attivo da solo, pagina aperta non ricaricata, ricarica alla ripresa simulata, preloadError ricarica una volta. La barra non l'ho vista perché sta dopo il login.
+- Rischio: i telefoni con la versione vecchia (senza skipWaiting) si aggiornano solo quando il vecchio worker rilascia (chiusura completa dell'app); dopo quella volta è tutto automatico.
+
 ### 2026-10-10 - Landing (Fase 2)
 
 - Sorgenti in `landing/` (branch `fragola/landing`): `src/` (HTML, CSS, JS, `.htaccess`),
