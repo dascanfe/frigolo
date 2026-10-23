@@ -320,6 +320,11 @@ export const it = {
     button: 'Invita',
     dismiss: 'Non ora',
   },
+  updateBar: {
+    title: "C'è una versione nuova di Frigolo ✨",
+    button: 'Aggiorna ora',
+    dismiss: 'Più tardi',
+  },
   install: {
     title: 'Tienila sulla schermata Home',
     ios: 'Tocca Condividi e poi "Aggiungi alla schermata Home".',

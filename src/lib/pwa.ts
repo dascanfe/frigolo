@@ -27,6 +27,9 @@ function setSwState(patch: Partial<ServiceWorkerState>) {
   for (const listener of swListeners) listener()
 }
 
+// Debug in sviluppo: window.__frigoloPwa.setSwState({ needRefresh: true }) simula una versione nuova
+if (import.meta.env.DEV) Object.assign(window, { __frigoloPwa: { setSwState } })
+
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000
 
 /** Da chiamare una volta all'avvio (main.tsx) */

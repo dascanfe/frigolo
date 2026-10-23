@@ -708,6 +708,18 @@
     display: none;
   }
 
+  /* barra "versione nuova": scende dall'alto */
+  @keyframes update-bar-in {
+    from {
+      transform: translateY(-120%);
+      opacity: 0;
+    }
+  }
+
+  .update-bar {
+    animation: update-bar-in 0.35s var(--ease-out) both;
+  }
+
   /* piccolo invito a toccare: un saltello, poi pausa */
   @keyframes starter-nudge {
     0%,
