@@ -229,9 +229,6 @@ export const it = {
     create: (name: string) => `Crea "${name}"`,
     recent: 'Gli ultimi acquisti',
     recentHint: 'Le cose comprate di recente: un tocco per rimetterle in lista.',
-    suggested: 'Suggeriti per te',
-    suggestedHint:
-      'In base a ogni quanto si ricompra una cosa e a cosa è di stagione. Tieni premuto per il motivo.',
     all: 'Tutti',
     filterByStore: 'Filtra per supermercato',
   },
