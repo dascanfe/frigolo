@@ -32,6 +32,31 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-10-23 - Rifiniture di ottobre (branch `fragola/rifiniture-ottobre`)
+
+1. Barra in basso: `useKeyboardOpen` (focus su un campo di testo o `visualViewport` ridotto di oltre
+   120px) la nasconde con la tastiera aperta; il body non viene mai fissato.
+2. Ricerca (`features/search/fuzzy.ts`): esatto, nome che inizia, parola che inizia, sottostringa
+   (da 4 caratteri), refusi solo se i risultati esatti sono meno di 5 e con tolleranza legata alla
+   lunghezza della query (sotto 5 lettere nessuna). A parità: acquisti, poi alfabetico.
+   Resta che "cacc" trova ancora "Focaccia" (sottostringa), ma da sola e senza rumore.
+3. Installazione: `InstallCard` in pagina (sostituisce `InstallBanner`), `IosInstallGuide` (3 passaggi
+   e freccia verso Condividi), stato in `lib/installNudge.ts` (ricompare dopo 3 giorni, al massimo
+   3 volte), `lib/installPlatform.ts` riconosce Safari e gli altri browser su iOS. L'esito del
+   prompt di Android è solo in localStorage: mandarlo alle metriche richiede una RPC di Basilio.
+4. `UpdateBar`: barra in alto con accento del tema e mascotte, "Aggiorna ora" (`applyUpdate`) e X
+   (chiusa solo in memoria: torna alla riapertura). Il controllo orario resta.
+5. Home: tolta la sezione "Suggeriti per te", resta il motore in `features/suggestions`.
+6. Catalogo: scroll-spy con IntersectionObserver (`useCategoryScrollSpy`); le pill non filtrano più,
+   portano alla categoria; l'evidenziazione resta ferma durante lo scorrimento animato.
+7. "I più acquistati": solo accento del tema, opacità decrescente.
+
+Debug in sviluppo: `window.__frigoloPwa.setSwState({ needRefresh: true })` e
+`setInstallState({ canPrompt: true })`.
+
+Non provato su dispositivi veri: tastiera iOS, installazione reale su Android e iPhone (l'indicatore
+punta in basso al centro: con Safari di iOS 26 il tasto Condividi sta nel menu "...").
+
 ### 2026-10-20 - Primo uso: più prodotti aggiunti e invito a condividere
 
 Dati: su 16 iscritti solo 9 (56%) aggiungono un prodotto; 1 lista su 17 è condivisa.

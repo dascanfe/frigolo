@@ -12,11 +12,12 @@ import { memberName, useHousehold } from '@/features/auth/useHousehold'
 import { CreateItemSheet } from '@/features/catalog/CreateItemSheet'
 import type { CreateItemRequest } from '@/features/catalog/CreateItemSheet'
 import { useCatalog } from '@/features/catalog/useCatalog'
+import { InstallCard } from '@/features/install/InstallCard'
 import { ListSwitcherSheet } from '@/features/lists/ListSwitcherSheet'
 import { armShareNudge } from '@/features/tips/shareNudge'
 import { dismissTip, triggerTip } from '@/features/tips/tips'
 import { useSearch } from '@/features/search/useSearch'
-import { usePurchaseHistoryQuery, useSuggestions } from '@/features/suggestions/useSuggestions'
+import { usePurchaseHistoryQuery } from '@/features/suggestions/useSuggestions'
 import { it as t } from '@/i18n/it'
 import { badgeQuantity, capitalizeFirst, pluralize } from '@/lib/format'
 import { toast } from '@/lib/toast'
@@ -45,9 +46,14 @@ export function ListScreen() {
   const [sheetTarget, setSheetTarget] = useState<EntrySheetTarget | null>(null)
   const [query, setQuery] = useState('')
   const [createRequest, setCreateRequest] = useState<CreateItemRequest | null>(null)
-  const search = useSearch(query, catalog.items)
-  const { suggestions } = useSuggestions()
   const history = usePurchaseHistoryQuery(household.id)
+  const purchaseCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const purchase of history.data ?? [])
+      counts.set(purchase.item_id, (counts.get(purchase.item_id) ?? 0) + 1)
+    return counts
+  }, [history.data])
+  const search = useSearch(query, catalog.items, purchaseCounts)
   const [storeFilter, setStoreFilter] = useState<string | null>(null)
 
   /** Supermercati presenti tra i prodotti in lista, per i filtri */
@@ -79,12 +85,6 @@ export function ListScreen() {
     }
     return result
   }, [history.data, list.entryByItemId, catalog.itemById])
-
-  /** Suggeriti, senza ripetere quelli già in "Gli ultimi acquisti" */
-  const visibleSuggestions = useMemo(() => {
-    const recentIds = new Set(recentItems.map((item) => item.id))
-    return suggestions.filter((suggestion) => !recentIds.has(suggestion.itemId))
-  }, [suggestions, recentItems])
 
   const isEmpty = !list.isPending && list.entries.length === 0
 
@@ -198,6 +198,7 @@ export function ListScreen() {
       />
 
       {!searching && !isEmpty && <ShareNudge />}
+      {!searching && !isEmpty && <InstallCard />}
 
       {!searching && storesInList.length > 0 && (
         <div className="chip-row px-4 py-1" role="group" aria-label={t.list.filterByStore}>
@@ -315,6 +316,7 @@ export function ListScreen() {
           >
             {t.emptyList.openCatalog}
           </Link>
+          <InstallCard />
         </>
       ) : (
         <>
@@ -402,32 +404,6 @@ export function ListScreen() {
                 />
               )
             })}
-          </ProductGrid>
-        </section>
-      )}
-
-      {!searching && visibleSuggestions.length > 0 && (
-        <section className="mt-8 border-t border-subtle pt-4">
-          <SectionHeader title={t.list.suggested} count={visibleSuggestions.length} />
-          <p className="-mt-2 px-4 pb-3 text-sm text-secondary">{t.list.suggestedHint}</p>
-          <ProductGrid label={t.list.suggested}>
-            {visibleSuggestions.map((suggestion) => (
-              <ProductTile
-                key={suggestion.itemId}
-                name={suggestion.item.name}
-                icon={suggestion.item.icon}
-                state="idle"
-                hint={suggestion.kind}
-                onTap={() => mutations.add(suggestion.item)}
-                onLongPress={() =>
-                  setSheetTarget({
-                    item: suggestion.item,
-                    category: suggestion.category,
-                    reason: suggestion.reason,
-                  })
-                }
-              />
-            ))}
           </ProductGrid>
         </section>
       )}

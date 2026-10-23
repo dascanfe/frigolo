@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { CategoryChips } from '@/components/CategoryChips'
 import { AddTile, ProductTile } from '@/components/ProductTile'
 import type { TileState } from '@/components/ProductTile'
@@ -12,6 +12,7 @@ import { badgeQuantity } from '@/lib/format'
 import { CreateItemSheet } from './CreateItemSheet'
 import type { CreateItemRequest } from './CreateItemSheet'
 import { useCatalog } from './useCatalog'
+import { categoryAnchorId, useCategoryScrollSpy } from './useCategoryScrollSpy'
 
 function tileState(entry: ListEntryWithItem | undefined): TileState {
   if (!entry) return 'idle'
@@ -22,13 +23,12 @@ export function CatalogScreen() {
   const catalog = useCatalog()
   const list = useList()
   const mutations = useListMutations()
-  const [selected, setSelected] = useState<string | null>(null)
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const endRef = useRef<HTMLDivElement>(null)
+  const slugs = catalog.categories.map((c) => c.slug)
+  const { active, goTo } = useCategoryScrollSpy(slugs, stickyRef, endRef)
   const [sheetTarget, setSheetTarget] = useState<EntrySheetTarget | null>(null)
   const [createRequest, setCreateRequest] = useState<CreateItemRequest | null>(null)
-
-  const visibleCategories = selected
-    ? catalog.categories.filter((c) => c.slug === selected)
-    : catalog.categories
 
   function toggle(item: Item) {
     const entry = list.entryByItemId.get(item.id)
@@ -46,24 +46,28 @@ export function CatalogScreen() {
       </header>
 
       <div
+        ref={stickyRef}
         className="sticky top-0 z-10 bg-app/95 backdrop-blur-sm"
         style={{ top: 'var(--safe-top)' }}
       >
         <CategoryChips
           categories={catalog.categories}
-          selected={selected}
-          onSelect={setSelected}
+          selected={active}
+          onSelect={goTo}
+          toggle={false}
+          followSelected
           allLabel="Tutte"
         />
       </div>
 
       <ProductGrid label="Catalogo prodotti" className="pt-2">
-        {visibleCategories.map((category) => {
+        {catalog.categories.map((category) => {
           const items = catalog.itemsByCategory.get(category.id) ?? []
           return [
             <CategoryDivider
               key={`divider-${category.id}`}
               name={category.name}
+              id={categoryAnchorId(category.slug)}
               slug={category.slug}
               icon={category.icon}
             />,
@@ -90,6 +94,7 @@ export function CatalogScreen() {
           ]
         })}
       </ProductGrid>
+      <div ref={endRef} aria-hidden="true" />
 
       <EntrySheet target={sheetTarget} onClose={() => setSheetTarget(null)} />
       <CreateItemSheet
