@@ -114,7 +114,7 @@ const SCREENS = {
   's05-corsia': { kind: 'list', title: 'Casa', sub: 'In ordine di corsia', sections: true },
   's06-carrello': { kind: 'list', title: 'Casa', sub: 'Nel carrello', checked: 4 },
   's13-analitiche': { kind: 'chart', title: 'Analitiche', sub: 'Lista Casa' },
-  's14-suggeriti': { kind: 'list', title: 'Casa', sub: 'Suggeriti per te', chips: true },
+  's14-ultimi-acquisti': { kind: 'list', title: 'Casa', sub: 'Suggeriti per te', chips: true },
   's17-offline': { kind: 'list', title: 'Casa', sub: 'Da comprare', banner: 'Offline' },
 }
 const COLORS = ['#3e7c86', '#ce5f36', '#7e7530', '#c2902f', '#a85641', '#86a79b']
