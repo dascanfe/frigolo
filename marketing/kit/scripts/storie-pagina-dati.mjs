@@ -89,7 +89,7 @@ Le prossime novità (nuove funzioni, versioni) si aggiungono a questa raccolta.
   {
     cartella: '4-domande',
     nome: 'Domande',
-    quando: 'Settimana 4, martedì 10 novembre, insieme a S4-01 (Feedback "Cosa manca?")',
+    quando: 'Settimana 4, giovedì 12 novembre (mattina, 8:00), insieme a S4-01 (Feedback "Cosa manca?")',
     storie: [
       ['01-cosa-vorresti.png', { tipo: 'testo', tema: 'menta', titolo: 'Cosa vorresti *in Frigolo?* 👀', testo: 'Scrivilo qui sotto: leggo tutto e rispondo a tutti.', mascotte: 'pensierosa', pos: 'basso' }],
       ['02-faq.png', { tipo: 'faq', tema: 'chiaro', titolo: 'Le tre *domande* più frequenti', voci: [
@@ -99,7 +99,7 @@ Le prossime novità (nuove funzioni, versioni) si aggiungono a questa raccolta.
       ] }],
     ],
     istruzioni: `RACCOLTA IN EVIDENZA: Domande
-Storie: 2. Da pubblicare nella settimana 4 (martedì 10 novembre, accanto a S4-01), dalla pagina ${PAGINA}.
+Storie: 2. Da pubblicare nella settimana 4 (giovedì 12 novembre al mattino, accanto a S4-01), dalla pagina ${PAGINA}.
 
 Storia 01 "Cosa vorresti in Frigolo?"
 - Aggiungi lo sticker DOMANDA (sticker > Domande) con il testo "Cosa vorresti in Frigolo?".
@@ -119,12 +119,12 @@ Dopo la pubblicazione
   {
     cartella: '5-caffe',
     nome: 'Caffè',
-    quando: 'Settimana 4, giovedì 12 novembre, insieme a S4-02 (Post "Offrimi un caffè")',
+    quando: 'Settimana 5, martedì 17 novembre (mattina, 8:00), insieme a S4-02 (Post "Offrimi un caffè")',
     storie: [
       ['01-offrimi-un-caffe.png', { tipo: 'testo', tema: 'lampone', titolo: 'Offrimi un *caffè* 💚', testo: 'Frigolo è gratis e senza pubblicità. Se ti è utile e ti va, un caffè mi aiuta a tenerlo vivo.', mascotte: 'contenta', pos: 'destra' }],
     ],
     istruzioni: `RACCOLTA IN EVIDENZA: Caffè
-Storia: 1. Da pubblicare nella settimana 4, giovedì 12 novembre, insieme al post S4-02 "Offrimi un caffè". Dalla pagina ${PAGINA}.
+Storia: 1. Da pubblicare nella settimana 5, martedì 17 novembre al mattino, insieme al post S4-02 "Offrimi un caffè". Dalla pagina ${PAGINA}.
 
 Cosa aggiungere in Instagram
 - Sticker link "Offrimi un caffè" verso
@@ -159,8 +159,8 @@ Ordine di pubblicazione
 3. Poi (circa 19:40): 1-installa
 4. Poi (circa 19:50): 2-come-funziona
 5. Martedì 20 ottobre, 19:30: Reel di lancio (S1-02), da ricondividere e aggiungere a Novità.
-6. Martedì 10 novembre: 4-domande (con S4-01)
-7. Giovedì 12 novembre: 5-caffe (con S4-02)
+6. Giovedì 12 novembre, mattina: 4-domande (con S4-01)
+7. Martedì 17 novembre, mattina: 5-caffe (con S4-02)
 
 Zone sicure: nelle storie la fascia alta (250 px) e bassa (340 px) è libera per l'interfaccia
 di Instagram: lì vanno gli sticker.
@@ -187,7 +187,7 @@ ${RACCOLTE.map((r) => `| ${r.nome} (\`${r.cartella}\`) | ${r.quando} | ${r.stori
 3. 19:40 Pubblica le 7 storie di \`1-installa\`, poi le 4 di \`2-come-funziona\`.
 4. Salva ogni gruppo nella sua raccolta in evidenza, con la copertina da \`copertine-in-evidenza/\`.
 
-**Più avanti:** martedì 20 ottobre il Reel di lancio (S1-02) si ricondivide e si aggiunge a \`3-novita\`; \`4-domande\` martedì 10 novembre insieme a S4-01, \`5-caffe\` giovedì 12 novembre
+**Più avanti:** martedì 20 ottobre il Reel di lancio (S1-02) si ricondivide e si aggiunge a \`3-novita\`; \`4-domande\` giovedì 12 novembre (mattina) insieme a S4-01, \`5-caffe\` martedì 17 novembre (mattina)
 insieme a S4-02 (è l'unico invito a donare, in linea con il tono).
 
 `
