@@ -1,5 +1,5 @@
 import { X } from 'lucide-react'
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { Button } from '@/components/Button'
 import { isShareNudgePending, subscribeShareNudge } from '@/features/tips/shareNudge'
 import { it as t } from '@/i18n/it'
@@ -10,6 +10,7 @@ import {
   subscribeInstallNudge,
 } from '@/lib/installNudge'
 import { getInstallState, promptInstall, subscribeInstall } from '@/lib/pwa'
+import { recordEvent } from '@/lib/telemetry'
 import { IosInstallGuide } from './IosInstallGuide'
 
 /**
@@ -29,10 +30,17 @@ export function InstallCard() {
 
   const ios = install.platform !== 'other'
   const canInstall = install.canPrompt || ios
+  // metriche anonime: la scheda è stata mostrata (una volta per apertura)
+  const cardShown =
+    !install.installed && canInstall && !guideOpen && !sharePending && isInstallNudgeDue(nudge, now)
+  useEffect(() => {
+    if (cardShown) recordEvent('install_scheda')
+  }, [cardShown])
   if (install.installed || !canInstall) return null
   if (!guideOpen && (sharePending || !isInstallNudgeDue(nudge, now))) return null
 
   async function onInstall() {
+    recordEvent('install_android_tocco')
     const accepted = await promptInstall()
     // rifiutato dal prompt nativo: conta come chiusura, torna tra 3 giorni
     if (!accepted) dismissInstallNudge()

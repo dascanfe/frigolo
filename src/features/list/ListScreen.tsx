@@ -1,5 +1,5 @@
 import { ChevronDown, History, Pointer, SearchX, Store } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { Link } from 'react-router'
 import { EmptyState } from '@/components/EmptyState'
@@ -17,6 +17,7 @@ import { ListSwitcherSheet } from '@/features/lists/ListSwitcherSheet'
 import { armShareNudge } from '@/features/tips/shareNudge'
 import { dismissTip, triggerTip } from '@/features/tips/tips'
 import { useSearch } from '@/features/search/useSearch'
+import { recordEvent } from '@/lib/telemetry'
 import { usePurchaseHistoryQuery } from '@/features/suggestions/useSuggestions'
 import { it as t } from '@/i18n/it'
 import { badgeQuantity, capitalizeFirst, pluralize } from '@/lib/format'
@@ -120,6 +121,23 @@ export function ListScreen() {
     if (noResultsCanCreate) triggerTip('create')
   }, [noResultsCanCreate])
   const searching = search.query.length > 0
+
+  // metriche anonime: una ricerca rimasta senza risultati per 1,5 secondi
+  // conta una volta, finché il campo non si svuota. Mai il testo cercato.
+  const searchEmpty = searching && search.results.length === 0
+  const emptyCounted = useRef(false)
+  useEffect(() => {
+    if (!searching) {
+      emptyCounted.current = false
+      return
+    }
+    if (!searchEmpty || emptyCounted.current) return
+    const timer = setTimeout(() => {
+      emptyCounted.current = true
+      recordEvent('ricerca_vuota', true)
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [searching, searchEmpty, search.query])
 
   /** Chiude la ricerca: campo vuoto, tastiera chiusa, torna la lista */
   function finishSearch() {

@@ -134,6 +134,30 @@ Anti abuso: ogni utente può mandare al massimo 60 sessioni e 20 errori all'ora 
 `metrics.rate_limit`, con user_id, svuotata ogni notte e mai letta dal cruscotto). Sessioni ed
 errori aggregati si tengono 400 giorni.
 
+### Aggiunte della v4 (migration 0028, app 2.1.0)
+
+Solo aggregati. Dei prodotti si mostrano i nomi solo per il catalogo base, mai quelli creati dalle
+persone (di questi si conta solo quanti ne nascono). Le liste con dentro un account escluso non
+entrano nelle metriche della spesa.
+
+| Metrica                  | Definizione                                                                                                                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ritorno per settimana    | Per chi si è iscritto in ciascuna delle ultime 8 settimane: quota attiva nella settimana 1, 2, 3 e 4 dopo l'iscrizione (giorni 7-13, 14-20, 21-27, 28-34). Solo settimane già trascorse.    |
+| Ci tornano in settimana  | Media nel periodo di persone attive nel giorno diviso persone attive nei 7 giorni fino a quel giorno.                                                                                       |
+| Tempi del primo uso      | Mediana, fra gli iscritti del periodo, del tempo dall'iscrizione al primo prodotto, alla prima spesa chiusa in una sua lista e al primo momento in cui è in una lista con un'altra persona. |
+| Prodotti più aggiunti    | Top 20 del catalogo base fra i prodotti ancora in lista e quelli comprati, nel periodo e da sempre (quelli tolti senza comprarli non si possono contare).                                   |
+| Categorie                | Quota dei prodotti aggiunti per categoria; numero di prodotti personalizzati creati.                                                                                                        |
+| Quando si fa la spesa    | Spese chiuse per giorno della settimana e ora (Europe/Rome); prodotti medi per spesa; spese a settimana per lista con almeno una spesa nel periodo.                                         |
+| Supermercati             | Spese chiuse per supermercato fra quelli proposti (Lidl, Eurospin, Conad, Coop, Carrefour, MD, Mercato); gli altri sommati in "altri", senza supermercato "non indicato".                   |
+| Persone per lista        | Liste di oggi con 1, 2, 3, 4-5 persone; ingressi con il link o con il codice; mediana del tempo fra creazione o rinnovo dell'invito e ingresso (stimata su fasce).                          |
+| Foto profilo             | Profili con una foto propria e con la mascotte.                                                                                                                                             |
+| Ricerche senza risultato | Ricerche rimaste senza risultati per 1,5 secondi: una per ricerca, finché il campo non si svuota. Mai il testo cercato.                                                                     |
+| Installazione            | Invito a installare mostrato (una volta per apertura), tocco su Installa (Android), esito del prompt (accettato o rifiutato), guida iPhone aperta.                                          |
+| Aggiornamenti            | Barra "versione nuova" mostrata e "Aggiorna ora" toccato; per ogni giorno, quota delle sessioni sull'ultima versione vista nel periodo.                                                     |
+| Orari d'uso              | Sessioni per giorno della settimana e ora di inizio (ora del telefono). Le sessioni di prima della 2.1.0 non hanno l'ora.                                                                   |
+
+Ogni riquadro del cruscotto ha una "i" con due righe: cosa misura e perché ci interessa.
+
 ## Obiettivi di lancio (proposta di Pepe, da concordare con Salvia)
 
 Primi 30 giorni dopo il lancio. Sono ipotesi ragionevoli per un'app gratuita lanciata con i

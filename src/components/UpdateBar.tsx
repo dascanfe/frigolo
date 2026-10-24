@@ -1,7 +1,8 @@
 import { X } from 'lucide-react'
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { it as t } from '@/i18n/it'
 import { applyUpdate, getServiceWorkerState, subscribeServiceWorker } from '@/lib/pwa'
+import { recordEvent } from '@/lib/telemetry'
 
 /**
  * Barra in alto quando il service worker ha trovato una versione nuova:
@@ -17,10 +18,16 @@ export function UpdateBar() {
   )
   const [dismissed, setDismissed] = useState(false)
   const [applying, setApplying] = useState(false)
+  const shown = sw.needRefresh && !dismissed
+  // metriche anonime: barra mostrata (una volta per apertura)
+  useEffect(() => {
+    if (shown) recordEvent('aggiorna_barra')
+  }, [shown])
 
   if (!sw.needRefresh || (dismissed && !applying)) return null
 
   async function update() {
+    recordEvent('aggiorna_tocco')
     setApplying(true)
     await applyUpdate()
   }

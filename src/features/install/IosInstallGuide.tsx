@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { Button } from '@/components/Button'
 import { it as t } from '@/i18n/it'
 import { toast } from '@/lib/toast'
+import { recordEvent } from '@/lib/telemetry'
 
 interface IosInstallGuideProps {
   open: boolean
@@ -36,6 +37,8 @@ export function IosInstallGuide({ open, onClose, safari }: IosInstallGuideProps)
 
   useEffect(() => {
     if (!open) return
+    // metriche anonime: guida iPhone aperta
+    recordEvent('install_guida_ios')
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') close()
     }
