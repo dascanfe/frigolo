@@ -8,10 +8,10 @@
    - Landing: le stesse tre tabelle del sito (visite, pagine,
      eventi) nel progetto delle statistiche, filtrate sulle pagine
      sotto /sub/frigolo (colonna pagine.sito). Le leggono solo le
-     regole gia' in vigore: solo l'account di Daniele.
+     regole già in vigore: solo l'account di Daniele.
    - App: gli aggregati d'uso dell'app. Li calcola ogni ora il
      database di Frigolo e li manda a questo progetto (tabella
-     frigolo_app_snapshot, stesse regole delle visite): cosi' basta
+     frigolo_app_snapshot, stesse regole delle visite): così basta
      un solo accesso, quello delle statistiche.
    ============================================================ */
 (function () {
@@ -106,8 +106,8 @@
   }
 
   /* La finestra del periodo scelto, e quella immediatamente prima,
-     della stessa lunghezza: e' quella che rende leggibile un numero.
-     "90 visite" non dice niente; "90 visite, il 18 per cento in piu'
+     della stessa lunghezza: è quella che rende leggibile un numero.
+     "90 visite" non dice niente; "90 visite, il 18 per cento in più
      dei trenta giorni prima" dice qualcosa. */
   function finestra() {
     if (stato.tutto) {
@@ -162,85 +162,85 @@
 
   /* ---------- spiegazioni dei riquadri ----------
 
-     Ogni "i" e' un bottone: apre due righe, cosa misura il riquadro e
-     perche' ci interessa. Si chiude con Esc, toccando fuori o di nuovo
+     Ogni "i" è un bottone: apre due righe, cosa misura il riquadro e
+     perché ci interessa. Si chiude con Esc, toccando fuori o di nuovo
      la stessa "i". */
   var SPIEGAZIONI = {
     "Visitatori": {
       "cosa": "Quante persone diverse hanno aperto la landing, stimate senza cookie.",
-      "perche": "Dice quanta gente arriva a conoscere Frigolo: se resta basso, servono piu' post e link in giro."
+      "perche": "Dice quanta gente arriva a conoscere Frigolo: se resta basso, servono più post e link in giro."
     },
     "Visite": {
-      "cosa": "Quante volte la landing e' stata aperta, contando come una sola le aperture ravvicinate della stessa persona.",
-      "perche": "Se le visite sono molte piu' dei visitatori, qualcuno torna a guardarla: e' un buon segno di interesse."
+      "cosa": "Quante volte la landing è stata aperta, contando come una sola le aperture ravvicinate della stessa persona.",
+      "perche": "Se le visite sono molte più dei visitatori, qualcuno torna a guardarla: è un buon segno di interesse."
     },
     "Pagine viste": {
       "cosa": "Quante pagine sono state aperte in tutto: landing, privacy e termini.",
-      "perche": "Se cresce senza che crescano le visite, la gente cerca informazioni: vale la pena rendere la landing piu' chiara."
+      "perche": "Se cresce senza che crescano le visite, la gente cerca informazioni: vale la pena rendere la landing più chiara."
     },
     "Tempo per pagina": {
-      "cosa": "Per quanto tempo, a meta' delle aperture, la pagina resta davvero davanti agli occhi.",
+      "cosa": "Per quanto tempo, a metà delle aperture, la pagina resta davvero davanti agli occhi.",
       "perche": "Pochi secondi vogliono dire che il messaggio non aggancia: si lavora sul titolo e sulla prima schermata."
     },
     "Scorrimento": {
-      "cosa": "Fin dove scorrono la pagina, a meta' delle aperture.",
-      "perche": "Se si fermano presto, le cose importanti (Apri Frigolo, istruzioni) vanno portate piu' in alto."
+      "cosa": "Fin dove scorrono la pagina, a metà delle aperture.",
+      "perche": "Se si fermano presto, le cose importanti (Apri Frigolo, istruzioni) vanno portate più in alto."
     },
     "Rimbalzo": {
       "cosa": "Quota di visite che se ne vanno subito, senza leggere e senza cliccare niente.",
-      "perche": "Piu' e' basso meglio e': se sale, chi arriva non trova quello che si aspettava dal link che ha seguito."
+      "perche": "Piu' è basso meglio è: se sale, chi arriva non trova quello che si aspettava dal link che ha seguito."
     },
     "Apri Frigolo": {
-      "cosa": "Visite in cui si e' toccato almeno un link che porta all'app.",
-      "perche": "E' il risultato che conta: se e' basso rispetto alle visite, il pulsante va reso piu' visibile o convincente."
+      "cosa": "Visite in cui si è toccato almeno un link che porta all'app.",
+      "perche": "È il risultato che conta: se è basso rispetto alle visite, il pulsante va reso più visibile o convincente."
     },
     "Paesi": {
       "cosa": "Da quali paesi arrivano le visite, ricavati sul server senza salvare l'indirizzo.",
-      "perche": "Se cresce l'estero, e' il momento di pensare alla versione inglese."
+      "perche": "Se cresce l'estero, è il momento di pensare alla versione inglese."
     },
     "Regioni": {
       "cosa": "Da quali regioni italiane arrivano le visite.",
-      "perche": "Mostra dove il passaparola funziona e dove Frigolo e' ancora sconosciuto."
+      "perche": "Mostra dove il passaparola funziona e dove Frigolo è ancora sconosciuto."
     },
-    "Citta'": {
-      "cosa": "Da quali citta' arrivano le visite, approssimate.",
-      "perche": "Utile per capire se un post locale o un gruppo di una citta' ha portato gente."
+    "Città": {
+      "cosa": "Da quali città arrivano le visite, approssimate.",
+      "perche": "Utile per capire se un post locale o un gruppo di una città ha portato gente."
     },
     "Adesso sulla landing": {
       "cosa": "Chi sta guardando la landing in questo momento, ultimi cinque minuti.",
       "perche": "Serve a vedere subito l'effetto di un post appena pubblicato."
     },
     "Visite per giorno": {
-      "cosa": "Quante visite ogni giorno (o ogni ora, se il periodo e' oggi) e quante vanno all'app.",
+      "cosa": "Quante visite ogni giorno (o ogni ora, se il periodo è oggi) e quante vanno all'app.",
       "perche": "I picchi raccontano quali post o link hanno funzionato: conviene rifare quello che li ha causati."
     },
     "A che ora arrivano": {
       "cosa": "In che ora del giorno arrivano le visite.",
-      "perche": "Dice quando pubblicare i post per farli vedere a piu' persone."
+      "perche": "Dice quando pubblicare i post per farli vedere a più persone."
     },
     "Nuove e di ritorno": {
-      "cosa": "Visite di chi passa per la prima volta e di chi era gia' passato nella stessa giornata.",
+      "cosa": "Visite di chi passa per la prima volta e di chi era già passato nella stessa giornata.",
       "perche": "Molti ritorni nella stessa giornata vogliono dire che si ragiona prima di provare: forse manca una risposta chiara."
     },
     "Pagine": {
-      "cosa": "Le pagine piu' aperte, con il tempo di lettura.",
+      "cosa": "Le pagine più aperte, con il tempo di lettura.",
       "perche": "Se privacy e termini sono molto letti, la gente vuole fidarsi: vale la pena dirlo meglio sulla landing."
     },
     "Tempo per sezione": {
       "cosa": "Quanto tempo si passa su ogni sezione della pagina scelta.",
-      "perche": "Le sezioni saltate si possono accorciare, quelle lette a lungo meritano piu' spazio."
+      "perche": "Le sezioni saltate si possono accorciare, quelle lette a lungo meritano più spazio."
     },
     "Fin dove leggono": {
       "cosa": "Quante aperture arrivano almeno a ogni punto della pagina.",
-      "perche": "Il punto in cui la curva crolla e' dove si perdono le persone: li' va messo qualcosa di piu' interessante."
+      "perche": "Il punto in cui la curva crolla è dove si perdono le persone: li' va messo qualcosa di più interessante."
     },
     "Da dove entrano": {
       "cosa": "La prima pagina aperta in ogni visita.",
-      "perche": "Quasi sempre e' la landing; se e' un'altra, qualcuno condivide quel link e va curata anche quella pagina."
+      "perche": "Quasi sempre è la landing; se è un'altra, qualcuno condivide quel link e va curata anche quella pagina."
     },
     "Da dove escono": {
       "cosa": "L'ultima pagina aperta in ogni visita.",
-      "perche": "Uscire dopo Apri Frigolo va benissimo; uscire da privacy o termini puo' voler dire un dubbio non risolto."
+      "perche": "Uscire dopo Apri Frigolo va benissimo; uscire da privacy o termini può voler dire un dubbio non risolto."
     },
     "Indirizzi non trovati": {
       "cosa": "Indirizzi cercati che sul sito non esistono.",
@@ -268,23 +268,23 @@
     },
     "Registrazioni": {
       "cosa": "Quanti account sono stati creati nel periodo.",
-      "perche": "E' la crescita di Frigolo: se rallenta, serve far girare di piu' la landing e gli inviti."
+      "perche": "È la crescita di Frigolo: se rallenta, serve far girare di più la landing e gli inviti."
     },
     "Profili completati": {
       "cosa": "Quanti hanno scelto un nome nel periodo, sulle registrazioni.",
-      "perche": "Se resta basso, il primo passo dopo l'iscrizione e' troppo faticoso e va semplificato."
+      "perche": "Se resta basso, il primo passo dopo l'iscrizione è troppo faticoso e va semplificato."
     },
     "Persone attive": {
       "cosa": "Quante persone hanno fatto almeno una cosa nell'app nel periodo.",
-      "perche": "Conta piu' delle iscrizioni: dice quanta gente usa davvero Frigolo."
+      "perche": "Conta più delle iscrizioni: dice quanta gente usa davvero Frigolo."
     },
     "Liste condivise": {
       "cosa": "Liste con almeno due persone, sul totale delle liste.",
-      "perche": "Frigolo nasce per fare la spesa in compagnia: se la quota e' bassa, invitare qualcuno va reso piu' facile."
+      "perche": "Frigolo nasce per fare la spesa in compagnia: se la quota è bassa, invitare qualcuno va reso più facile."
     },
     "Prodotti aggiunti": {
       "cosa": "Quanti prodotti sono stati messi in lista nel periodo.",
-      "perche": "E' il gesto principale dell'app: se cala mentre le persone restano, qualcosa nell'aggiunta da' fastidio."
+      "perche": "È il gesto principale dell'app: se cala mentre le persone restano, qualcosa nell'aggiunta da' fastidio."
     },
     "Spese completate": {
       "cosa": "Quante spese sono state chiuse, a mano o dal salvataggio notturno.",
@@ -292,11 +292,11 @@
     },
     "Inviti usati": {
       "cosa": "Quante persone sono entrate nella lista di qualcun altro.",
-      "perche": "Ogni invito usato porta una persona nuova senza pubblicita': e' la crescita migliore."
+      "perche": "Ogni invito usato porta una persona nuova senza pubblicita': è la crescita migliore."
     },
     "Inviti sbagliati": {
       "cosa": "Tentativi di entrare con un codice sbagliato o scaduto.",
-      "perche": "Pochi sono errori di battitura; un picco improvviso puo' essere qualcuno che prova codici a caso."
+      "perche": "Pochi sono errori di battitura; un picco improvviso può essere qualcuno che prova codici a caso."
     },
     "Persone attive (andamento)": {
       "cosa": "Persone attive ogni giorno e nei sette giorni fino a quel giorno.",
@@ -312,18 +312,18 @@
     },
     "Iscrizioni": {
       "cosa": "Account creati per settimana, per mese e per anno, anche quelli poi chiusi.",
-      "perche": "E' la storia della crescita: si vede l'effetto del lancio e dei post nel tempo."
+      "perche": "È la storia della crescita: si vede l'effetto del lancio e dei post nel tempo."
     },
     "Percorso di iscrizione": {
       "cosa": "Quante persone superano ogni passo, dalla visita alla landing al primo prodotto.",
-      "perche": "Il passo con la caduta piu' grande e' quello da migliorare per primo."
+      "perche": "Il passo con la caduta più grande è quello da migliorare per primo."
     },
     "Quanto la usano": {
       "cosa": "Quanti giorni l'ha usata ogni persona attiva nel periodo, in gruppi.",
       "perche": "Molti in un giorno solo vogliono dire curiosi che non tornano; molti oltre i 15 sono fedelissimi."
     },
     "Sessioni": {
-      "cosa": "Quante volte si apre l'app e quanto resta aperta, in media e a meta' delle sessioni.",
+      "cosa": "Quante volte si apre l'app e quanto resta aperta, in media e a metà delle sessioni.",
       "perche": "Una lista della spesa si usa in fretta: sessioni brevi e frequenti sono un buon segno."
     },
     "Versioni in uso": {
@@ -331,7 +331,7 @@
       "perche": "Se una versione vecchia resta a lungo, l'aggiornamento non arriva: va spinto meglio."
     },
     "Temi scelti": {
-      "cosa": "Quale tema di colori e' in uso nelle sessioni.",
+      "cosa": "Quale tema di colori è in uso nelle sessioni.",
       "perche": "Dice se i temi piacciono e quali conviene curare o aggiungere."
     },
     "Funzioni": {
@@ -340,25 +340,25 @@
     },
     "Errori dell'app": {
       "cosa": "Errori capitati sui telefoni delle persone, con il messaggio ripulito.",
-      "perche": "Piu' e' basso meglio e': un errore che si ripete spesso va corretto per primo."
+      "perche": "Piu' è basso meglio è: un errore che si ripete spesso va corretto per primo."
     },
     "Ci tornano in settimana": {
       "cosa": "Media del periodo di quante persone attive in una settimana usano l'app ogni giorno.",
-      "perche": "Piu' e' alto, piu' Frigolo e' un'abitudine quotidiana; se cala, si usa solo il giorno della spesa."
+      "perche": "Piu' è alto, più Frigolo è un'abitudine quotidiana; se cala, si usa solo il giorno della spesa."
     },
     "Tempi del primo uso": {
-      "cosa": "Quanto passa, a meta' delle persone, dall'iscrizione al primo prodotto, alla prima spesa chiusa e alla seconda persona in lista.",
+      "cosa": "Quanto passa, a metà delle persone, dall'iscrizione al primo prodotto, alla prima spesa chiusa e alla seconda persona in lista.",
       "perche": "Tempi lunghi vogliono dire un inizio faticoso: lo si accorcia con aiuti nell'app."
     },
     "Ritorno per settimana di iscrizione": {
-      "cosa": "Per chi si e' iscritto in una certa settimana, quanti tornano nelle quattro settimane dopo.",
-      "perche": "Se le settimane recenti trattengono di piu', le ultime modifiche funzionano."
+      "cosa": "Per chi si è iscritto in una certa settimana, quanti tornano nelle quattro settimane dopo.",
+      "perche": "Se le settimane recenti trattengono di più, le ultime modifiche funzionano."
     },
-    "Prodotti piu' aggiunti": {
-      "cosa": "I prodotti del catalogo messi in lista piu' spesso nel periodo. Mai quelli creati dalle persone.",
-      "perche": "Questi prodotti devono essere i piu' facili da trovare, con l'icona giusta."
+    "Prodotti più aggiunti": {
+      "cosa": "I prodotti del catalogo messi in lista più spesso nel periodo. Mai quelli creati dalle persone.",
+      "perche": "Questi prodotti devono essere i più facili da trovare, con l'icona giusta."
     },
-    "Prodotti piu' aggiunti da sempre": {
+    "Prodotti più aggiunti da sempre": {
       "cosa": "Gli stessi prodotti, contati da quando esiste Frigolo.",
       "perche": "Aiuta a ordinare il catalogo e i suggerimenti."
     },
@@ -375,8 +375,8 @@
       "perche": "Se un supermercato domina, l'ordine dei reparti per quello deve essere perfetto."
     },
     "Persone per lista": {
-      "cosa": "Quante liste hanno 1, 2, 3 o piu' persone, come si entra (link o codice) e quanto passa dall'invito.",
-      "perche": "Se si entra quasi sempre con il link, il codice si puo' nascondere; tempi lunghi vogliono dire inviti dimenticati."
+      "cosa": "Quante liste hanno 1, 2, 3 o più persone, come si entra (link o codice) e quanto passa dall'invito.",
+      "perche": "Se si entra quasi sempre con il link, il codice si può nascondere; tempi lunghi vogliono dire inviti dimenticati."
     },
     "Foto profilo": {
       "cosa": "Quanti profili hanno una foto e quanti tengono la mascotte; quante ricerche non trovano niente.",
@@ -392,11 +392,11 @@
     },
     "Orari d'uso": {
       "cosa": "In che giorno e a che ora si apre l'app.",
-      "perche": "Dice quando le persone hanno Frigolo in mano: e' il momento giusto per novita' e messaggi."
+      "perche": "Dice quando le persone hanno Frigolo in mano: è il momento giusto per novità e messaggi."
     },
     "Tornano?": {
-      "cosa": "Fra chi si e' iscritto nel periodo, quanti tornano il giorno dopo, nella seconda settimana e nel secondo mese.",
-      "perche": "E' la misura piu' onesta: se pochi tornano, la prima esperienza non convince."
+      "cosa": "Fra chi si è iscritto nel periodo, quanti tornano il giorno dopo, nella seconda settimana e nel secondo mese.",
+      "perche": "È la misura più onesta: se pochi tornano, la prima esperienza non convince."
     },
     "Spazio usato": {
       "cosa": "Quanto spazio occupano il database e le foto, sul limite del piano gratuito.",
@@ -424,7 +424,7 @@
     var titolo = b.parentNode.querySelector('.t');
     $('spiega-titolo').textContent = titolo ? titolo.textContent : '';
     $('spiega-cosa').innerHTML = '<b>Cosa misura.</b> ' + fuga(x.cosa);
-    $('spiega-perche').innerHTML = '<b>Perche\' ci interessa.</b> ' + fuga(x.perche);
+    $('spiega-perche').innerHTML = '<b>Perché ci interessa.</b> ' + fuga(x.perche);
     spiega.hidden = false;
     var r = b.getBoundingClientRect(), w = spiega.offsetWidth, h = spiega.offsetHeight;
     var left = Math.min(Math.max(8, r.left - 12), window.innerWidth - w - 8);
@@ -510,7 +510,7 @@
 
   /* ---------- la sessione ---------- */
 
-  /* Il punto piu' insidioso di tutto il cruscotto.
+  /* Il punto più insidioso di tutto il cruscotto.
 
      Quando il gettone d'accesso scade e non si riesce a rinnovarlo (il
      telefono era in tasca, il portatile chiuso, la rete non ancora
@@ -519,23 +519,23 @@
      accesso del database non rispondono "non puoi", rispondono
      "niente": arriva un 200 con zero righe.
 
-     Il risultato e' il peggiore possibile: un cruscotto che sembra
-     funzionare e racconta che non e' passato nessuno. Per questo prima
+     Il risultato è il peggiore possibile: un cruscotto che sembra
+     funzionare e racconta che non è passato nessuno. Per questo prima
      di ogni lettura si controlla che la sessione ci sia davvero, e se
      non c'e' si torna alla schermata d'accesso invece di disegnare il
      vuoto. */
   var SCADUTA = 'sessione-scaduta';
   var MUTO    = 'server-muto';
 
-  /* Attenzione a `getSession`: se il gettone e' scaduto prova a
+  /* Attenzione a `getSession`: se il gettone è scaduto prova a
      rinnovarlo, e se la rete non risponde ci riprova a oltranza senza
      mai chiudere la promessa. Provato: dopo dodici secondi era ancora
      li'. Sull'iPhone che si sveglia, con la rete non ancora pronta,
      vuol dire restare appesi.
 
      Quindi le si da' un tempo massimo, oltre il quale si risponde
-     "non lo so". Non lo so non e' "sessione scaduta": si tengono i
-     numeri che c'erano e si dice che non si e' potuto aggiornare. */
+     "non lo so". Non lo so non è "sessione scaduta": si tengono i
+     numeri che c'erano e si dice che non si è potuto aggiornare. */
   function sessioneViva() {
     var scadenza = new Promise(function (ok) {
       setTimeout(function () { ok(MUTO); }, 8000);
@@ -543,7 +543,7 @@
     var domanda = sb.auth.getSession().then(function (r) {
       var s = r && r.data && r.data.session;
       if (!s || !s.access_token) return null;
-      // gia' scaduto e non rinnovato: vale come se non ci fosse
+      // già scaduto e non rinnovato: vale come se non ci fosse
       if (s.expires_at && s.expires_at * 1000 <= Date.now()) return null;
       return s;
     }, function () { return null; });
@@ -592,10 +592,10 @@
       sb.from('eventi').select('*, pagine!inner(sito)').eq('pagine.sito', 'frigolo')
         .gte('quando', da).order('quando', { ascending: false }).limit(2000),
       /* Lo stato del battito notturno, per accorgersi se il progetto
-         si e' addormentato. */
+         si è addormentato. */
       sb.from('stato_sistema').select('*').limit(1)
     ]).then(function (r) {
-      /* L'ultima richiesta, quella del battito, puo' fallire senza
+      /* L'ultima richiesta, quella del battito, può fallire senza
          conseguenze. Le prime tre no. */
       var errore = r.slice(0, 3).find(function (x) { return x.error; });
       if (errore) throw errore.error;
@@ -612,7 +612,7 @@
     });
   }
 
-  /* Il periodo precedente si chiede dopo aver gia' disegnato: i numeri
+  /* Il periodo precedente si chiede dopo aver già disegnato: i numeri
      principali compaiono subito, il confronto si aggiunge un attimo
      dopo. Meglio che aspettare per avere tutto insieme. */
   function caricaPrima() {
@@ -667,8 +667,8 @@
     }).catch(function () { stato.prima = null; disegnaConfronti(); });
   }
 
-  /* Il confronto: il colore dice se il movimento e' buono, non se il
-     numero sale. Sul rimbalzo salire e' una brutta notizia. */
+  /* Il confronto: il colore dice se il movimento è buono, non se il
+     numero sale. Sul rimbalzo salire è una brutta notizia. */
   function confronto(id, ora, prima, opzioni) {
     opzioni = opzioni || {};
     var el = $(id);
@@ -751,9 +751,9 @@
     testo($('k-tempo'), durata(mediana(tempi)));
     testo($('k-scroll'), scrolli.length ? mediana(scrolli) + '%' : '-');
 
-    /* Rimbalzo: una visita in cui si e' aperta una pagina sola, senza
+    /* Rimbalzo: una visita in cui si è aperta una pagina sola, senza
        fermarcisi almeno dieci secondi. Chi apre una pagina e la legge
-       due minuti non e' un rimbalzo, anche se non ne apre altre. */
+       due minuti non è un rimbalzo, anche se non ne apre altre. */
     var perVisita = {};
     pagine.forEach(function (p) {
       (perVisita[p.visita_id] || (perVisita[p.visita_id] = [])).push(p);
@@ -770,7 +770,7 @@
       ? rimbalzi.length + ' visite su ' + conPagine.length
       : 'entrano e se ne vanno subito');
 
-    /* Apri Frigolo: le visite con almeno un clic verso l'app. E' il
+    /* Apri Frigolo: le visite con almeno un clic verso l'app. È il
        posto che nel cruscotto del sito ha il curriculum scaricato. */
     var clicApp = stato.eventi.filter(function (e) { return buone[e.visita_id] && versoApp(e); });
     var visiteApp = {};
@@ -878,7 +878,7 @@
 
     var citta = conta(visite, 'citta');
     var conCitta = citta.reduce(function (a, r) { return a + r.valore; }, 0);
-    testo($('conta-citta'), conCitta + ' su ' + visite.length + ' con la citta\'');
+    testo($('conta-citta'), conCitta + ' su ' + visite.length + ' con la città');
     barre('citta', citta, { quante: 8 });
 
     /* --- paesi --- */
@@ -944,9 +944,9 @@
           ? 'battito regolare'
           : 'ultimo battito ' + giorni + ' giorni fa, da controllare';
 
-        /* Anche i database geografici invecchiano. Se passano piu' di
-           45 giorni vuol dire che l'aggiornamento automatico si e'
-           inceppato, e conviene saperlo prima che le citta' comincino
+        /* Anche i database geografici invecchiano. Se passano più di
+           45 giorni vuol dire che l'aggiornamento automatico si è
+           inceppato, e conviene saperlo prima che le città comincino
            a sbagliare. */
         var g = $('piede-geo');
         if (g) {
@@ -1043,9 +1043,9 @@
 
   /* Nuove e di ritorno.
 
-     Attenzione a cosa si puo' dire davvero: l'impronta del visitatore
-     cambia ogni notte, apposta, perche' cosi' non e' un pedinamento.
-     Quindi "gia' visto prima" vuol dire "gia' passato oggi", non
+     Attenzione a cosa si può dire davvero: l'impronta del visitatore
+     cambia ogni notte, apposta, perché così non è un pedinamento.
+     Quindi "già visto prima" vuol dire "già passato oggi", non
      "tornato dopo una settimana". */
   function disegnaRitorno(visite) {
     var giorni = stato.tutto ? 30 : (stato.giorni || 1);
@@ -1060,7 +1060,7 @@
       caselle.push({ data: d, nuove: 0, ritorno: 0 });
     }
 
-    // in ordine di tempo: la prima volta che vedo un'impronta e' una visita nuova
+    // in ordine di tempo: la prima volta che vedo un'impronta è una visita nuova
     var viste = {};
     var ordinate = visite.slice().sort(function (a, b) {
       return new Date(a.iniziata) - new Date(b.iniziata);
@@ -1170,7 +1170,7 @@
 
   /* Fin dove leggono: per ogni decimo di pagina, quante aperture ci
      sono arrivate almeno fino li'. Parte da 100 e scende; il punto
-     in cui crolla e' dove si perdono le persone. */
+     in cui crolla è dove si perdono le persone. */
   function disegnaCurva(pagine) {
     var scelto = stato.percorsoScelto;
     var titolo = $('titolo-curva');
@@ -1264,9 +1264,9 @@
     });
   }
 
-  /* L'andamento e' un'area con la linea morbida (come nei grafici
+  /* L'andamento è un'area con la linea morbida (come nei grafici
      di Frigolo), non a colonne: un punto per giorno, o per ora quando
-     il periodo e' oggi. La linea tratteggiata sono le visite che
+     il periodo è oggi. La linea tratteggiata sono le visite che
      aprono l'app. */
   function disegnaAndamento(visite) {
     var app = stato.visiteApp || {};
@@ -1311,9 +1311,9 @@
 
   /* Gli indirizzi cercati che sul sito non esistono.
 
-     Qui dentro i robot NON si tolgono, ed e' voluto: quasi tutti gli
+     Qui dentro i robot NON si tolgono, ed è voluto: quasi tutti gli
      indirizzi morti li cercano loro, e togliendoli il pannello
-     resterebbe sempre vuoto. Quello che serve sapere e' se un vecchio
+     resterebbe sempre vuoto. Quello che serve sapere è se un vecchio
      indirizzo torna spesso, e se qualche volta lo cerca una persona:
      in quel caso vale un reindirizzamento. La riga sopra l'elenco dice
      quanti sono di robot. */
@@ -1407,7 +1407,7 @@
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'eventi' }, arrivo)
       .subscribe(function (s) {
         /* Il collegamento si nota solo quando manca: se tutto va,
-           la riga in alto e' libera di dire quante persone ci sono. */
+           la riga in alto è libera di dire quante persone ci sono. */
         var riga = $('stato-nota');
         if (!riga) return;
         var mio = 'aggiornamento dal vivo scollegato';
@@ -1422,8 +1422,8 @@
   }
 
   /* Un messaggio in tempo reale non porta tutto quello che serve ai
-     conteggi, quindi lo usiamo come sveglia: ricarichiamo, ma non piu'
-     di una volta ogni due secondi, cosi' una raffica di battiti non
+     conteggi, quindi lo usiamo come sveglia: ricarichiamo, ma non più
+     di una volta ogni due secondi, così una raffica di battiti non
      diventa una raffica di interrogazioni. */
   function arrivo() {
     if (stato.ricarica) return;
@@ -1540,7 +1540,7 @@
   }
 
   /* Chiaro di serie. La scelta resta in questo browser e non
-     tocca il database, quindi ogni dispositivo puo' avere il suo. */
+     tocca il database, quindi ogni dispositivo può avere il suo. */
   function applicaTema(t) {
     var scuro = t === 'scuro';
     if (scuro) document.documentElement.setAttribute('data-tema', 'scuro');
@@ -1688,7 +1688,7 @@
   var gradienti = 0;
 
   /* serie: [{ chiave, nome, classe ('' | 'seconda' | 'avviso'), scalaPropria }]
-     La prima e' l'area, le altre sono linee. */
+     La prima è l'area, le altre sono linee. */
   function area(id, giorni, serie) {
     var el = $(id);
     if (!el) return;
@@ -1728,7 +1728,7 @@
       return '<span data-tip="<b>' + fuga(titolo) + '</b>' + righe + '"></span>';
     }).join('');
 
-    // il colore della sfumatura e' quello della prima serie
+    // il colore della sfumatura è quello della prima serie
     el.style.color = serie[0].classe === 'avviso' ? 'var(--warn)' : 'var(--acc)';
     el.innerHTML = svg + '<div class="bersagli">' + bersagli + '</div>' +
       '<span class="tetto">' + numeroA(maxComune) + '</span>';
@@ -2191,7 +2191,7 @@
         stato.appGenerato = riga.dati.generato || riga.ricevuto;
         stato.iscrizioni = riga.dati.iscrizioni || null;
         stato.globali = riga.dati.globali || null;
-        // arrivano ogni ora: oltre tre ore di ritardo qualcosa si e' fermato
+        // arrivano ogni ora: oltre tre ore di ritardo qualcosa si è fermato
         var ritardo = (Date.now() - new Date(riga.ricevuto).getTime()) / 3600000;
         nota(ritardo > 3 ? 'metriche dell\'app ferme da ' + Math.floor(ritardo) + ' ore, da controllare' : '');
         disegnaApp(); piedeApp();
@@ -2299,7 +2299,7 @@
 
      Con ?finto su localhost il cruscotto si disegna senza accesso e
      senza rete, con righe inventate che passano per gli stessi
-     calcoli dei dati veri. In rete la condizione e' falsa. */
+     calcoli dei dati veri. In rete la condizione è falsa. */
   var locale = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   stato.finto = locale && /[?&]finto\b/.test(location.search);
 
@@ -2377,14 +2377,14 @@
      da un'altra scheda), lo dice qui. Prima non lo ascoltava nessuno,
      e il cruscotto restava a schermo a leggere il vuoto. */
   sb.auth.onAuthStateChange(function (evento, sessione) {
-    if (evento === 'INITIAL_SESSION') return;          // e' l'avvio, se ne occupa il blocco sotto
+    if (evento === 'INITIAL_SESSION') return;          // è l'avvio, se ne occupa il blocco sotto
     if (evento === 'SIGNED_OUT' || !sessione) {
       if (document.body.classList.contains('dentro')) fuoriSessione();
     }
   });
 
   /* Il cruscotto salvato sulla schermata dell'iPhone non viene chiuso
-     ma congelato: quando si riapre, la pagina e' ancora quella di
+     ma congelato: quando si riapre, la pagina è ancora quella di
      giorni prima, con il gettone scaduto e il canale caduto. Stessa
      cosa sul portatile che si risveglia. Al ritorno in primo piano si
      ricontrolla la sessione, si rileggono i dati e si riapre il
@@ -2392,7 +2392,7 @@
   function alRisveglio() {
     if (document.visibilityState !== 'visible') return;
     if (!document.body.classList.contains('dentro')) return;
-    // caricaSezione riapre il canale solo se e' davvero caduto
+    // caricaSezione riapre il canale solo se è davvero caduto
     caricaSezione();
   }
   document.addEventListener('visibilitychange', alRisveglio);
