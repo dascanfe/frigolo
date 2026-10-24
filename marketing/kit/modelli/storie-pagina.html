@@ -1,0 +1,146 @@
+<!doctype html>
+<!--
+  Modello per le storie e le copertine in evidenza della pagina @frigolo.app (1080x1920).
+  Si configura con ?d=<JSON>. Campi:
+    tipo      cover | testo | phone | passo | faq | icona
+    tema      chiaro | lampone | menta | inchiostro
+    titolo    *corsivo*, | a capo      testo   frase sotto il titolo
+    mascotte  classica | contenta | pensierosa | posta      pos  posizione mascotte: basso | destra | centro
+    n         etichetta in alto a destra (es. "iPhone 1/3")
+    schermata (phone) percorso di uno screenshot, in scala uniforme dentro la cornice
+    passo     (passo) ios-safari | ios-condividi | ios-home | and-chrome | and-menu | and-fatto
+    voci      (faq) [[domanda, risposta], ...]
+    icona     (icona) installa | funziona | novita | domande | caffe
+  Zone sicure Instagram: fascia alta 250 px e bassa 340 px senza testi importanti.
+  Rendering: node marketing/kit/scripts/storie-pagina.mjs
+-->
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Frigolo - Storie pagina</title>
+    <link rel="stylesheet" href="kit.css" />
+    <style>
+      :root { --w:1080px; --h:1920px; }
+      .t-chiaro { --bg:#f8eef0; --fg:#3a1d27; --fg-soft:#6b4552; --accent:#b02e50; --chip-bg:#b02e50; --chip-fg:#faf3ec; --blob:#efd3da; --card:#fff; background:var(--bg); }
+      .t-lampone { --bg:#b02e50; --fg:#faf3ec; --fg-soft:#f6dbe2; --accent:#9de0d1; --chip-bg:#faf3ec; --chip-fg:#7d1f39; --blob:rgba(250,243,236,.16); --card:rgba(250,243,236,.14); background:var(--bg); }
+      .t-menta { --bg:#9de0d1; --fg:#04342f; --fg-soft:#1e5a52; --accent:#b02e50; --chip-bg:#faf3ec; --chip-fg:#04342f; --blob:rgba(250,243,236,.5); --card:rgba(250,243,236,.7); background:var(--bg); }
+      .t-inchiostro { --bg:#3a1d27; --fg:#faf3ec; --fg-soft:#e9cfd6; --accent:#f08aa5; --chip-bg:#b02e50; --chip-fg:#faf3ec; --blob:rgba(250,243,236,.09); --card:rgba(250,243,236,.1); background:var(--bg); }
+      body { background:#000; }
+      .canvas { width:1080px; height:1920px; }
+      .top { position:absolute; left:90px; right:90px; top:262px; display:flex; justify-content:space-between; align-items:center; font-size:46px; }
+      .top .n { font-family:var(--font-body); font-weight:900; font-size:32px; color:var(--fg-soft); letter-spacing:.04em; }
+      .copy { position:absolute; left:90px; right:90px; top:372px; }
+      .copy h1 { font-family:var(--font-display); font-weight:700; font-size:98px; line-height:1.04; letter-spacing:-.01em; }
+      .copy h1 em { color:var(--accent); font-style:italic; }
+      .copy .testo { font-size:46px; line-height:1.3; margin-top:26px; max-width:880px; color:var(--fg-soft); }
+      .tipo-phone .copy, .tipo-passo .copy { top:360px; text-align:center; }
+      .tipo-phone .copy h1, .tipo-passo .copy h1 { font-size:76px; }
+      .tipo-cover .copy { text-align:center; }
+      .tipo-cover .copy h1 { font-size:120px; }
+      .tipo-cover .copy .testo { margin-left:auto; margin-right:auto; }
+      .tipo-cover .blob { width:1200px; height:1200px; left:-60px; bottom:-300px; }
+      .tipo-cover .mascotte { width:760px; height:760px; left:50%; transform:translateX(-50%); bottom:300px; }
+      .tipo-faq .copy { top:372px; } .tipo-faq .copy h1 { font-size:84px; }
+      .tipo-testo .blob { width:1000px; height:1000px; right:-260px; bottom:-200px; }
+      .tipo-testo .copy { top:430px; }
+      .tipo-testo .copy h1 { font-size:112px; }
+      .mascotte.pos-destra { width:640px; height:640px; right:30px; bottom:340px; }
+      .mascotte.pos-basso { width:520px; height:520px; left:50%; transform:translateX(-50%); bottom:340px; }
+      .mascotte.pos-centro { width:700px; height:700px; left:50%; transform:translateX(-50%); bottom:340px; }
+      .telefono { position:absolute; left:50%; transform:translateX(-50%); top:612px; width:460px; padding:14px; border-radius:68px; background:#2a1219; box-shadow:0 24px 60px rgba(40,10,20,.35); }
+      .telefono img { display:block; width:100%; height:auto; border-radius:56px; }
+      .schermo { position:relative; width:432px; height:935px; border-radius:56px; overflow:hidden; background:#faf3ec; color:#3a1d27; font-family:var(--font-body); }
+      .schermo * { position:absolute; }
+      .pag-av { left:141px; top:230px; width:150px; height:150px; border-radius:50%; background:#9de0d1; }
+      .pag-t { left:0; right:0; top:402px; text-align:center; font-family:var(--font-display); font-weight:700; font-size:44px; }
+      .l1,.l2,.l3 { height:16px; border-radius:8px; background:#e6d3d8; }
+      .l1 { left:76px; right:76px; top:480px; } .l2 { left:110px; right:110px; top:514px; } .l3 { left:150px; right:150px; top:548px; }
+      .pag-b { left:116px; right:116px; top:620px; height:74px; border-radius:37px; background:#b02e50; color:#faf3ec; text-align:center; line-height:74px; font-weight:900; font-size:28px; }
+      .stato { left:36px; right:36px; top:22px; height:20px; }
+      .stato i { top:0; height:16px; border-radius:8px; background:#3a1d27; opacity:.75; }
+      .ring { border:7px solid #b02e50; border-radius:26px; box-shadow:0 0 0 12px rgba(176,46,80,.22); }
+      .vela { left:0; top:0; right:0; bottom:0; background:rgba(58,29,39,.42); }
+      .url { left:34px; right:34px; bottom:46px; height:74px; border-radius:37px; background:#efe3e6; text-align:center; line-height:74px; font-weight:700; font-size:27px; color:#3a1d27; }
+      .url-and { left:24px; right:24px; top:64px; height:74px; border-radius:37px; background:#efe3e6; line-height:74px; font-weight:700; font-size:27px; color:#3a1d27; padding-left:30px; }
+      .bar-ios { left:0; right:0; bottom:0; height:130px; background:#efe3e6; }
+      .nota { left:0; right:0; text-align:center; font-weight:900; font-size:27px; color:#b02e50; }
+      .sheet { left:0; right:0; bottom:0; height:600px; background:#faf3ec; border-radius:40px 40px 0 0; }
+      .riga { left:30px; right:30px; height:86px; border-radius:20px; background:#f1e5e8; line-height:86px; padding-left:96px; font-weight:700; font-size:27px; }
+      .riga b { left:26px; top:24px; width:38px; height:38px; border-radius:10px; background:#c9a9b2; }
+      .menu { right:24px; top:150px; width:330px; height:420px; border-radius:24px; background:#fff; box-shadow:0 10px 40px rgba(40,10,20,.3); }
+      .menu .riga { left:14px; right:14px; background:transparent; height:84px; line-height:84px; padding-left:70px; }
+      .menu .riga b { top:22px; left:12px; width:36px; height:36px; border-radius:50%; }
+      .home { left:0; top:0; right:0; bottom:0; background:linear-gradient(160deg,#cbeee6,#f1d3dc 60%,#e8a9bc); }
+      .app { width:84px; height:84px; border-radius:22px; background:rgba(255,255,255,.75); }
+      .app-n { width:100px; text-align:center; font-size:20px; font-weight:700; color:#3a1d27; }
+      .app.frigolo { background:#9de0d1 center/cover url('../../../public/mascot-avatar.webp'); }
+      .faq { position:absolute; left:90px; right:90px; top:640px; display:flex; flex-direction:column; gap:34px; }
+      .faq div { background:var(--card); border-radius:44px; padding:40px 48px 44px; }
+      .faq h2 { font-family:var(--font-display); font-weight:700; font-size:52px; line-height:1.1; margin-bottom:14px; }
+      .faq p { font-size:40px; line-height:1.3; color:var(--fg-soft); }
+      .icona-bg { position:absolute; inset:0; background:
+        radial-gradient(ellipse 800px 700px at 22% 14%, rgba(240,170,195,.85), transparent 70%),
+        radial-gradient(ellipse 700px 650px at 92% 20%, rgba(214,110,90,.6), transparent 70%),
+        radial-gradient(ellipse 800px 800px at 90% 88%, rgba(120,60,85,.55), transparent 70%),
+        radial-gradient(ellipse 600px 600px at 10% 92%, rgba(190,60,100,.5), transparent 70%),
+        linear-gradient(160deg, #cf5073, #ab3157 60%, #9a3a5c); }
+      .icona-bg svg { position:absolute; left:350px; top:770px; width:380px; height:380px; fill:none; stroke:#faf3ec; stroke-width:15; stroke-linecap:round; stroke-linejoin:round; }
+    </style>
+  </head>
+  <body>
+    <div class="canvas" id="c"></div>
+    <script>
+      const d = JSON.parse(new URLSearchParams(location.search).get('d'))
+      const esc = (s) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch])
+      const fmt = (s) => esc(s).replace(/\*([^*]+)\*/g, '<em>$1</em>').replace(/\|/g, '<br>')
+      const M = { classica:'../../../assets/mascot.webp', contenta:'../mascotte/frigolo-contenta.png', pensierosa:'../mascotte/frigolo-pensierosa.png', posta:'../mascotte/frigolo-posta.png' }
+      const tema = d.tema || 'lampone'
+      const tipo = d.tipo
+      const c = document.getElementById('c')
+      document.documentElement.className = 'f-s'
+      document.body.className = `t-${tema}`
+      c.className = `canvas t-${tema} tipo-${tipo}`
+
+      const ICONE = {
+        installa: '<path d="M160 40v150M100 136l60 60 60-60"/><path d="M50 210v50a20 20 0 0 0 20 20h180a20 20 0 0 0 20-20v-50"/>',
+        funziona: '<rect x="70" y="40" width="180" height="240" rx="28"/><path d="M108 108l16 16 28-32M178 112h38M108 176l16 16 28-32M178 180h38M108 244h0"/>',
+        novita: '<path d="M160 36l32 84 84 40-84 40-32 84-32-84-84-40 84-40z"/>',
+        domande: '<path d="M60 60h200a20 20 0 0 1 20 20v130a20 20 0 0 1-20 20H150l-60 50v-50H60a20 20 0 0 1-20-20V80a20 20 0 0 1 20-20z"/><path d="M130 122c0-30 60-30 60 0 0 24-30 24-30 52M160 204h0"/>',
+        caffe: '<path d="M50 100h170v100a60 60 0 0 1-60 60h-50a60 60 0 0 1-60-60z"/><path d="M220 124h24a34 34 0 0 1 0 68h-30"/><path d="M110 40v26M150 40v26M190 40v26"/><path d="M135 222c-18-14-24-26-14-34 8-6 14 0 14 0s6-6 14 0c10 8 4 20-14 34z"/>'
+      }
+      const stato = '<div class="stato"><i style="left:0;width:60px"></i><i style="right:0;width:70px"></i></div>'
+      const paginaApp = '<div class="pag-av"></div><div class="pag-t">Frigolo</div><div class="l1"></div><div class="l2"></div><div class="l3"></div><div class="pag-b">Apri l\'app</div>'
+      const avatar = (st) => `<img src="../../../public/mascot-avatar.webp" style="left:141px;top:230px;width:150px;height:150px;border-radius:50%;${st||''}">`
+      const pagina = paginaApp.replace('<div class="pag-av"></div>', avatar())
+      const PASSI = {
+        'ios-safari': stato + pagina + '<div class="url">dascanfe.com</div><div class="ring" style="left:22px;right:22px;bottom:34px;height:98px;border-radius:49px"></div><div class="nota" style="bottom:156px">Apri il link da qui</div>',
+        'ios-condividi': stato + pagina + '<div class="bar-ios"></div>' +
+          '<svg style="left:0;bottom:0;width:432px;height:130px" viewBox="0 0 432 130" fill="none" stroke="#6b4552" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M50 50l-16 16 16 16"/><path d="M118 50l16 16-16 16"/><rect x="190" y="52" width="52" height="44" rx="8" stroke="#b02e50"/><path d="M216 78V28M200 42l16-16 16 16" stroke="#b02e50"/><path d="M296 54h30a8 8 0 0 1 8 8v30h-38zM296 54v38"/><rect x="372" y="54" width="34" height="34" rx="6"/></svg>' +
+          '<div class="ring" style="left:166px;bottom:18px;width:100px;height:100px;border-radius:30px"></div><div class="nota" style="bottom:152px">Tocca Condividi</div>',
+        'ios-home': stato + pagina + '<div class="vela"></div><div class="sheet"></div><div style="left:166px;right:166px;top:352px;height:8px;border-radius:4px;background:#d8c3c9"></div>' +
+          '<div class="riga" style="top:392px"><b></b>Copia</div><div class="riga" style="top:490px"><b></b>Aggiungi ai preferiti</div>' +
+          '<div class="riga" style="top:588px;background:#fbe3ea;color:#7d1f39"><b style="background:#b02e50"></b>Aggiungi a Home</div><div class="ring" style="left:20px;right:20px;top:582px;height:98px;border-radius:26px"></div><div class="riga" style="top:686px"><b></b>Cerca nella pagina</div>',
+        'and-chrome': stato + pagina + '<div class="url-and">dascanfe.com</div><div class="ring" style="right:18px;top:60px;width:84px;height:84px;border-radius:42px"></div>' +
+          '<svg style="right:36px;top:76px;width:48px;height:52px" viewBox="0 0 48 52"><circle cx="24" cy="10" r="5" fill="#3a1d27"/><circle cx="24" cy="26" r="5" fill="#3a1d27"/><circle cx="24" cy="42" r="5" fill="#3a1d27"/></svg><div class="nota" style="top:158px;">Apri il link da qui</div>',
+        'and-menu': stato + pagina + '<div class="url-and">dascanfe.com</div><div class="vela"></div><div class="menu"><div class="riga" style="top:14px"><b></b>Nuova scheda</div><div class="riga" style="top:98px"><b></b>Cronologia</div><div class="riga" style="top:182px;background:#fbe3ea;color:#7d1f39"><b style="background:#b02e50"></b>Installa app</div><div class="riga" style="top:266px"><b></b>Impostazioni</div></div><div class="ring" style="left:84px;top:326px;width:318px;height:98px;border-radius:26px"></div>',
+        'and-fatto': '<div class="home"></div>' +
+          [0,1,2,3,4,5,6,7].map((k) => { const x = 36 + (k%4)*98, y = 150 + Math.floor(k/4)*150; return `<div class="app${k===5?' frigolo':''}" style="left:${x}px;top:${y}px"></div><div class="app-n" style="left:${x-8}px;top:${y+92}px">${k===5?'Frigolo':''}</div>` }).join('') +
+          '<div class="ring" style="left:' + (36+98-9) + 'px;top:' + (150+150-9) + 'px;width:102px;height:102px;border-radius:28px"></div>'
+      }
+
+      let h = ''
+      if (tipo === 'icona') {
+        h += `<div class="icona-bg"><svg viewBox="0 0 320 320" stroke-width="15">${ICONE[d.icona]}</svg></div>`
+      } else {
+        h += '<div class="blob"></div>'
+        if (d.mascotte) h += `<img class="mascotte pos-${d.pos || 'basso'}" src="${M[d.mascotte]}" alt="">`
+        h += `<div class="top"><div class="brand"><img src="../../../public/mascot-avatar.webp" alt="">Frigolo</div>${d.n ? `<span class="n">${esc(d.n)}</span>` : ''}</div>`
+        h += `<div class="copy"><h1>${fmt(d.titolo)}</h1>${d.testo ? `<p class="testo">${fmt(d.testo)}</p>` : ''}</div>`
+        if (tipo === 'phone') h += `<div class="telefono"><img src="../../../${d.schermata}" alt=""></div>`
+        if (tipo === 'passo') h += `<div class="telefono"><div class="schermo">${PASSI[d.passo]}</div></div>`
+        if (tipo === 'faq') h += '<div class="faq">' + d.voci.map(([q, a]) => `<div><h2>${esc(q)}</h2><p>${esc(a)}</p></div>`).join('') + '</div>'
+      }
+      c.innerHTML = h
+    </script>
+  </body>
+</html>
