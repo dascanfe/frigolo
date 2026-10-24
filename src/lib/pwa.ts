@@ -289,5 +289,9 @@ export async function promptInstall(): Promise<boolean> {
   deferredPrompt = null
   setInstallState({ canPrompt: false })
   recordInstallOutcome(outcome)
+  // metriche anonime (import dinamico: telemetry importa già pwa)
+  void import('./telemetry').then((m) =>
+    m.recordEvent(outcome === 'accepted' ? 'install_prompt_accettato' : 'install_prompt_rifiutato'),
+  )
   return outcome === 'accepted'
 }
