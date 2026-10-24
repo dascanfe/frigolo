@@ -23,7 +23,7 @@ export default defineConfig({
       // "prompt": il plugin non ricarica mai la pagina da solo (lo fa pwa.ts, e solo quando
       // l'app e' in background); il nuovo service worker si attiva comunque da solo (skipWaiting)
       registerType: 'prompt',
-      includeAssets: ['favicon.png', 'mascot.png', 'mascot-avatar.webp', 'icons/*.png'],
+      includeAssets: ['favicon.png', 'mascot.png', 'mascot-avatar.webp', 'mascot-sad.webp', 'icons/*.png'],
       manifest: {
         id: '/',
         name: 'Frigolo',

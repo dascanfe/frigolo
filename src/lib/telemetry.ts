@@ -7,7 +7,8 @@
  *   offline. Nessun identificativo: il server somma tutto in contatori per giorno;
  * - per gli errori: tipo, messaggio tecnico ripulito (niente email, id, token,
  *   numeri lunghi), versione, pagina senza parametri. Al massimo 10 per
- *   apertura, senza doppioni.
+ *   apertura, senza doppioni. Gli errori di render (schermata di cortesia) hanno
+ *   il prefisso "[render]" e, in coda, componente e file:riga.
  *
  * Sessione: parte all'apertura e quando la pagina torna visibile; finisce
  * quando la pagina resta nascosta per più di 30 secondi. Se l'app viene chiusa
@@ -129,26 +130,79 @@ function alCambioVisibilita() {
   apri()
 }
 
+export type TipoErrore = 'errore' | 'promessa' | 'query' | 'modifica' | 'render'
+
+/**
+ * Tipi ammessi dal server (metrics_record_error): gli altri finirebbero in "altro".
+ * Gli errori di render partono come "errore" con il prefisso "[render]" nel
+ * messaggio, finché il server non ammette "render" (migration 0028 da preparare).
+ */
+const TIPO_SERVER: Record<TipoErrore, 'errore' | 'promessa' | 'query' | 'modifica'> = {
+  errore: 'errore',
+  promessa: 'promessa',
+  query: 'query',
+  modifica: 'modifica',
+  render: 'errore',
+}
+
+function descrivi(errore: unknown): string {
+  if (errore instanceof Error) return `${errore.name}: ${errore.message}`
+  if (typeof errore === 'object' && errore && 'message' in errore)
+    return String((errore as { message: unknown }).message)
+  return String(errore)
+}
+
+/**
+ * Dove è successo un errore di render: nome del componente (prima voce utile
+ * dello stack dei componenti di React; in produzione i nomi sono accorciati dal
+ * minificatore) e file:riga della prima riga utile dello stack dell'errore.
+ */
+export function doveRender(errore: unknown, componentStack?: string | null): string {
+  const parti: string[] = []
+  // senza i parametri degli indirizzi (in sviluppo: ?t=...) la riga si legge meglio
+  const stack = (errore instanceof Error ? (errore.stack ?? '') : '').replace(/\?[^\s:)]*/g, '')
+  // lo stack dei componenti di React c'è solo per i confini di errore; per le rotte
+  // si ripiega sul nome della funzione nella prima riga dello stack dell'errore
+  const componente =
+    componentStack?.match(/^\s*at\s+([A-Z][\w$.]*)/m)?.[1] ??
+    stack.match(/^\s*at\s+(?:async\s+)?([A-Z][\w$.]*)\s+\(/m)?.[1]
+  if (componente) parti.push(componente)
+  const frame = stack.match(/([\w.-]+\.(?:m?js|[jt]sx?)):(\d+)(?::(\d+))?/)
+  if (frame) parti.push(`${frame[1]}:${frame[2]}${frame[3] ? `:${frame[3]}` : ''}`)
+  return parti.join(' ')
+}
+
+/** "[render] Nome: messaggio @ Componente file.js:12", ripulito e dentro i 200 caratteri */
+export function messaggioRender(errore: unknown, componentStack?: string | null): string {
+  const dove = ripulisci(doveRender(errore, componentStack), 60)
+  const testa = ripulisci(`[render] ${descrivi(errore)}`, dove ? 200 - dove.length - 3 : 200)
+  return dove ? `${testa} @ ${dove}` : testa
+}
+
+interface DettagliErrore {
+  /** Stack dei componenti di React (solo errori di render) */
+  componentStack?: string | null
+  /** Pagina da riportare, se diversa da quella in cui ci si trova */
+  pagina?: string
+}
+
 /** Errori: tipo, messaggio ripulito, versione e pagina, senza doppioni. */
-export function reportError(tipo: 'errore' | 'promessa' | 'query' | 'modifica', errore: unknown) {
+export function reportError(tipo: TipoErrore, errore: unknown, dettagli: DettagliErrore = {}) {
   // offline gli errori di rete sono attesi: non dicono niente
   if (!navigator.onLine) return
   if (erroriInviati.size >= MAX_ERRORI) return
-  const grezzo =
-    errore instanceof Error
-      ? `${errore.name}: ${errore.message}`
-      : typeof errore === 'object' && errore && 'message' in errore
-        ? String((errore as { message: unknown }).message)
-        : String(errore)
-  const messaggio = ripulisci(grezzo)
+  const messaggio =
+    tipo === 'render'
+      ? messaggioRender(errore, dettagli.componentStack)
+      : ripulisci(descrivi(errore))
   const chiave = `${tipo}|${messaggio}`
   if (erroriInviati.has(chiave)) return
   erroriInviati.add(chiave)
   void invia('metrics_record_error', {
-    p_tipo: tipo,
+    p_tipo: TIPO_SERVER[tipo],
     p_messaggio: messaggio,
     p_versione: VERSIONE,
-    p_pagina: location.pathname,
+    p_pagina: dettagli.pagina ?? location.pathname,
   })
 }
 

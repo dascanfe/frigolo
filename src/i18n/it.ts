@@ -380,6 +380,12 @@ export const it = {
     network: 'Nessuna connessione. Controlla la rete e riprova.',
     loadLists: 'Non riesco a caricare le liste',
   },
+  crash: {
+    title: 'Qualcosa è andato storto',
+    text: 'Non è colpa tua. Prova a ricaricare: la tua lista è al sicuro.',
+    reload: 'Ricarica',
+    home: 'Torna alla lista',
+  },
   common: {
     wait: 'Un attimo...',
     cancel: 'Annulla',
