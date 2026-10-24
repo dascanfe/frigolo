@@ -98,34 +98,40 @@ export function setupServiceWorker() {
   })
 }
 
+const CHUNK_ERROR_RE =
+  /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/i
+
+/** True se l'errore dice che un pezzo dell'app non si è caricato (versione nuova uscita nel frattempo) */
+export function isChunkLoadError(error: unknown): boolean {
+  const message = String((error as Error | undefined)?.message ?? error)
+  return CHUNK_ERROR_RE.test(message)
+}
+
+/** Ricarica una volta sola per sessione (il flag in sessionStorage evita i cicli). True se ha ricaricato. */
+export function reloadOnceForNewVersion(): boolean {
+  try {
+    if (sessionStorage.getItem(RELOAD_FLAG)) return false
+    sessionStorage.setItem(RELOAD_FLAG, '1')
+  } catch {
+    return false // senza sessionStorage meglio non rischiare un ciclo
+  }
+  void reloadPage()
+  return true
+}
+
 /**
  * Pezzi dell'app non piu' sul server (versione nuova uscita mentre la pagina
  * era aperta): ricarica una volta sola, il flag in sessionStorage evita i cicli.
  * Si installa anche in sviluppo e senza service worker.
  */
 export function setupChunkErrorReload() {
-  const reloadOnce = () => {
-    try {
-      if (sessionStorage.getItem(RELOAD_FLAG)) return
-      sessionStorage.setItem(RELOAD_FLAG, '1')
-    } catch {
-      return // senza sessionStorage meglio non rischiare un ciclo
-    }
-    void reloadPage()
-  }
+  const reloadOnce = () => void reloadOnceForNewVersion()
   window.addEventListener('vite:preloadError', (event) => {
     event.preventDefault()
     reloadOnce()
   })
   window.addEventListener('unhandledrejection', (event) => {
-    const message = String((event.reason as Error | undefined)?.message ?? event.reason)
-    if (
-      /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/i.test(
-        message,
-      )
-    ) {
-      reloadOnce()
-    }
+    if (isChunkLoadError(event.reason)) reloadOnce()
   })
   // caricata bene: il prossimo problema potra' ricaricare di nuovo
   window.addEventListener('load', () => {
