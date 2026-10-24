@@ -22,6 +22,8 @@ export function useCategoryScrollSpy(
   const [active, setActive] = useState<string | null>(null)
   const lockedRef = useRef<string | null>(null)
   const atEndRef = useRef(false)
+  /** Interrompe lo scorrimento in corso (listener e timer del tocco su una chip) */
+  const cancelGoToRef = useRef<(() => void) | null>(null)
   const slugKey = slugs.join('|')
 
   /** Sotto la barra appiccicosa: la categoria "corrente" è quella che ha superato questa linea */
@@ -73,6 +75,10 @@ export function useCategoryScrollSpy(
     }
   }, [slugKey, stickyRef, endRef, lineOffset])
 
+  // uscendo dalla pagina nessun listener o timer deve restare in giro: a scorrimento
+  // finito correggerebbe lo scroll di un'altra schermata
+  useEffect(() => () => cancelGoToRef.current?.(), [])
+
   const goTo = useCallback(
     (slug: string | null) => {
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -82,6 +88,7 @@ export function useCategoryScrollSpy(
         if (!el) return 0
         return Math.max(0, el.getBoundingClientRect().top + window.scrollY - lineOffset() + 4)
       }
+      cancelGoToRef.current?.()
       setActive(slug)
       lockedRef.current = slug ?? '__top'
       window.scrollTo({ top: targetTop(), behavior: reduce ? 'auto' : 'smooth' })
@@ -100,10 +107,16 @@ export function useCategoryScrollSpy(
           timer = window.setTimeout(release, 150)
           return
         }
+        cancel()
+      }
+      const cancel = () => {
+        window.clearTimeout(timer)
         window.removeEventListener('scroll', onScroll)
         window.removeEventListener('scrollend', release)
         lockedRef.current = null
+        cancelGoToRef.current = null
       }
+      cancelGoToRef.current = cancel
       const onScroll = () => {
         window.clearTimeout(timer)
         timer = window.setTimeout(release, 140)
