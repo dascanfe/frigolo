@@ -19,23 +19,14 @@ export function CrashScreen({ fullScreen = false }: CrashScreenProps) {
       }`}
       role="alert"
     >
-      <div className="relative">
-        <img
-          src="/mascot.png"
-          alt=""
-          width={112}
-          height={112}
-          // testa piegata e un po' spenta: la mascotte dispiaciuta
-          className="size-28 -rotate-6 opacity-90 drop-shadow-[0_8px_16px_rgb(58_44_33/0.15)]"
-          draggable={false}
-        />
-        <span
-          className="absolute -top-1 -right-3 flex size-8 items-center justify-center rounded-full bg-surface font-display text-xl font-bold text-secondary ring-1 ring-subtle"
-          aria-hidden="true"
-        >
-          ?
-        </span>
-      </div>
+      <img
+        src="/mascot-sad.webp"
+        alt=""
+        width={112}
+        height={112}
+        className="size-28 drop-shadow-[0_8px_16px_rgb(58_44_33/0.15)]"
+        draggable={false}
+      />
       <h1 className="font-display text-3xl font-bold text-primary">{t.crash.title}</h1>
       <p className="max-w-xs text-sm text-secondary">{t.crash.text}</p>
       <div className="flex flex-col gap-2 pt-2">
