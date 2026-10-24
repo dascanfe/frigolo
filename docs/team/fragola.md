@@ -32,6 +32,55 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-10-24 - Schermo bianco da lista a catalogo (branch `fragola/schermo-bianco`, versione 2.0.1)
+
+Segnalazione: su iPhone (PWA, build "1.4.0" tra il 18 e il 23 ottobre) passando dalla lista al catalogo
+lo schermo diventa bianco con "Script error."; in telemetria 4 errori `errore`, `Script error.`, pagina `/`.
+
+Fatto (rete di sicurezza):
+- `ErrorBoundary` in `App.tsx` (fuori da provider, accesso e router) e `errorElement` sulle rotte
+  (`RouteError`): schermata `CrashScreen` con la mascotte, "Qualcosa è andato storto", "Ricarica" e
+  "Torna alla lista" (senza router né query, quindi funziona anche se quelli sono rotti). Per gli errori
+  delle schermate resta la barra in basso, si può cambiare pagina. Prima gli errori di render nelle rotte
+  mostravano la pagina grigia di react-router ("Unexpected Application Error!", verificato), quelli fuori
+  dalle rotte (accesso, provider, toast) davvero lo schermo bianco.
+- Telemetria: `reportError('render', errore, { componentStack })` manda al server il tipo già ammesso
+  `errore` con messaggio `[render] Nome: messaggio @ Componente file.js:riga:colonna` (200 caratteri,
+  ripulito) e la pagina reale. Nessuna migration 0028 necessaria: se un giorno si vorrà separarli, basta
+  aggiungere `render` all'elenco di `metrics_record_error` e togliere la mappa `TIPO_SERVER` in `telemetry.ts`.
+  In produzione i nomi dei componenti sono accorciati dal minificatore: senza sourcemap restano file:riga
+  e il messaggio vero, che di solito bastano.
+- Un pezzo lazy non caricato (versione nuova uscita) ricarica una volta sola (`reloadOnceForNewVersion`).
+- Dati imprevisti: `indexCatalog` e `useList` tollerano cache vecchie o righe malformate.
+- Scroll-spy: il tocco su una chip non lascia più listener e timer uscendo dalla pagina (correggeva
+  lo scroll della schermata successiva).
+
+Ipotesi sulla causa, con probabilità (non riproducibile in locale):
+1. 35%, rumore cross-origin non legato al catalogo: "Script error." è il messaggio mascherato di uno script
+   di un'altra origine (Turnstile di Cloudflare sulla schermata di accesso, che sta su `/` e invia la metrica
+   appena c'è la sessione; oppure estensioni e traduzione di Safari). Conferma: gli errori arrivano subito
+   dopo l'accesso, mai da `/catalogo`; smentita: compare un `[render]` con la stessa pagina.
+2. 20%, aggiornamento del service worker mentre l'app è aperta (il 23 ottobre sono uscite 3 versioni
+   con lo stesso "1.4.0", skipWaiting e clientsClaim). Il catalogo non è un pezzo lazy (solo Analitiche
+   lo è, verificato nel build), quindi può colpire al massimo la scheda Analitiche. Ora gestito.
+3. 10%, cache persistita (IndexedDB) di una build vecchia letta da una nuova con lo stesso buster `1.4.0`.
+   Dal diff tra il 18 e il 23 ottobre le forme dei dati delle query non cambiano: poco probabile. Da qui in
+   avanti: cambiare la versione ogni volta che cambia la forma di un dato in cache.
+4. 10%, iPhone con iOS vecchio (sotto 16.4: il build usa il target `baseline-widely-available` di Vite)
+   con errore di sintassi o API mancante. Un errore di analisi dello script non è catturabile da React.
+5. 7%, scroll-spy e IntersectionObserver: provati 6 cicli rapidi lista, catalogo, chip, lista nel build
+   di produzione, nessun errore; trovato solo il bug dello scroll corretto sopra.
+6. 3%, icone, categorie, prodotti personalizzati: tutti i 132 nomi di icona del database sono nel catalogo
+   (test `iconsInUse.test.ts`); nomi come `constructor`, `__proto__`, vuoto, emoji ricadono sul cestino;
+   prodotti con nome da 60 caratteri e icona da 40 reggono. Provati in locale con 12 prodotti limite.
+7. 15%, altro non riconducibile con i dati che abbiamo.
+
+Da guardare nei prossimi giorni: `metrics.error_counts` con messaggi `[render]`: se ce ne sono, la causa
+è nell'app e il messaggio la dice; se restano solo `Script error.`, è il caso 1 o 4.
+
+Da decidere: testi della schermata di cortesia con Zenzero (`it.crash` in `src/i18n/it.ts`); una mascotte
+dispiaciuta vera da Paprika (oggi è quella di sempre, inclinata, con un punto interrogativo).
+
 ### 2026-10-23 - Rifiniture di ottobre (branch `fragola/rifiniture-ottobre`)
 
 1. Barra in basso: `useKeyboardOpen` (focus su un campo di testo o `visualViewport` ridotto di oltre
