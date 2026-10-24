@@ -22,7 +22,18 @@ const PAUSA_MS = 30_000
 const MAX_ERRORI = 10
 const CHIAVE_IN_SOSPESO = 'frigolo.sessione'
 
-type Rpc = 'metrics_record_session' | 'metrics_record_error'
+type Rpc = 'metrics_record_session' | 'metrics_record_error' | 'metrics_record_event'
+
+/** Eventi dell'app: elenco chiuso, lo stesso della RPC metrics_record_event. */
+export type EventoApp =
+  | 'ricerca_vuota'
+  | 'install_scheda'
+  | 'install_android_tocco'
+  | 'install_prompt_accettato'
+  | 'install_prompt_rifiutato'
+  | 'install_guida_ios'
+  | 'aggiorna_barra'
+  | 'aggiorna_tocco'
 
 let inizio: number | null = null
 let nascostaDa: number | null = null
@@ -55,6 +66,17 @@ function dispositivo(): 'ios' | 'android' | 'desktop' {
   return 'desktop'
 }
 
+/**
+ * Conta un evento dell'app (solo il nome, da un elenco chiuso: mai testi
+ * scritti dall'utente). Ognuno al massimo una volta per apertura.
+ */
+const eventiInviati = new Set<EventoApp>()
+export function recordEvent(evento: EventoApp, ancheRipetuto = false) {
+  if (!ancheRipetuto && eventiInviati.has(evento)) return
+  eventiInviati.add(evento)
+  void invia('metrics_record_event', { p_evento: evento })
+}
+
 /** Toglie dal testo email, id, parametri degli indirizzi, token e numeri lunghi. */
 export function ripulisci(testo: string, max = 200): string {
   return testo
@@ -78,6 +100,8 @@ function mandaSessione(da: number, a: number, eraOffline: boolean) {
     p_dispositivo: dispositivo(),
     p_tema: getTheme(),
     p_offline: eraOffline,
+    // ora di inizio (ora del telefono), per la mappa degli orari d'uso
+    p_ora: new Date(da).getHours(),
   })
 }
 

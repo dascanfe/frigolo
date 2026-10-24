@@ -267,12 +267,14 @@ begin
 end $$;
 
 -- limite per ora: oltre 60 sessioni non si conta piu'
+select pg_temp.as_postgres();
+create temp table d0 as select coalesce(sum(n), 0) as n from metrics.session_counts where dispositivo = 'desktop';
 select pg_temp.as_user('d0000000-0000-0000-0000-000000000009');
 select public.metrics_record_session(15, '1.5.0', 'browser', 'desktop', 'mare', false) from generate_series(1, 70);
 select pg_temp.as_postgres();
 do $$
 begin
-  assert (select sum(n) from metrics.session_counts where dispositivo = 'desktop') = 58, 'limite di 60 sessioni all ora';
+  assert (select sum(n) from metrics.session_counts where dispositivo = 'desktop') = (select n from d0) + 58, 'limite di 60 sessioni all ora';
 end $$;
 
 select pg_temp.as_anon();
@@ -281,6 +283,57 @@ begin
   begin
     perform public.metrics_record_error('errore', 'x', '1', '/');
     assert false, 'anon registra errori';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
+-- -----------------------------------------------------------------------------
+-- 0028: eventi, ora delle sessioni, ingressi, dati v4
+-- -----------------------------------------------------------------------------
+select pg_temp.as_postgres();
+create temp table c4 as select
+  (select coalesce(sum(n), 0) from metrics.daily_counts where metric = 'ev_ricerca_vuota') as ricerche,
+  (select coalesce(sum(n), 0) from metrics.daily_counts where metric = 'join_code') as codici,
+  (select coalesce(sum(n), 0) from metrics.invite_delays) as ritardi;
+insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data, created_at, updated_at)
+values ('d0000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+        'm10@example.test', '{"display_name":"Dieci"}', now(), now());
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000009');
+select public.metrics_record_event('ricerca_vuota');
+select public.metrics_record_event('testo libero non ammesso');
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000010');   -- M9 ha gia' esaurito il limite orario
+select public.metrics_record_session(130, '2.1.0', 'standalone', 'ios', 'mare', false, 21);
+select pg_temp.as_postgres();
+update ids set code = h.join_code from public.households h where h.id = ids.id;
+insert into ids select 'N', id, join_code from public.households where name = 'Lista di Nove';
+select pg_temp.as_user('d0000000-0000-0000-0000-000000000010');
+select public.join_household((select code from ids where k = 'N'));
+select pg_temp.as_postgres();
+do $$
+declare
+  v jsonb := metrics.periodo(metrics.today() - 6, metrics.today());
+  g jsonb := metrics.globali_v4();
+begin
+  assert (select coalesce(sum(n), 0) from metrics.daily_counts where metric = 'ev_ricerca_vuota') = (select ricerche from c4) + 1,
+    'evento contato, quello fuori elenco no';
+  assert not exists (select 1 from metrics.daily_counts where metric like 'ev\_testo%'), 'niente eventi liberi';
+  assert exists (select 1 from metrics.session_counts where ora = 21), 'ora di inizio salvata';
+  assert (select coalesce(sum(n), 0) from metrics.daily_counts where metric = 'join_code') = (select codici from c4) + 1, 'ingresso con codice';
+  assert (select coalesce(sum(n), 0) from metrics.invite_delays) = (select ritardi from c4) + 1, 'ritardo invito registrato';
+  assert v ? 'prodotti_top' and v ? 'spesa' and v ? 'liste' and v ? 'orari' and v ? 'primo_uso' and v ? 'versioni', 'dati v4';
+  assert jsonb_array_length(v -> 'spesa' -> 'calore') = 7 and jsonb_array_length(v -> 'spesa' -> 'calore' -> 0) = 24, 'mappa 7 x 24';
+  assert (v -> 'eventi' ->> 'ricerca_vuota')::int >= 1, 'eventi nel periodo';
+  assert g ? 'coorti' and g ? 'prodotti_top_sempre', 'globali';
+  assert v::text !~* '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', 'nessun id';
+  assert pg_column_size(metrics.snapshot()) < 900000, 'istantanea leggera';
+end $$;
+
+select pg_temp.as_anon();
+do $$
+begin
+  begin
+    perform public.metrics_record_event('ricerca_vuota');
+    assert false, 'anon registra eventi';
   exception when insufficient_privilege then null;
   end;
 end $$;
