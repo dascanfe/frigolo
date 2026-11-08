@@ -13,11 +13,12 @@ import {
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useStuck } from '@/lib/useStuck'
 import type { ReactNode } from 'react'
 import { LinkButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { BACK_BAR_OFFSET, PageHeader } from '@/components/PageHeader'
+import { PageHeader, STICKY_LEFT_GAP, STICKY_TOP } from '@/components/PageHeader'
 import { useCatalog } from '@/features/catalog/useCatalog'
 import { it as t } from '@/i18n/it'
 import { CategoryDonut } from './CategoryDonut'
@@ -41,6 +42,8 @@ import {
 import type { Period } from './useAnalytics'
 
 export function AnalyticsScreen() {
+  const filtersRef = useRef<HTMLDivElement>(null)
+  const stuck = useStuck(filtersRef)
   const [period, setPeriod] = useState<Period>('15d')
   const [categoryId, setCategoryId] = useState<string | null>(null)
   const [now] = useState(() => new Date())
@@ -72,8 +75,9 @@ export function AnalyticsScreen() {
         <>
           {/* Filtri: una sola riga sopra tutti i grafici */}
           <div
-            className="sticky top-0 z-10 flex flex-col gap-2 px-4 py-2"
-            style={{ top: `calc(var(--safe-top) + ${BACK_BAR_OFFSET})` }}
+            ref={filtersRef}
+            className={`sticky z-10 flex flex-col gap-2 py-2 pr-4 transition-[padding] duration-150 ${stuck ? STICKY_LEFT_GAP : 'pl-4'}`}
+            style={{ top: STICKY_TOP }}
           >
             <div
               className="glass grid grid-cols-5 gap-1 rounded-full p-1"

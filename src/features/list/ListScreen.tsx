@@ -234,9 +234,11 @@ export function ListScreen() {
             to="/impostazioni"
             aria-label={t.nav.settings}
             title={t.nav.settings}
-            className="glass flex size-11 items-center justify-center rounded-full text-secondary transition-transform active:scale-95"
+            className="group flex size-11 items-center justify-center"
           >
-            <Settings size={26} strokeWidth={2} aria-hidden="true" />
+            <span className="glass flex size-9 items-center justify-center rounded-full text-secondary transition-transform group-active:scale-95">
+              <Settings size={18} strokeWidth={2.25} aria-hidden="true" />
+            </span>
           </Link>
         </div>
       </header>

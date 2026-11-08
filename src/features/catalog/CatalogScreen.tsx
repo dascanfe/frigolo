@@ -1,6 +1,7 @@
+import { useStuck } from '@/lib/useStuck'
 import { useMemo, useRef, useState } from 'react'
 import { CategoryChips } from '@/components/CategoryChips'
-import { BACK_BAR_OFFSET, PageHeader } from '@/components/PageHeader'
+import { PageHeader, STICKY_TOP } from '@/components/PageHeader'
 import { AddTile, ProductTile } from '@/components/ProductTile'
 import type { TileState } from '@/components/ProductTile'
 import { CategoryDivider, ProductGrid } from '@/components/ProductGrid'
@@ -28,6 +29,7 @@ export function CatalogScreen() {
   const mutations = useListMutations()
   const stickyRef = useRef<HTMLDivElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
+  const stuck = useStuck(stickyRef)
   const slugs = catalog.categories.map((c) => c.slug)
   const { active, goTo } = useCategoryScrollSpy(slugs, stickyRef, endRef)
   const [sheetTarget, setSheetTarget] = useState<EntrySheetTarget | null>(null)
@@ -55,8 +57,8 @@ export function CatalogScreen() {
 
       <div
         ref={stickyRef}
-        className="sticky top-0 z-10 bg-app/95 backdrop-blur-sm"
-        style={{ top: `calc(var(--safe-top) + ${BACK_BAR_OFFSET})` }}
+        className={`sticky z-10 bg-app/95 backdrop-blur-sm transition-[padding] duration-150 ${stuck ? 'pl-[46px]' : ''}`}
+        style={{ top: STICKY_TOP }}
       >
         <CategoryChips
           categories={catalog.categories}
