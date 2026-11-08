@@ -18,6 +18,32 @@ export const STICKY_TOP = 'calc(var(--safe-top) + 14px)'
  */
 export const STICKY_CHIPS_TOP = 'calc(var(--safe-top) + 6px)'
 
+/**
+ * Top di una barra con pillola di vetro (alta 50px col bordo, con 8px di margine sopra)
+ * appiccicata in alto: il centro della pillola coincide con quello del cerchio.
+ */
+export const STICKY_PILL_TOP = 'calc(var(--safe-top) + 3px)'
+
+/**
+ * Vetro dietro a una barra appiccicosa: quando la barra è attaccata copre anche
+ * la fascia sopra (fino al bordo dello schermo), così il contenuto che scorre si
+ * vede solo sfocato. Va messo come primo figlio della barra (che è `sticky z-10`).
+ */
+export function StickyGlass({ visible, top }: { visible: boolean; top: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-x-0 bottom-0 -z-10 border-b border-subtle transition-opacity duration-150 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      style={{
+        top: `calc(-1 * ${top})`,
+        backgroundColor: 'color-mix(in srgb, var(--bg-app) 72%, transparent)',
+        WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
+        backdropFilter: 'blur(20px) saturate(1.6)',
+      }}
+    />
+  )
+}
+
 /** Spazio a sinistra di una barra appiccicosa attaccata in alto: ci sta il cerchio della freccia */
 export const STICKY_LEFT_GAP = 'pl-[62px]'
 

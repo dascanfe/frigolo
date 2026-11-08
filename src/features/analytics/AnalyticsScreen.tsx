@@ -18,7 +18,7 @@ import { useStuck } from '@/lib/useStuck'
 import type { ReactNode } from 'react'
 import { LinkButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { PageHeader, STICKY_LEFT_GAP, STICKY_TOP } from '@/components/PageHeader'
+import { PageHeader, STICKY_LEFT_GAP, STICKY_PILL_TOP, StickyGlass } from '@/components/PageHeader'
 import { useCatalog } from '@/features/catalog/useCatalog'
 import { it as t } from '@/i18n/it'
 import { CategoryDonut } from './CategoryDonut'
@@ -77,8 +77,9 @@ export function AnalyticsScreen() {
           <div
             ref={filtersRef}
             className={`sticky z-10 flex flex-col gap-2 py-2 pr-4 transition-[padding] duration-150 ${stuck ? STICKY_LEFT_GAP : 'pl-4'}`}
-            style={{ top: STICKY_TOP }}
+            style={{ top: STICKY_PILL_TOP }}
           >
+            <StickyGlass visible={stuck} top={STICKY_PILL_TOP} />
             <div
               className="glass grid grid-cols-5 gap-1 rounded-full p-1"
               role="tablist"

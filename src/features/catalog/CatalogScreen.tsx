@@ -1,7 +1,7 @@
 import { useStuck } from '@/lib/useStuck'
 import { useMemo, useRef, useState } from 'react'
 import { CategoryChips } from '@/components/CategoryChips'
-import { PageHeader, STICKY_CHIPS_TOP } from '@/components/PageHeader'
+import { PageHeader, STICKY_CHIPS_TOP, StickyGlass } from '@/components/PageHeader'
 import { AddTile, ProductTile } from '@/components/ProductTile'
 import type { TileState } from '@/components/ProductTile'
 import { CategoryDivider, ProductGrid } from '@/components/ProductGrid'
@@ -60,18 +60,7 @@ export function CatalogScreen() {
         className={`sticky z-10 transition-[padding] duration-150 ${stuck ? 'pl-[56px]' : ''}`}
         style={{ top: STICKY_CHIPS_TOP }}
       >
-        {/* vetro dietro alle chip: quando la barra è attaccata copre anche la fascia
-            sopra (fino al bordo dello schermo), così i prodotti non si vedono scorrere */}
-        <div
-          aria-hidden="true"
-          className={`absolute inset-x-0 bottom-0 -z-10 border-b border-subtle transition-opacity duration-150 ${stuck ? 'opacity-100' : 'opacity-0'}`}
-          style={{
-            top: `calc(-1 * ${STICKY_CHIPS_TOP})`,
-            backgroundColor: 'color-mix(in srgb, var(--bg-app) 72%, transparent)',
-            WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
-            backdropFilter: 'blur(20px) saturate(1.6)',
-          }}
-        />
+        <StickyGlass visible={stuck} top={STICKY_CHIPS_TOP} />
         <CategoryChips
           categories={catalog.categories}
           selected={active}
