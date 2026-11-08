@@ -139,33 +139,41 @@
     -webkit-touch-callout: none;
     touch-action: manipulation;
     isolation: isolate;
+    overflow: hidden;
     transition:
       transform var(--dur-press) var(--ease-out),
       border-color var(--dur-fill) var(--ease-organic),
-      color 260ms var(--ease-organic) 90ms,
+      color 320ms var(--ease-organic) 160ms,
       opacity var(--dur-fill) var(--ease-organic),
       box-shadow var(--dur-fill) var(--ease-organic);
   }
 
-  /* Il colore della tile selezionata non cambia di colpo: una macchia parte
-     dall'angolo in basso a sinistra e si allarga fino a riempirla */
+  /* Il colore della tile selezionata si versa come un liquido: una goccia
+     irregolare nasce nell'angolo in basso a sinistra, ruota e si gonfia fino a
+     riempire la tile, arrotondandosi mentre cresce. Si anima solo transform e
+     border-radius (niente clip-path), così resta fluida anche sui telefoni. */
   .tile::before {
     content: '';
     position: absolute;
-    inset: -1.5px;
+    left: 0;
+    bottom: 0;
     z-index: -1;
-    border-radius: inherit;
+    width: 300%;
+    aspect-ratio: 1;
     background-color: var(--tile-fill, var(--tile-active-bg));
-    clip-path: circle(0% at 0% 100%);
+    border-radius: 34% 66% 58% 42% / 46% 38% 62% 54%;
+    transform: translate(-50%, 50%) rotate(-75deg) scale(0);
     transition:
-      clip-path var(--dur-fill) var(--ease-organic),
+      transform var(--dur-liquid) var(--ease-liquid),
+      border-radius var(--dur-liquid) var(--ease-liquid),
       background-color var(--dur-fill) var(--ease-organic);
     pointer-events: none;
   }
 
   .tile--active::before,
   .tile--done::before {
-    clip-path: circle(150% at 0% 100%);
+    border-radius: 50%;
+    transform: translate(-50%, 50%) rotate(0deg) scale(1);
   }
 
   .tile:active:not(:disabled),
@@ -181,7 +189,7 @@
   .tile__icon {
     flex: none;
     color: var(--tile-idle-icon);
-    transition: color 260ms var(--ease-organic) 90ms;
+    transition: color 320ms var(--ease-organic) 160ms;
   }
 
   .tile__name {
