@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Archive,
   Check,
-  Coffee,
   DoorOpen,
   KeyRound,
   List,
@@ -17,6 +16,7 @@ import type { FormEvent } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { Button } from '@/components/Button'
 import { ConfirmSheet } from '@/components/ConfirmSheet'
+import { DonationNote } from '@/components/DonationNote'
 import { Icon } from '@/components/Icon'
 import { PageHeader } from '@/components/PageHeader'
 import { SectionHeader } from '@/components/SectionHeader'
@@ -32,7 +32,7 @@ import {
   useInvalidateLists,
 } from '@/features/lists/useLists'
 import { avatarPublicUrl } from '@/features/profile/profileApi'
-import { DONATION_URL, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL, it as t } from '@/i18n/it'
+import { PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL, it as t } from '@/i18n/it'
 import {
   applyUpdate,
   checkForUpdate,
@@ -408,16 +408,7 @@ export function SettingsScreen() {
 
       {/* ---------------- Caffè: una riga discreta, in fondo ---------------- */}
       <div className="mx-4 mt-4 flex flex-col items-center gap-1 text-center">
-        <p className="text-xs text-secondary">{t.donation.text}</p>
-        <a
-          href={DONATION_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-bold text-accent active:bg-sand/40"
-        >
-          <Coffee size={16} aria-hidden="true" />
-          {t.donation.label}
-        </a>
+        <DonationNote />
         <p className="mt-2 text-xs text-secondary">
           {t.support.text}{' '}
           <a href={`mailto:${SUPPORT_EMAIL}`} className="font-bold text-accent underline">
