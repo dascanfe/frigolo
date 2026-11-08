@@ -138,13 +138,42 @@
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     touch-action: manipulation;
+    isolation: isolate;
+    overflow: hidden;
     transition:
       transform var(--dur-press) var(--ease-out),
-      background-color var(--dur-color) ease-out,
-      border-color var(--dur-color) ease-out,
-      color var(--dur-color) ease-out,
-      opacity var(--dur-color) ease-out,
-      box-shadow var(--dur-color) ease-out;
+      border-color var(--dur-fill) var(--ease-organic),
+      color 320ms var(--ease-organic) 160ms,
+      opacity var(--dur-fill) var(--ease-organic),
+      box-shadow var(--dur-fill) var(--ease-organic);
+  }
+
+  /* Il colore della tile selezionata si versa come un liquido: una goccia
+     irregolare nasce nell'angolo in basso a sinistra, ruota e si gonfia fino a
+     riempire la tile, arrotondandosi mentre cresce. Si anima solo transform e
+     border-radius (niente clip-path), così resta fluida anche sui telefoni. */
+  .tile::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    width: 300%;
+    aspect-ratio: 1;
+    background-color: var(--tile-fill, var(--tile-active-bg));
+    border-radius: 34% 66% 58% 42% / 46% 38% 62% 54%;
+    transform: translate(-50%, 50%) rotate(-75deg) scale(0);
+    transition:
+      transform var(--dur-liquid) var(--ease-liquid),
+      border-radius var(--dur-liquid) var(--ease-liquid),
+      background-color var(--dur-fill) var(--ease-organic);
+    pointer-events: none;
+  }
+
+  .tile--active::before,
+  .tile--done::before {
+    border-radius: 50%;
+    transform: translate(-50%, 50%) rotate(0deg) scale(1);
   }
 
   .tile:active:not(:disabled),
@@ -160,7 +189,7 @@
   .tile__icon {
     flex: none;
     color: var(--tile-idle-icon);
-    transition: color var(--dur-color) ease-out;
+    transition: color 320ms var(--ease-organic) 160ms;
   }
 
   .tile__name {
@@ -178,7 +207,7 @@
 
   /* --- in lista, da comprare --- */
   .tile--active {
-    background-color: var(--tile-active-bg);
+    --tile-fill: var(--tile-active-bg);
     border-color: var(--tile-active-bg);
     color: var(--tile-active-text);
     box-shadow: var(--shadow-tile);
@@ -190,7 +219,7 @@
 
   /* --- nel carrello, preso --- */
   .tile--done {
-    background-color: var(--tile-done-bg);
+    --tile-fill: var(--tile-done-bg);
     border-color: var(--tile-done-bg);
     color: var(--tile-done-text);
     opacity: 0.85;
@@ -357,6 +386,40 @@
     background-color: var(--text-primary);
     border-color: var(--text-primary);
     color: var(--c-cream);
+  }
+
+  /* Riga di chip con la pill che scivola: il fondo scuro non è della chip ma di
+     un indicatore sotto, che si sposta e si allunga con una curva morbida */
+  .chips-pill .chip {
+    position: relative;
+    z-index: 1;
+    transition:
+      background-color var(--dur-organic) var(--ease-organic),
+      border-color var(--dur-organic) var(--ease-organic),
+      color var(--dur-organic) var(--ease-organic);
+  }
+
+  .chips-pill .chip[aria-pressed='true'] {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .chips-pill__indicator {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    height: 44px;
+    border-radius: 999px;
+    background-color: var(--text-primary);
+    box-shadow: var(--shadow-tile);
+    pointer-events: none;
+  }
+
+  .chips-pill__indicator--ready {
+    transition:
+      transform 520ms var(--ease-spring),
+      width 380ms var(--ease-organic),
+      opacity var(--dur-color) ease-out;
   }
 
   /* -------------------------------------------------------------------------- */
@@ -669,11 +732,7 @@
   padding-top: var(--safe-top);
 }
 
-@utility pb-nav {
-  padding-bottom: calc(var(--nav-offset) + 16px);
-}
-
-/* Pannello "vetro" per la nav flottante e gli elementi sospesi */
+/* Pannello "vetro" per gli elementi sospesi */
 @utility glass {
   background-color: var(--glass-bg);
   -webkit-backdrop-filter: blur(24px) saturate(1.6);
@@ -756,4 +815,19 @@
   .starter-nudge {
     animation: starter-nudge 3.2s ease-in-out 0.8s infinite;
   }
+}
+
+/* Card "Non sai cosa comprare?": sfumatura morbida dall'accento del tema, testo sempre a inchiostro */
+.inspiration-card {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 14%, var(--bg-surface)),
+    color-mix(in srgb, var(--accent) 32%, var(--bg-surface))
+  );
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--c-ink) 12%, transparent);
+  transition: transform var(--dur-press, 120ms) ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+.inspiration-card:active {
+  transform: scale(0.98);
 }

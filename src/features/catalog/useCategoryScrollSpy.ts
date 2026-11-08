@@ -7,9 +7,10 @@ export const categoryAnchorId = (slug: string) => `cat-${slug}`
  * Scroll-spy del catalogo: ritorna la categoria visibile in cima (null =
  * prima di tutte) e `goTo` per andarci dal tocco su una chip.
  *
- * Usa IntersectionObserver: ogni intestazione di categoria, quando supera la
- * linea sotto la barra delle chip, fa ricalcolare l'attiva (l'ultima sopra la
- * linea). Un sentinella in fondo attiva l'ultima categoria a fine pagina,
+ * A ogni evento di scorrimento si cerca l'ultima intestazione di categoria che
+ * ha superato la linea appena sotto la barra delle chip (misurata in quel
+ * momento, perché la barra cambia posizione quando si attacca in alto). Una
+ * sentinella in fondo attiva l'ultima categoria a fine pagina,
  * anche se è troppo corta per superare la linea. Durante lo scorrimento
  * animato dopo un tocco l'evidenziazione resta sulla chip toccata, senza
  * rimbalzare sulle categorie attraversate.
@@ -27,7 +28,7 @@ export function useCategoryScrollSpy(
   const slugKey = slugs.join('|')
 
   /** Sotto la barra appiccicosa: la categoria "corrente" è quella che ha superato questa linea */
-  const lineOffset = useCallback(() => {
+  const barBottom = useCallback(() => {
     const bar = stickyRef.current
     return bar ? bar.getBoundingClientRect().bottom : 72
   }, [stickyRef])
@@ -40,7 +41,8 @@ export function useCategoryScrollSpy(
         setActive(order[order.length - 1] ?? null)
         return
       }
-      const line = lineOffset()
+      // appena l'intestazione entra nella parte alta dello schermo, sotto la barra
+      const line = barBottom() + 56
       let current: string | null = null
       for (const slug of order) {
         const el = document.getElementById(categoryAnchorId(slug))
@@ -50,16 +52,11 @@ export function useCategoryScrollSpy(
       setActive(current)
     }
 
-    const bar = stickyRef.current
-    const topMargin = Math.round(bar ? bar.getBoundingClientRect().bottom : 72)
-    const headings = new IntersectionObserver(recompute, {
-      rootMargin: `-${topMargin}px 0px 0px 0px`,
-      threshold: [0, 1],
-    })
-    for (const slug of order) {
-      const el = document.getElementById(categoryAnchorId(slug))
-      if (el) headings.observe(el)
-    }
+    // il calcolo è leggero (una quindicina di intestazioni): si fa a ogni scroll,
+    // così la chip cambia esattamente quando la sezione arriva in cima
+    const onScroll = () => recompute()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
     const end = new IntersectionObserver(
       (entries) => {
         atEndRef.current = entries.some((entry) => entry.isIntersecting)
@@ -70,10 +67,11 @@ export function useCategoryScrollSpy(
     if (endRef.current) end.observe(endRef.current)
     recompute()
     return () => {
-      headings.disconnect()
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
       end.disconnect()
     }
-  }, [slugKey, stickyRef, endRef, lineOffset])
+  }, [slugKey, endRef, barBottom])
 
   // uscendo dalla pagina nessun listener o timer deve restare in giro: a scorrimento
   // finito correggerebbe lo scroll di un'altra schermata
@@ -86,7 +84,7 @@ export function useCategoryScrollSpy(
       const targetTop = () => {
         const el = slug ? document.getElementById(categoryAnchorId(slug)) : null
         if (!el) return 0
-        return Math.max(0, el.getBoundingClientRect().top + window.scrollY - lineOffset() + 4)
+        return Math.max(0, el.getBoundingClientRect().top + window.scrollY - barBottom() + 4)
       }
       cancelGoToRef.current?.()
       setActive(slug)
@@ -126,7 +124,7 @@ export function useCategoryScrollSpy(
       // se la pagina è già nel punto giusto non arriva nessuno scroll
       timer = window.setTimeout(release, 400)
     },
-    [lineOffset],
+    [barBottom],
   )
 
   return { active, goTo }

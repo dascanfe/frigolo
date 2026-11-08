@@ -32,12 +32,34 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-11-08 - Nuova home, catalogo esteso, Ispirazioni (branch `fragola/nuova-home`, versione 2.2.0)
+
+Richiesta di Daniele, tutto in locale (niente produzione):
+
+- Via la barra in basso (`BottomNav` e `useKeyboardOpen` eliminati; `--nav-offset` ora vale solo l'area sicura di iOS).
+  Impostazioni: ingranaggio in alto a destra, staccato dagli avatar. Gli avatar sono un solo link alle analitiche della lista
+  (la gestione persone resta in Impostazioni). "Sfoglia il catalogo" sulla riga di "Da comprare". Catalogo, Analitiche,
+  Impostazioni e Ispirazioni hanno `PageHeader` con la freccia per tornare alla lista.
+- "Gli ultimi acquisti": prodotti unici delle ultime 3 spese chiuse (`useRecentTripItems`, chiave sotto `['purchases', lista]`).
+- Migration `0029_catalogo_esteso.sql` e `seed.sql`: Carne e Pesce separati (slug `carne` al posto di `carne-pesce`, nuovo `pesce`,
+  ordine 40 e 45), 263 prodotti base nuovi (da 234 a 497). Elenco in `docs/catalogo-proposta.md`. Il test `catalogSeed.test.ts`
+  legge `seed.sql` e controlla icone, unità, mesi, nomi unici e che gli ingredienti di Ispirazioni esistano.
+- Catalogo: sezione "Di stagione" (frutta e verdura con i mesi del mese corrente) in cima.
+- Ispirazioni (`/ispirazioni`, dati in `src/features/inspiration/mesi.ts`): intro del mese, frutta/verdura/pesce di stagione
+  dai `season_months` del catalogo, 5 idee di piatto per mese con gli ingredienti come tile.
+- Colori categoria: `--cat-pesce` nuovo (#5a82b4), `--cat-carne` prende il posto di `--cat-carne-pesce`.
+
+Da sapere: la migration sposta in Pesce anche `purchases.category_id` dei 9 prodotti base di pesce, così le analitiche per
+categoria restano coerenti. Le app aperte con la versione vecchia vedono per un attimo la categoria "carne" senza colore
+finché non si aggiornano.
+
 ### 2026-10-24 - Schermo bianco da lista a catalogo (branch `fragola/schermo-bianco`, versione 2.0.1)
 
 Segnalazione: su iPhone (PWA, build "1.4.0" tra il 18 e il 23 ottobre) passando dalla lista al catalogo
 lo schermo diventa bianco con "Script error."; in telemetria 4 errori `errore`, `Script error.`, pagina `/`.
 
 Fatto (rete di sicurezza):
+
 - `ErrorBoundary` in `App.tsx` (fuori da provider, accesso e router) e `errorElement` sulle rotte
   (`RouteError`): schermata `CrashScreen` con la mascotte, "Qualcosa è andato storto", "Ricarica" e
   "Torna alla lista" (senza router né query, quindi funziona anche se quelli sono rotti). Per gli errori
@@ -56,6 +78,7 @@ Fatto (rete di sicurezza):
   lo scroll della schermata successiva).
 
 Ipotesi sulla causa, con probabilità (non riproducibile in locale):
+
 1. 35%, rumore cross-origin non legato al catalogo: "Script error." è il messaggio mascherato di uno script
    di un'altra origine (Turnstile di Cloudflare sulla schermata di accesso, che sta su `/` e invia la metrica
    appena c'è la sessione; oppure estensioni e traduzione di Safari). Conferma: gli errori arrivano subito

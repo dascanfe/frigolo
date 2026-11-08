@@ -1,4 +1,13 @@
-import { ChevronDown, History, Pointer, SearchX, Store } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronRight,
+  History,
+  LayoutGrid,
+  Pointer,
+  SearchX,
+  Settings,
+  Store,
+} from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { Link } from 'react-router'
@@ -16,6 +25,8 @@ import { InstallCard } from '@/features/install/InstallCard'
 import { ListSwitcherSheet } from '@/features/lists/ListSwitcherSheet'
 import { armShareNudge } from '@/features/tips/shareNudge'
 import { dismissTip, triggerTip } from '@/features/tips/tips'
+import { currentMonth } from '@/features/catalog/seasonal'
+import { MESI } from '@/features/inspiration/mesi'
 import { useSearch } from '@/features/search/useSearch'
 import { recordEvent } from '@/lib/telemetry'
 import { usePurchaseHistoryQuery } from '@/features/suggestions/useSuggestions'
@@ -28,6 +39,8 @@ import { EntrySheet } from './EntrySheet'
 import type { EntrySheetTarget } from './EntrySheet'
 import { ShareNudge } from './ShareNudge'
 import { useList } from './useList'
+import { useRecentTripItems } from './useRecentTripItems'
+import { captureFlip, useFlipPlay } from '@/lib/flip'
 import { useListMutations } from './useToggleItem'
 
 function tileState(entry: ListEntryWithItem | undefined): TileState {
@@ -35,7 +48,8 @@ function tileState(entry: ListEntryWithItem | undefined): TileState {
   return entry.status === 'cart' ? 'done' : 'active'
 }
 
-const RECENT_LIMIT = 9
+/** Avatar mostrati in testata: oltre questi, un tondo "+N" */
+const MAX_AVATARS = 5
 
 export function ListScreen() {
   const { household, members, lists } = useHousehold()
@@ -44,10 +58,13 @@ export function ListScreen() {
   const list = useList()
   const mutations = useListMutations()
   const [cartOpen, setCartOpen] = useState(true)
+  // prodotti che volano nel carrello e vicine che scivolano
+  useFlipPlay()
   const [sheetTarget, setSheetTarget] = useState<EntrySheetTarget | null>(null)
   const [query, setQuery] = useState('')
   const [createRequest, setCreateRequest] = useState<CreateItemRequest | null>(null)
   const history = usePurchaseHistoryQuery(household.id)
+  const recentTrips = useRecentTripItems(household.id)
   const purchaseCounts = useMemo(() => {
     const counts = new Map<string, number>()
     for (const purchase of history.data ?? [])
@@ -73,19 +90,16 @@ export function ListScreen() {
     : list.todo
   const cart = list.cart
 
-  /** Ultimi prodotti comprati (distinti), non già in lista: un tap per rimetterli */
+  /** Prodotti delle ultime 3 spese chiuse, non già in lista: un tocco per rimetterli */
   const recentItems = useMemo(() => {
-    const seen = new Set<string>()
     const result: Item[] = []
-    for (const purchase of history.data ?? []) {
-      if (seen.has(purchase.item_id) || list.entryByItemId.has(purchase.item_id)) continue
-      seen.add(purchase.item_id)
-      const item = catalog.itemById.get(purchase.item_id)
-      if (item) result.push(item)
-      if (result.length >= RECENT_LIMIT) break
+    for (const itemId of recentTrips.data ?? []) {
+      if (list.entryByItemId.has(itemId)) continue
+      const item = catalog.itemById.get(itemId)
+      if (item && !item.is_archived) result.push(item)
     }
     return result
-  }, [history.data, list.entryByItemId, catalog.itemById])
+  }, [recentTrips.data, list.entryByItemId, catalog.itemById])
 
   const isEmpty = !list.isPending && list.entries.length === 0
 
@@ -175,13 +189,13 @@ export function ListScreen() {
             aria-haspopup="dialog"
             aria-label={`${t.lists.switch}. Lista aperta: ${household.name}`}
           >
-            <h1 className="truncate font-display text-4xl font-bold text-primary">
+            <h1 className="truncate font-display text-3xl font-bold text-primary sm:text-4xl">
               {household.name}
             </h1>
             <ChevronDown
-              size={26}
+              size={24}
               strokeWidth={2.5}
-              className="mt-1 shrink-0 text-secondary"
+              className="mt-0.5 shrink-0 text-secondary"
               aria-hidden="true"
             />
           </button>
@@ -194,19 +208,42 @@ export function ListScreen() {
             {lists.length > 1 && ` · ${pluralize(lists.length, 'lista', 'liste')}`}
           </p>
         </div>
-        <ul className="flex shrink-0 -space-x-2 pt-1" aria-label={t.lists.people}>
-          {members.map((member) => (
-            <li key={member.user_id}>
-              <Avatar
-                name={memberName(member)}
-                color={member.color}
-                avatarUrl={member.avatar_url}
-                size={36}
-                className="ring-app"
-              />
-            </li>
-          ))}
-        </ul>
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            to="/analitiche"
+            aria-label={t.nav.openAnalytics(household.name)}
+            title={t.nav.analytics}
+            className="flex min-h-11 items-center rounded-full px-1 active:bg-sand/40"
+          >
+            <span className="flex -space-x-2.5" aria-hidden="true">
+              {members.slice(0, MAX_AVATARS).map((member) => (
+                <Avatar
+                  key={member.user_id}
+                  name={memberName(member)}
+                  color={member.color}
+                  avatarUrl={member.avatar_url}
+                  size={30}
+                  className="ring-app"
+                />
+              ))}
+              {members.length > MAX_AVATARS && (
+                <span className="ring-app relative z-0 inline-flex size-[30px] items-center justify-center rounded-full bg-surface text-xs font-black text-secondary ring-2">
+                  +{members.length - MAX_AVATARS}
+                </span>
+              )}
+            </span>
+          </Link>
+          <Link
+            to="/impostazioni"
+            aria-label={t.nav.settings}
+            title={t.nav.settings}
+            className="group flex size-11 items-center justify-center"
+          >
+            <span className="glass flex size-9 items-center justify-center rounded-full text-secondary transition-transform group-active:scale-95">
+              <Settings size={18} strokeWidth={2.25} aria-hidden="true" />
+            </span>
+          </Link>
+        </div>
       </header>
 
       <SearchBar
@@ -338,7 +375,20 @@ export function ListScreen() {
         </>
       ) : (
         <>
-          <SectionHeader title={t.list.toBuy} count={todo.length} />
+          <div data-flip-target="todo" />
+          <SectionHeader
+            title={t.list.toBuy}
+            count={todo.length}
+            action={
+              <Link
+                to="/catalogo"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-bold text-accent active:bg-sand/40"
+              >
+                <LayoutGrid size={16} strokeWidth={2.25} aria-hidden="true" />
+                {t.nav.openCatalog}
+              </Link>
+            }
+          />
           {todo.length === 0 ? (
             <p className="px-4 pb-2 text-sm text-secondary">
               {activeStore ? t.list.nothingElseAt(activeStore) : t.list.allTaken}
@@ -355,7 +405,11 @@ export function ListScreen() {
                   unit={entry.unit}
                   store={entry.store}
                   note={entry.note}
-                  onTap={() => mutations.setStatus(entry.id, 'cart')}
+                  flipId={entry.id}
+                  onTap={() => {
+                    captureFlip(entry.id, 'cart')
+                    mutations.setStatus(entry.id, 'cart')
+                  }}
                   onLongPress={() =>
                     setSheetTarget({ item: entry.item, category: entry.category, entry })
                   }
@@ -365,7 +419,7 @@ export function ListScreen() {
           )}
 
           {cart.length > 0 && (
-            <>
+            <div data-flip-target="cart">
               <SectionHeader
                 title={t.list.cart}
                 count={cart.length}
@@ -386,7 +440,11 @@ export function ListScreen() {
                         icon={entry.item.icon}
                         state="done"
                         store={entry.store}
-                        onTap={() => mutations.setStatus(entry.id, 'todo')}
+                        flipId={entry.id}
+                        onTap={() => {
+                          captureFlip(entry.id, 'todo')
+                          mutations.setStatus(entry.id, 'todo')
+                        }}
                         onLongPress={() =>
                           setSheetTarget({ item: entry.item, category: entry.category, entry })
                         }
@@ -395,7 +453,7 @@ export function ListScreen() {
                   </ProductGrid>
                 </div>
               )}
-            </>
+            </div>
           )}
         </>
       )}
@@ -424,6 +482,36 @@ export function ListScreen() {
             })}
           </ProductGrid>
         </section>
+      )}
+
+      {!searching && (
+        <Link
+          to="/ispirazioni"
+          className="inspiration-card mx-4 mt-8 flex min-h-[104px] items-center gap-3 overflow-hidden rounded-3xl py-3 pr-3 pl-5 text-left ring-1 ring-subtle"
+        >
+          <span className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="font-display text-xl leading-tight font-bold text-primary">
+              {t.inspiration.ctaTitle}
+            </span>
+            <span className="text-sm leading-snug text-secondary">
+              {t.inspiration.ctaSubtitle(MESI[currentMonth() - 1]?.nome.toLowerCase() ?? '')}
+            </span>
+          </span>
+          <img
+            src="/mascot-happy.webp"
+            alt=""
+            width={72}
+            height={72}
+            className="size-[72px] shrink-0 object-contain"
+            draggable={false}
+          />
+          <ChevronRight
+            size={22}
+            strokeWidth={2.5}
+            className="shrink-0 text-accent"
+            aria-hidden="true"
+          />
+        </Link>
       )}
 
       <EntrySheet target={sheetTarget} onClose={() => setSheetTarget(null)} />

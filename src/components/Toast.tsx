@@ -9,7 +9,7 @@ const ICONS: Record<ToastKind, typeof Info> = {
   error: TriangleAlert,
 }
 
-/** Da montare una volta sola, in App: mostra i toast sopra la bottom nav */
+/** Da montare una volta sola, in App: mostra i toast in basso, sopra l'area sicura di iOS */
 export function ToastHost() {
   const items = useSyncExternalStore(subscribeToasts, getToasts, getToasts)
   if (items.length === 0) return null

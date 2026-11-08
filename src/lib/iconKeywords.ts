@@ -274,7 +274,8 @@ export const CATEGORY_ICON_SUGGESTIONS: Record<CategorySlug, IconName[]> = {
     'Cookie',
     'Layers',
   ],
-  'carne-pesce': ['Beef', 'Drumstick', 'Ham', 'Sausage', 'Fish', 'Shrimp', 'Shell', 'Can'],
+  carne: ['Beef', 'Drumstick', 'Ham', 'Sausage', 'Hamburger', 'Rabbit'],
+  pesce: ['Fish', 'Shrimp', 'Shell', 'Can'],
   'latticini-uova': [
     'Milk',
     'Carton',

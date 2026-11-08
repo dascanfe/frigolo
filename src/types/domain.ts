@@ -53,12 +53,13 @@ export const UNIT_STEPS: Record<Unit, number> = {
   conf: 1,
 }
 
-/** Slug delle 14 categorie del seed */
+/** Slug delle 15 categorie del seed */
 export const CATEGORY_SLUGS = [
   'frutta',
   'verdura',
   'pane-forno',
-  'carne-pesce',
+  'carne',
+  'pesce',
   'latticini-uova',
   'dispensa',
   'colazione',

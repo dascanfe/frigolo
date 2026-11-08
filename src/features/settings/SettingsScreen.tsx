@@ -18,6 +18,7 @@ import { Avatar } from '@/components/Avatar'
 import { Button } from '@/components/Button'
 import { ConfirmSheet } from '@/components/ConfirmSheet'
 import { Icon } from '@/components/Icon'
+import { PageHeader } from '@/components/PageHeader'
 import { SectionHeader } from '@/components/SectionHeader'
 import { memberName, useHousehold } from '@/features/auth/useHousehold'
 import { signOut } from '@/features/auth/useSession'
@@ -156,9 +157,7 @@ export function SettingsScreen() {
 
   return (
     <main className="flex flex-col gap-2 pb-6">
-      <header className="px-4 pt-6 pb-2">
-        <h1 className="font-display text-4xl font-bold text-primary">Impostazioni</h1>
-      </header>
+      <PageHeader title={t.nav.settings} />
 
       {/* ---------------- Profilo ---------------- */}
       <SectionHeader title={t.profile.sheetTitle} />

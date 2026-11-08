@@ -13,11 +13,14 @@ import {
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useStuck } from '@/lib/useStuck'
 import type { ReactNode } from 'react'
 import { LinkButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import { PageHeader, STICKY_LEFT_GAP, STICKY_PILL_TOP, StickyGlass } from '@/components/PageHeader'
 import { useCatalog } from '@/features/catalog/useCatalog'
+import { it as t } from '@/i18n/it'
 import { CategoryDonut } from './CategoryDonut'
 import { MembersBar } from './MembersBar'
 import { PurchaseFrequencyTable } from './PurchaseFrequencyTable'
@@ -39,6 +42,8 @@ import {
 import type { Period } from './useAnalytics'
 
 export function AnalyticsScreen() {
+  const filtersRef = useRef<HTMLDivElement>(null)
+  const stuck = useStuck(filtersRef)
   const [period, setPeriod] = useState<Period>('15d')
   const [categoryId, setCategoryId] = useState<string | null>(null)
   const [now] = useState(() => new Date())
@@ -59,12 +64,10 @@ export function AnalyticsScreen() {
 
   return (
     <main className="flex flex-col gap-3 pb-6">
-      <header className="px-4 pt-6 pb-1">
-        <h1 className="font-display text-4xl font-bold text-primary">Analitiche</h1>
-        <p className="text-sm text-secondary">
-          Cosa si compra, quanto spesso e chi lo mette in lista.
-        </p>
-      </header>
+      <PageHeader
+        title={t.nav.analytics}
+        subtitle="Cosa si compra, quanto spesso e chi lo mette in lista."
+      />
 
       {hasHistory.data === false ? (
         <EmptyHistory />
@@ -72,9 +75,11 @@ export function AnalyticsScreen() {
         <>
           {/* Filtri: una sola riga sopra tutti i grafici */}
           <div
-            className="sticky top-0 z-10 flex flex-col gap-2 px-4 py-2"
-            style={{ top: 'var(--safe-top)' }}
+            ref={filtersRef}
+            className={`sticky z-10 flex flex-col gap-2 py-2 pr-4 transition-[padding] duration-300 ease-(--ease-organic) ${stuck ? STICKY_LEFT_GAP : 'pl-4'}`}
+            style={{ top: STICKY_PILL_TOP }}
           >
+            <StickyGlass visible={stuck} top={STICKY_PILL_TOP} />
             <div
               className="glass grid grid-cols-5 gap-1 rounded-full p-1"
               role="tablist"
