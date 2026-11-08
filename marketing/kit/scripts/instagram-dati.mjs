@@ -308,6 +308,39 @@ Niente cookie, niente pubblicità, il codice è pubblico 💚 Link nella bio.`,
     sticker: 'Storia: condividi la slide 4 con uno sticker Sondaggio "Quale tema?" (Lampone / Basilico / Mare / Altro).',
   },
   {
+    id: 'N1-carosello-novita-2-2',
+    note: 'Formato 4:5: prima di "Seleziona più" tocca l\'icona del formato per passare a verticale.',
+    collab: COLLAB,
+    sett: 4,
+    giorno: 'Domenica',
+    ora: '18:30',
+    data: '2026-11-08',
+    titolo: 'Carosello "Novità 2.2"',
+    formato: 'Carosello 4:5, 7 slide',
+    obiettivo: 'Raccontare la versione 2.2: home nuova, catalogo più ricco, Ispirazioni, ultimi acquisti, animazioni.',
+    immagini: nn([
+      T({ tema: 'lampone', titolo: 'Frigolo *2.2* è qui', testo: 'Più prodotti, più idee, tutto più fluido.', mascotte: 'classica' }),
+      P({ tema: 'chiaro', titolo: 'Una home *tutta nuova*', testo: 'Via il menu in basso: tutto a portata di pollice.', schermata: S + 'n01-home.png' }),
+      P({ tema: 'menta', titolo: 'Quasi *500 prodotti*', testo: 'E il pesce ora ha la sua sezione.', schermata: S + 'n02-catalogo-pesce.png' }),
+      P({ tema: 'chiaro', titolo: 'Non sai cosa *comprare?*', testo: 'Ogni mese le idee di stagione.', schermata: S + 'n03-ispirazioni.png' }),
+      P({ tema: 'lampone', titolo: 'I soliti, *a un tocco*', testo: 'Quello che hai preso nelle ultime 3 spese.', schermata: S + 'n04-ultimi-acquisti.png' }),
+      P({ tema: 'menta', titolo: 'Tutto *scorre*', testo: 'Tocca un prodotto: si colora come un liquido.', schermata: S + 'n05-liquido.png' }),
+      T({ tema: 'chiaro', titolo: 'Si aggiorna *da sola*', testo: 'Apri Frigolo: la 2.2 è già lì.', mascotte: 'classica' }),
+    ]),
+    didascalia: `Frigolo si è rifatto il look ✨
+
+🏠 Una home nuova, senza menu in basso: le impostazioni sono in alto, le analitiche le apri dagli avatar
+🐟 Quasi 500 prodotti nel catalogo, e il pesce ha la sua sezione
+🍊 Non sai cosa comprare? Ogni mese trovi cosa è di stagione e qualche idea per i piatti
+🔁 Gli ultimi acquisti: i prodotti delle tue ultime 3 spese, da rimettere in lista con un tocco
+💧 Tocchi un prodotto e si colora come un liquido, poi vola nel carrello
+
+Se usi già Frigolo non devi fare niente: si aggiorna da sola. Link nella bio 💚`,
+    hashtag: '#frigolo #listadellaspesa #novità #app #uxdesign #appitaliane #opensource #stagione',
+    alt: 'Carosello di 7 slide sulle novità di Frigolo 2.2: la home senza menu in basso, il catalogo con quasi 500 prodotti e la sezione Pesce, la pagina Ispirazioni con frutta e verdura di stagione, gli ultimi acquisti, il riempimento liquido dei prodotti e l\'aggiornamento automatico.',
+    sticker: 'Storia: condividi il post con uno sticker Sondaggio "Hai già visto le novità?" (Sì / Non ancora).',
+  },
+  {
     id: 'S4-01-feedback',
     note: 'Formato 4:5: prima di "Seleziona più" tocca l\'icona del formato per passare a verticale.',
     collab: COLLAB,

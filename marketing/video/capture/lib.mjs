@@ -5,7 +5,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const here = path.dirname(fileURLToPath(import.meta.url))
-export const BASE = 'http://127.0.0.1:5199'
+export const BASE = process.env.BASE || 'http://127.0.0.1:5199'
 export const PASS = 'frigolo-demo-1'
 // Viewport sotto la status bar iOS (48 pt): 390x796. La barra e l'indicatore Home si aggiungono dopo.
 export const VW = 390
