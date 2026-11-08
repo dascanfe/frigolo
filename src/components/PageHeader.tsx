@@ -43,7 +43,7 @@ export function PageHeader({ title, subtitle, className }: PageHeaderProps) {
       <div className="flex items-start">
         {/* al posto della freccia, che sta fissa: il titolo parte a 10px dal bordo del cerchio */}
         <span className="h-11 w-[46px] shrink-0" aria-hidden="true" />
-        <h1 className="min-w-0 break-words pt-1 font-display text-4xl leading-[1.1] font-bold text-primary">
+        <h1 className="min-w-0 break-words pt-1 font-display text-3xl leading-[1.1] sm:text-4xl font-bold text-primary">
           {title}
         </h1>
       </div>
