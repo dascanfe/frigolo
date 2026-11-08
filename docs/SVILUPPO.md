@@ -519,7 +519,7 @@ src/
   styles/             tokens.css (design token) e global.css
   lib/                Client Supabase, query client, coda offline, icone, formattazione
   types/              Tipi generati da Supabase e tipi di dominio
-  components/         Componenti UI condivisi (tile, griglia, bottom nav, ...)
+  components/         Componenti UI condivisi (tile, griglia, testata con freccia indietro, ...)
   features/           Una cartella per area funzionale (list, catalog, search, ...)
 ```
 

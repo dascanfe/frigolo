@@ -17,7 +17,9 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { LinkButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import { PageHeader } from '@/components/PageHeader'
 import { useCatalog } from '@/features/catalog/useCatalog'
+import { it as t } from '@/i18n/it'
 import { CategoryDonut } from './CategoryDonut'
 import { MembersBar } from './MembersBar'
 import { PurchaseFrequencyTable } from './PurchaseFrequencyTable'
@@ -59,12 +61,10 @@ export function AnalyticsScreen() {
 
   return (
     <main className="flex flex-col gap-3 pb-6">
-      <header className="px-4 pt-6 pb-1">
-        <h1 className="font-display text-4xl font-bold text-primary">Analitiche</h1>
-        <p className="text-sm text-secondary">
-          Cosa si compra, quanto spesso e chi lo mette in lista.
-        </p>
-      </header>
+      <PageHeader
+        title={t.nav.analytics}
+        subtitle="Cosa si compra, quanto spesso e chi lo mette in lista."
+      />
 
       {hasHistory.data === false ? (
         <EmptyHistory />

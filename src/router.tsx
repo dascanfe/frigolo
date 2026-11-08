@@ -4,6 +4,7 @@ import { RouteError } from '@/components/ErrorBoundary'
 import { ListScreen } from '@/features/list/ListScreen'
 import { CatalogScreen } from '@/features/catalog/CatalogScreen'
 import { SettingsScreen } from '@/features/settings/SettingsScreen'
+import { InspirationScreen } from '@/features/inspiration/InspirationScreen'
 import { IconPreviewScreen } from '@/features/dev/IconPreviewScreen'
 
 export const router = createBrowserRouter([
@@ -14,7 +15,7 @@ export const router = createBrowserRouter([
     errorElement: <RouteError fullScreen />,
     children: [
       {
-        // errore in una schermata: la barra in basso resta, si può cambiare pagina
+        // errore in una schermata: la testata resta, si può tornare alla lista
         errorElement: <RouteError />,
         children: [
           { index: true, element: <ListScreen /> },
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
             }),
           },
           { path: 'impostazioni', element: <SettingsScreen /> },
+          { path: 'ispirazioni', element: <InspirationScreen /> },
           // solo in sviluppo: anteprima delle icone custom
           ...(import.meta.env.DEV ? [{ path: 'dev/icone', element: <IconPreviewScreen /> }] : []),
           // i link d'invito li legge main.tsx prima del router (captureInviteFromUrl):

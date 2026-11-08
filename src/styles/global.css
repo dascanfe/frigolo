@@ -669,11 +669,7 @@
   padding-top: var(--safe-top);
 }
 
-@utility pb-nav {
-  padding-bottom: calc(var(--nav-offset) + 16px);
-}
-
-/* Pannello "vetro" per la nav flottante e gli elementi sospesi */
+/* Pannello "vetro" per gli elementi sospesi */
 @utility glass {
   background-color: var(--glass-bg);
   -webkit-backdrop-filter: blur(24px) saturate(1.6);
