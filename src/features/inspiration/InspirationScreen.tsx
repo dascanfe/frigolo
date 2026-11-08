@@ -81,7 +81,7 @@ export function InspirationScreen() {
       <PageHeader
         title={t.inspiration.title(contenuto.nome.toLowerCase())}
         subtitle={
-          <div className="flex flex-col gap-2 pt-1">
+          <div className="flex flex-col gap-3 pt-2">
             <p className="text-base text-primary">{contenuto.intro}</p>
             <p className="text-sm text-secondary">{t.inspiration.hint}</p>
           </div>
@@ -94,9 +94,11 @@ export function InspirationScreen() {
         <>
           {gruppi.length > 0 && (
             <>
-              <SectionHeader title={t.inspiration.inSeason} />
+              <div className="mt-6">
+                <SectionHeader title={t.inspiration.inSeason} />
+              </div>
               {gruppi.map((gruppo) => (
-                <section key={gruppo.titolo} className="mb-4">
+                <section key={gruppo.titolo} className="mb-7">
                   <h3 className="px-4 pb-2 text-xs font-bold uppercase tracking-[0.08em] text-secondary">
                     {gruppo.titolo}
                   </h3>
@@ -106,17 +108,19 @@ export function InspirationScreen() {
             </>
           )}
 
-          <SectionHeader title={t.inspiration.ideas} />
+          <div className="mt-6">
+            <SectionHeader title={t.inspiration.ideas} />
+          </div>
           {contenuto.piatti.map((piatto) => {
             const ingredienti = piatto.ingredienti
               .map((nome) => byName.get(nome.toLowerCase()))
               .filter((item): item is Item => Boolean(item))
             return (
-              <section key={piatto.nome} className="mb-5">
+              <section key={piatto.nome} className="mb-9">
                 <h3 className="px-4 font-display text-lg font-bold leading-tight text-primary">
                   {piatto.nome}
                 </h3>
-                <p className="px-4 pt-0.5 pb-3 text-sm text-secondary">{piatto.idea}</p>
+                <p className="px-4 pt-1 pb-4 text-sm text-secondary">{piatto.idea}</p>
                 <ProductGrid label={`${t.inspiration.ingredients}: ${piatto.nome}`}>
                   {tiles(ingredienti)}
                 </ProductGrid>
