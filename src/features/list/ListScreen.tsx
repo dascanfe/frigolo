@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Avatar } from '@/components/Avatar'
 import { Link } from 'react-router'
 import { EmptyState } from '@/components/EmptyState'
+import { DonationNote } from '@/components/DonationNote'
 import { AddTile, ProductTile } from '@/components/ProductTile'
 import type { TileState } from '@/components/ProductTile'
 import { ProductGrid } from '@/components/ProductGrid'
@@ -513,6 +514,9 @@ export function ListScreen() {
           />
         </Link>
       )}
+
+      {/* in fondo, dopo gli ultimi acquisti e le ispirazioni: il caffè, come nelle impostazioni */}
+      {!searching && <DonationNote className="mx-4 mt-8 mb-6" />}
 
       <EntrySheet target={sheetTarget} onClose={() => setSheetTarget(null)} />
       <CreateItemSheet
