@@ -76,7 +76,7 @@ export function AnalyticsScreen() {
           {/* Filtri: una sola riga sopra tutti i grafici */}
           <div
             ref={filtersRef}
-            className={`sticky z-10 flex flex-col gap-2 py-2 pr-4 transition-[padding] duration-150 ${stuck ? STICKY_LEFT_GAP : 'pl-4'}`}
+            className={`sticky z-10 flex flex-col gap-2 py-2 pr-4 transition-[padding] duration-300 ease-(--ease-organic) ${stuck ? STICKY_LEFT_GAP : 'pl-4'}`}
             style={{ top: STICKY_PILL_TOP }}
           >
             <StickyGlass visible={stuck} top={STICKY_PILL_TOP} />

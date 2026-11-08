@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Icon } from '@/components/Icon'
 import { categoryIconBgVar } from '@/lib/colors'
 
@@ -34,6 +34,33 @@ export function CategoryChips({
   rowClassName = 'px-4',
 }: CategoryChipsProps) {
   const rowRef = useRef<HTMLDivElement>(null)
+  /** Pill scura che scivola sotto la chip attiva (null = nessuna attiva) */
+  const [pill, setPill] = useState<{ x: number; w: number } | null>(null)
+  /** La prima volta la pill compare già al suo posto, senza scivolare da sinistra */
+  const [pillReady, setPillReady] = useState(false)
+
+  useLayoutEffect(() => {
+    const row = rowRef.current
+    if (!row) return
+    const measure = () => {
+      const active = row.querySelector<HTMLElement>('[aria-pressed="true"]')
+      const next = active ? { x: active.offsetLeft, w: active.offsetWidth } : null
+      // aggiorna solo se cambia davvero (evita giri di render inutili)
+      setPill((prev) => (prev?.x === next?.x && prev?.w === next?.w ? prev : next))
+    }
+    measure()
+    // le larghezze cambiano quando arriva il font o cambia la finestra
+    const observer = new ResizeObserver(measure)
+    observer.observe(row)
+    for (const chip of row.children) observer.observe(chip)
+    return () => observer.disconnect()
+  }, [selected, categories, allLabel])
+
+  useEffect(() => {
+    if (!pill || pillReady) return
+    const frame = window.requestAnimationFrame(() => setPillReady(true))
+    return () => window.cancelAnimationFrame(frame)
+  }, [pill, pillReady])
 
   useEffect(() => {
     if (!followSelected) return
@@ -49,10 +76,19 @@ export function CategoryChips({
   return (
     <div
       ref={rowRef}
-      className={`scrollbar-none flex gap-2 overflow-x-auto py-2 ${rowClassName}`}
+      className={`chips-pill scrollbar-none relative flex gap-2 overflow-x-auto py-2 transition-[padding] duration-300 ease-(--ease-organic) ${rowClassName}`}
       role="group"
       aria-label="Filtra per categoria"
     >
+      <span
+        aria-hidden="true"
+        className={`chips-pill__indicator ${pillReady ? 'chips-pill__indicator--ready' : ''}`}
+        style={{
+          width: pill?.w ?? 0,
+          transform: `translateX(${pill?.x ?? 0}px)`,
+          opacity: pill ? 1 : 0,
+        }}
+      />
       {allLabel && (
         <button
           type="button"

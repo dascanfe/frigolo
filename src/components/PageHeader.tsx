@@ -33,7 +33,7 @@ export function StickyGlass({ visible, top }: { visible: boolean; top: string })
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-x-0 bottom-0 -z-10 border-b border-subtle transition-opacity duration-150 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      className={`pointer-events-none absolute inset-x-0 bottom-0 -z-10 border-b border-subtle transition-opacity duration-300 ease-(--ease-organic) ${visible ? 'opacity-100' : 'opacity-0'}`}
       style={{
         top: `calc(-1 * ${top})`,
         backgroundColor: 'color-mix(in srgb, var(--bg-app) 72%, transparent)',

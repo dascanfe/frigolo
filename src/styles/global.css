@@ -138,13 +138,34 @@
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     touch-action: manipulation;
+    isolation: isolate;
     transition:
       transform var(--dur-press) var(--ease-out),
-      background-color var(--dur-color) ease-out,
-      border-color var(--dur-color) ease-out,
-      color var(--dur-color) ease-out,
-      opacity var(--dur-color) ease-out,
-      box-shadow var(--dur-color) ease-out;
+      border-color var(--dur-fill) var(--ease-organic),
+      color 260ms var(--ease-organic) 90ms,
+      opacity var(--dur-fill) var(--ease-organic),
+      box-shadow var(--dur-fill) var(--ease-organic);
+  }
+
+  /* Il colore della tile selezionata non cambia di colpo: una macchia parte
+     dall'angolo in basso a sinistra e si allarga fino a riempirla */
+  .tile::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--tile-fill, var(--tile-active-bg));
+    clip-path: circle(0% at 0% 100%);
+    transition:
+      clip-path var(--dur-fill) var(--ease-organic),
+      background-color var(--dur-fill) var(--ease-organic);
+    pointer-events: none;
+  }
+
+  .tile--active::before,
+  .tile--done::before {
+    clip-path: circle(150% at 0% 100%);
   }
 
   .tile:active:not(:disabled),
@@ -160,7 +181,7 @@
   .tile__icon {
     flex: none;
     color: var(--tile-idle-icon);
-    transition: color var(--dur-color) ease-out;
+    transition: color 260ms var(--ease-organic) 90ms;
   }
 
   .tile__name {
@@ -178,7 +199,7 @@
 
   /* --- in lista, da comprare --- */
   .tile--active {
-    background-color: var(--tile-active-bg);
+    --tile-fill: var(--tile-active-bg);
     border-color: var(--tile-active-bg);
     color: var(--tile-active-text);
     box-shadow: var(--shadow-tile);
@@ -190,7 +211,7 @@
 
   /* --- nel carrello, preso --- */
   .tile--done {
-    background-color: var(--tile-done-bg);
+    --tile-fill: var(--tile-done-bg);
     border-color: var(--tile-done-bg);
     color: var(--tile-done-text);
     opacity: 0.85;
@@ -357,6 +378,40 @@
     background-color: var(--text-primary);
     border-color: var(--text-primary);
     color: var(--c-cream);
+  }
+
+  /* Riga di chip con la pill che scivola: il fondo scuro non è della chip ma di
+     un indicatore sotto, che si sposta e si allunga con una curva morbida */
+  .chips-pill .chip {
+    position: relative;
+    z-index: 1;
+    transition:
+      background-color var(--dur-organic) var(--ease-organic),
+      border-color var(--dur-organic) var(--ease-organic),
+      color var(--dur-organic) var(--ease-organic);
+  }
+
+  .chips-pill .chip[aria-pressed='true'] {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .chips-pill__indicator {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    height: 44px;
+    border-radius: 999px;
+    background-color: var(--text-primary);
+    box-shadow: var(--shadow-tile);
+    pointer-events: none;
+  }
+
+  .chips-pill__indicator--ready {
+    transition:
+      transform 520ms var(--ease-spring),
+      width 380ms var(--ease-organic),
+      opacity var(--dur-color) ease-out;
   }
 
   /* -------------------------------------------------------------------------- */

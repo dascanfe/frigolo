@@ -156,6 +156,12 @@
   --dur-press: 80ms;
   --dur-color: 180ms;
   --dur-sheet: 240ms;
+  /* animazioni morbide: partenza decisa, arrivo lento (riempimenti, pill, barre) */
+  --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
+  /* come sopra ma con un piccolo rimbalzo finale, per ciò che si sposta */
+  --ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1);
+  --dur-organic: 320ms;
+  --dur-fill: 480ms;
 }
 
 /* -------------------------------------------------------------------------- */

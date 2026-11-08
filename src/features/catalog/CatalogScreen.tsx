@@ -57,7 +57,7 @@ export function CatalogScreen() {
 
       <div
         ref={stickyRef}
-        className={`sticky z-10 transition-[padding] duration-150 ${stuck ? 'pl-[56px]' : ''}`}
+        className={`sticky z-10 transition-[padding] duration-300 ease-(--ease-organic) ${stuck ? 'pl-[56px]' : ''}`}
         style={{ top: STICKY_CHIPS_TOP }}
       >
         <StickyGlass visible={stuck} top={STICKY_CHIPS_TOP} />
