@@ -14,7 +14,7 @@ interface CrashScreenProps {
 export function CrashScreen({ fullScreen = false }: CrashScreenProps) {
   return (
     <main
-      className={`flex flex-col items-center justify-center gap-3 bg-app px-8 text-center ${
+      className={`flex flex-col items-center justify-center gap-items bg-app px-8 text-center ${
         fullScreen ? 'min-h-dvh' : 'min-h-[70dvh]'
       }`}
       role="alert"
@@ -29,7 +29,7 @@ export function CrashScreen({ fullScreen = false }: CrashScreenProps) {
       />
       <h1 className="font-display text-3xl font-bold text-primary">{t.crash.title}</h1>
       <p className="max-w-xs text-sm text-secondary">{t.crash.text}</p>
-      <div className="flex flex-col gap-2 pt-2">
+      <div className="flex flex-col gap-title pt-title">
         <Button onClick={() => window.location.reload()}>{t.crash.reload}</Button>
         <Button variant="ghost" onClick={() => window.location.assign('/')}>
           {t.crash.home}

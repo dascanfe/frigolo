@@ -41,7 +41,7 @@ export function CategoryDivider({ name, slug, icon, id }: CategoryDividerProps) 
   return (
     <div
       id={id}
-      className="col-span-full flex items-center gap-2 pt-5 first:pt-0"
+      className="col-span-full flex items-center gap-2 pt-block first:pt-0"
       role="presentation"
     >
       {icon && (

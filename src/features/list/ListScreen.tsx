@@ -288,7 +288,7 @@ export function ListScreen() {
 
       {searching ? (
         <>
-          <SectionHeader title={t.list.results} count={search.results.length} />
+          <SectionHeader lead="block" title={t.list.results} count={search.results.length} />
           {search.results.length === 0 && !search.canCreate ? (
             <EmptyState
               icon={SearchX}
@@ -373,6 +373,7 @@ export function ListScreen() {
       ) : (
         <>
           <SectionHeader
+            lead="block"
             title={t.list.toBuy}
             count={todo.length}
             action={
@@ -414,6 +415,7 @@ export function ListScreen() {
             <>
               <SectionHeader
                 title={t.list.cart}
+                description={t.list.cartHint}
                 count={cart.length}
                 collapsible={{
                   open: cartOpen,
@@ -421,7 +423,6 @@ export function ListScreen() {
                   controls: 'cart-grid',
                 }}
               />
-              <p className="-mt-2 px-4 pb-3 text-sm text-secondary">{t.list.cartHint}</p>
               {cartOpen && (
                 <div id="cart-grid">
                   <ProductGrid label={t.list.cart}>
@@ -447,13 +448,14 @@ export function ListScreen() {
       )}
 
       {!searching && recentItems.length > 0 && (
-        <section className="mt-8 border-t border-subtle pt-4">
+        <section className="mt-section border-t border-subtle">
           <SectionHeader
+            lead="block"
             title={t.list.recent}
+            description={t.list.recentHint}
             count={recentItems.length}
             action={<History size={20} className="text-secondary" aria-hidden="true" />}
           />
-          <p className="-mt-2 px-4 pb-3 text-sm text-secondary">{t.list.recentHint}</p>
           <ProductGrid label={t.list.recent}>
             {recentItems.map((item) => {
               const category = catalog.categoryById.get(item.category_id)
@@ -475,7 +477,7 @@ export function ListScreen() {
       {!searching && (
         <Link
           to="/ispirazioni"
-          className="inspiration-card mx-4 mt-8 flex min-h-[104px] items-center gap-3 overflow-hidden rounded-3xl py-3 pr-3 pl-5 text-left ring-1 ring-subtle"
+          className="inspiration-card mx-4 mt-section flex min-h-[104px] items-center gap-3 overflow-hidden rounded-3xl py-3 pr-3 pl-5 text-left ring-1 ring-subtle"
         >
           <span className="flex min-w-0 flex-1 flex-col gap-1">
             <span className="font-display text-xl leading-tight font-bold text-primary">

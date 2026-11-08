@@ -228,7 +228,7 @@ export function BottomSheet({ open, onClose, title, children, footer }: BottomSh
       >
         <div className="sheet-grip" style={{ touchAction: 'none' }}>
           <div className="sheet-handle" aria-hidden="true" />
-          <div className="flex items-center justify-between gap-3 px-5 pb-2">
+          <div className="flex items-center justify-between gap-3 px-5 pb-title">
             {title ? (
               <h2 id={titleId} className="font-display text-xl font-bold text-primary">
                 {title}
@@ -248,12 +248,12 @@ export function BottomSheet({ open, onClose, title, children, footer }: BottomSh
         </div>
         <div
           ref={contentRef}
-          className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-5 pb-2"
+          className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-5 pb-title"
           style={{ touchAction: 'pan-y' }}
         >
           {children}
         </div>
-        {footer && <div className="px-5 pt-3">{footer}</div>}
+        {footer && <div className="px-5 pt-items">{footer}</div>}
       </div>
     </>,
     document.body,

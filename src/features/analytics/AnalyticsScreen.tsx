@@ -63,7 +63,7 @@ export function AnalyticsScreen() {
   const fetching = summary.isFetching || items.isFetching || weekly.isFetching
 
   return (
-    <main className="flex flex-col gap-3 pb-6">
+    <main className="flex flex-col gap-block pb-section">
       <PageHeader
         title={t.nav.analytics}
         subtitle="Cosa si compra, quanto spesso e chi lo mette in lista."

@@ -77,11 +77,11 @@ export function InspirationScreen() {
   ].filter((g) => g.items.length > 0)
 
   return (
-    <main className="flex flex-col pb-10">
+    <main className="flex flex-col pb-section">
       <PageHeader
         title={t.inspiration.title(contenuto.nome.toLowerCase())}
         subtitle={
-          <div className="flex flex-col gap-2 pt-1">
+          <div className="mt-title flex flex-col gap-title">
             <p className="text-base text-primary">{contenuto.intro}</p>
             <p className="text-sm text-secondary">{t.inspiration.hint}</p>
           </div>
@@ -94,10 +94,10 @@ export function InspirationScreen() {
         <>
           {gruppi.length > 0 && (
             <>
-              <SectionHeader title={t.inspiration.inSeason} />
+              <SectionHeader title={t.inspiration.inSeason} lead="section" />
               {gruppi.map((gruppo) => (
-                <section key={gruppo.titolo} className="mb-4">
-                  <h3 className="px-4 pb-2 text-xs font-bold uppercase tracking-[0.08em] text-secondary">
+                <section key={gruppo.titolo} className="mb-block last:mb-0">
+                  <h3 className="px-4 pb-title text-xs font-bold uppercase tracking-[0.08em] text-secondary">
                     {gruppo.titolo}
                   </h3>
                   <ProductGrid label={gruppo.titolo}>{tiles(gruppo.items)}</ProductGrid>
@@ -112,11 +112,11 @@ export function InspirationScreen() {
               .map((nome) => byName.get(nome.toLowerCase()))
               .filter((item): item is Item => Boolean(item))
             return (
-              <section key={piatto.nome} className="mb-5">
+              <section key={piatto.nome} className="mb-section last:mb-0">
                 <h3 className="px-4 font-display text-lg font-bold leading-tight text-primary">
                   {piatto.nome}
                 </h3>
-                <p className="px-4 pt-0.5 pb-3 text-sm text-secondary">{piatto.idea}</p>
+                <p className="px-4 pt-title pb-items text-sm text-secondary">{piatto.idea}</p>
                 <ProductGrid label={`${t.inspiration.ingredients}: ${piatto.nome}`}>
                   {tiles(ingredienti)}
                 </ProductGrid>
