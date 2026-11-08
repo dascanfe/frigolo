@@ -637,14 +637,18 @@ h1 {
 .feat-shot .phone {
   --w: min(230px, 62vw);
 }
+/* Centrato nello spazio sotto la barra in alto (64px più il bordo), non in tutto lo schermo.
+   Il telefono è alto 2.085 volte la sua larghezza (schermo 390x844 più la cornice). */
 .sticky-phone {
+  --topbar-h: 65px;
+  --phone-w: min(300px, calc((100vh - 130px) / 2.164));
   position: sticky;
-  top: calc(50vh - 340px);
+  top: calc(var(--topbar-h) + (100vh - var(--topbar-h) - var(--phone-w) * 2.085) / 2);
   display: flex;
   justify-content: center;
 }
 .sticky-phone .phone {
-  --w: min(300px, calc((100vh - 130px) / 2.164));
+  --w: var(--phone-w);
 }
 .screens img {
   position: absolute;
