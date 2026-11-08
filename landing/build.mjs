@@ -116,6 +116,11 @@ const SCREENS = {
   's13-analitiche': { kind: 'chart', title: 'Analitiche', sub: 'Lista Casa' },
   's14-ultimi-acquisti': { kind: 'list', title: 'Casa', sub: 'Suggeriti per te', chips: true },
   's17-offline': { kind: 'list', title: 'Casa', sub: 'Da comprare', banner: 'Offline' },
+  'n01-home': { kind: 'grid', title: 'Casa', sub: 'Da comprare' },
+  'n03-ispirazioni': { kind: 'grid', title: 'Ispirazioni', sub: 'Di stagione questo mese' },
+  'n04-ultimi-acquisti': { kind: 'grid', title: 'Casa', sub: 'Gli ultimi acquisti' },
+  'n05-liquido': { kind: 'grid', title: 'Catalogo', sub: 'Pesce' },
+  'n06-volo': { kind: 'grid', title: 'Casa', sub: 'Nel carrello' },
 }
 const COLORS = ['#3e7c86', '#ce5f36', '#7e7530', '#c2902f', '#a85641', '#86a79b']
 const missing = []
@@ -285,7 +290,7 @@ html = html.replace(
 
 // dati strutturati
 const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj)}</script>`
-const shots = ['s06-carrello', 's02-catalogo', 's04-lista-giulia', 's13-analitiche'].map(
+const shots = ['n01-home', 'n05-liquido', 'n03-ispirazioni', 's13-analitiche'].map(
   (s) => `${BASE}img/${s}-780.webp`,
 )
 const app = ld({
