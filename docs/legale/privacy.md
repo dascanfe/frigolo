@@ -68,6 +68,15 @@ sulla salute). Frigolo non ne ha bisogno e non le usa.
   anonima quanto dura ogni utilizzo, la versione dell'app, se è installata o aperta nel browser, il
   tipo di dispositivo (iPhone, Android o computer), il tema scelto e se eri offline. Questi dati
   vengono sommati in conteggi giornalieri senza alcun collegamento al tuo account.
+- Gesti anonimi nell'app: registriamo in forma anonima anche l'ora in cui apri l'app e alcuni gesti
+  da un elenco fisso: una ricerca che non ha dato risultati (mai il testo cercato), l'invito a
+  installare l'app e la tua risposta, la guida per iPhone, l'avviso di nuova versione e il pulsante
+  "Aggiorna ora". Quando entri in una lista contiamo se hai usato il link o il codice e quanto tempo
+  è passato dall'invito. Sono sommati in conteggi giornalieri, senza collegamento al tuo account.
+- Statistiche sulla spesa: in forma aggregata guardiamo quali prodotti del catalogo di Frigolo
+  vengono aggiunti più spesso, quali supermercati vengono scelti tra quelli proposti e in quali
+  giorni e orari si chiude la spesa. I nomi dei prodotti che crei tu non vengono mai mostrati né
+  analizzati: contiamo solo quanti ne vengono creati.
 - Errori tecnici: se l'app incontra un errore, inviamo un messaggio tecnico privato di email,
   codici e numeri, con la versione dell'app e la pagina (senza parametri). Anche questi dati sono
   conteggi giornalieri non collegati al tuo account.

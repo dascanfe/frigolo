@@ -24,6 +24,8 @@ interface ProductTileProps {
   onTap?: () => void
   onLongPress?: () => void
   disabled?: boolean
+  /** Identità per le animazioni di spostamento (vedi lib/flip) */
+  flipId?: string
 }
 
 const STATE_LABEL: Record<TileState, string> = {
@@ -49,6 +51,7 @@ export function ProductTile({
   onTap,
   onLongPress,
   disabled = false,
+  flipId,
 }: ProductTileProps) {
   const handlers = useLongPress({ onTap, onLongPress, disabled })
 
@@ -68,6 +71,7 @@ export function ProductTile({
       type="button"
       className={`tile tile--${state}`}
       data-state={state}
+      data-flip-id={flipId}
       aria-label={ariaParts.join(', ')}
       disabled={disabled}
       {...handlers}

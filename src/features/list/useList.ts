@@ -49,7 +49,7 @@ export function useList(): ListData {
 
   return useMemo(() => {
     const entries: ListEntryWithItem[] = []
-    for (const row of list.data ?? []) {
+    for (const row of Array.isArray(list.data) ? list.data : []) {
       const item = catalog.itemById.get(row.item_id)
       const category = item ? catalog.categoryById.get(item.category_id) : undefined
       // un prodotto archiviato o non ancora in cache non si mostra

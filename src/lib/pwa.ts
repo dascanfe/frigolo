@@ -4,6 +4,9 @@
  * stesso stato senza contesto React.
  */
 import { registerSW } from 'virtual:pwa-register'
+import { detectInstallPlatform } from './installPlatform'
+import type { InstallPlatform } from './installPlatform'
+import { markInstalled, recordInstallOutcome } from './installNudge'
 
 /* ------------------------------------------------------------------------- */
 /* Service worker                                                            */
@@ -28,10 +31,56 @@ function setSwState(patch: Partial<ServiceWorkerState>) {
 }
 
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000
+/** In background per piu' di cosi', alla ripresa la pagina si ricarica da sola */
+export const BACKGROUND_RELOAD_AFTER_MS = 3 * 60 * 1000
+const RELOAD_FLAG = 'frigolo-preload-reload'
+
+/** Salva la coda offline e ricarica: le modifiche in attesa non si perdono */
+async function reloadPage() {
+  try {
+    // import dinamico: pwa.ts resta leggero e testabile senza Supabase
+    const [{ savePendingMutations }, { queryClient }] = await Promise.all([
+      import('./offlineQueue'),
+      import('./queryClient'),
+    ])
+    await savePendingMutations(queryClient)
+  } catch {
+    // se il salvataggio fallisce si ricarica comunque: resta la cache principale
+  }
+  window.location.reload()
+}
+
+/**
+ * Decide se, tornando in primo piano dopo `hiddenMs`, serve ricaricare in
+ * silenzio per passare alla versione nuova (mai mentre la pagina e' visibile).
+ */
+export function shouldReloadOnResume(needRefresh: boolean, hiddenMs: number): boolean {
+  return needRefresh && hiddenMs >= BACKGROUND_RELOAD_AFTER_MS
+}
 
 /** Da chiamare una volta all'avvio (main.tsx) */
 export function setupServiceWorker() {
   if (import.meta.env.DEV || !('serviceWorker' in navigator)) return
+
+  // Il nuovo worker si attiva da solo (skipWaiting). Se la pagina aperta era gia'
+  // controllata da un worker, il cambio di controller vuol dire "versione nuova
+  // attiva, questa pagina e' ancora la vecchia": si mostra la barra.
+  let hadController = Boolean(navigator.serviceWorker.controller)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController) setSwState({ needRefresh: true })
+    hadController = true
+  })
+
+  // Ripresa dal background: dopo qualche minuto la pagina vecchia si ricarica in silenzio
+  let hiddenAt = 0
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      hiddenAt = Date.now()
+    } else if (hiddenAt && shouldReloadOnResume(swState.needRefresh, Date.now() - hiddenAt)) {
+      void reloadPage()
+    }
+  })
+
   updateServiceWorker = registerSW({
     immediate: true,
     onRegisteredSW: (_url, registration) => {
@@ -44,18 +93,78 @@ export function setupServiceWorker() {
       })
     },
     onOfflineReady: () => setSwState({ offlineReady: true }),
+    // versione in attesa (vecchi worker senza skipWaiting): si mostra la barra
     onNeedRefresh: () => setSwState({ needRefresh: true }),
   })
 }
 
-/** Cerca una nuova versione adesso; ritorna true se ne ha trovata una in attesa */
+const CHUNK_ERROR_RE =
+  /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/i
+
+/** True se l'errore dice che un pezzo dell'app non si è caricato (versione nuova uscita nel frattempo) */
+export function isChunkLoadError(error: unknown): boolean {
+  const message = String((error as Error | undefined)?.message ?? error)
+  return CHUNK_ERROR_RE.test(message)
+}
+
+/** Ricarica una volta sola per sessione (il flag in sessionStorage evita i cicli). True se ha ricaricato. */
+export function reloadOnceForNewVersion(): boolean {
+  try {
+    if (sessionStorage.getItem(RELOAD_FLAG)) return false
+    sessionStorage.setItem(RELOAD_FLAG, '1')
+  } catch {
+    return false // senza sessionStorage meglio non rischiare un ciclo
+  }
+  void reloadPage()
+  return true
+}
+
+/**
+ * Pezzi dell'app non piu' sul server (versione nuova uscita mentre la pagina
+ * era aperta): ricarica una volta sola, il flag in sessionStorage evita i cicli.
+ * Si installa anche in sviluppo e senza service worker.
+ */
+export function setupChunkErrorReload() {
+  const reloadOnce = () => void reloadOnceForNewVersion()
+  window.addEventListener('vite:preloadError', (event) => {
+    event.preventDefault()
+    reloadOnce()
+  })
+  window.addEventListener('unhandledrejection', (event) => {
+    if (isChunkLoadError(event.reason)) reloadOnce()
+  })
+  // caricata bene: il prossimo problema potra' ricaricare di nuovo
+  window.addEventListener('load', () => {
+    window.setTimeout(() => {
+      try {
+        sessionStorage.removeItem(RELOAD_FLAG)
+      } catch {
+        /* niente */
+      }
+    }, 10_000)
+  })
+}
+
+/** Cerca una nuova versione adesso; ritorna true se ne ha trovata una (gia' attiva o in attesa) */
 export async function checkForUpdate(): Promise<boolean> {
   if (!('serviceWorker' in navigator)) return false
   const registration = await navigator.serviceWorker.getRegistration()
   if (!registration) return false
   await registration.update()
-  // l'evento onNeedRefresh arriva in modo asincrono: diamo un attimo
-  await new Promise((resolve) => window.setTimeout(resolve, 800))
+  // il nuovo worker si installa e si attiva da solo: aspettiamo il cambio di controller
+  if (registration.installing || registration.waiting) {
+    await new Promise<void>((resolve) => {
+      const timeout = window.setTimeout(resolve, 10_000)
+      navigator.serviceWorker.addEventListener(
+        'controllerchange',
+        () => {
+          window.clearTimeout(timeout)
+          resolve()
+        },
+        { once: true },
+      )
+    })
+  }
   if (registration.waiting) setSwState({ needRefresh: true })
   return swState.needRefresh
 }
@@ -72,32 +181,33 @@ export function getServiceWorkerState() {
 }
 
 /**
- * Attiva la nuova versione e ricarica. Non si affida solo al plugin: manda
- * SKIP_WAITING al worker in attesa e ricarica quando prende il controllo,
- * oppure comunque dopo 2,5 secondi (su iOS standalone il cambio di controller
- * a volte non arriva).
+ * Passa alla versione nuova e ricarica (al tocco di "Aggiorna ora"). Di norma
+ * il worker nuovo e' gia' attivo e basta ricaricare; se ce n'e' ancora uno in
+ * attesa (worker vecchi) gli manda SKIP_WAITING e ricarica quando prende il
+ * controllo, o comunque dopo 2,5 secondi (su iOS standalone il cambio di
+ * controller a volte non arriva).
  */
 export async function applyUpdate() {
   const registration =
     'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : undefined
-  const reloadWhenControlled = new Promise<void>((resolve) => {
-    const timeout = window.setTimeout(resolve, 2500)
-    navigator.serviceWorker?.addEventListener(
-      'controllerchange',
-      () => {
-        window.clearTimeout(timeout)
-        resolve()
-      },
-      { once: true },
-    )
-  })
   if (registration?.waiting) {
+    const reloadWhenControlled = new Promise<void>((resolve) => {
+      const timeout = window.setTimeout(resolve, 2500)
+      navigator.serviceWorker.addEventListener(
+        'controllerchange',
+        () => {
+          window.clearTimeout(timeout)
+          resolve()
+        },
+        { once: true },
+      )
+    })
     registration.waiting.postMessage({ type: 'SKIP_WAITING' })
-  } else if (updateServiceWorker) {
+    await reloadWhenControlled
+  } else if (swState.needRefresh && !registration && updateServiceWorker) {
     void updateServiceWorker(false)
   }
-  await reloadWhenControlled
-  window.location.reload()
+  await reloadPage()
 }
 
 /* ------------------------------------------------------------------------- */
@@ -114,14 +224,12 @@ export interface InstallState {
   installed: boolean
   /** Il browser offre il prompt nativo (Chrome/Edge/Android) */
   canPrompt: boolean
-  /** iOS Safari: niente prompt, si spiega "Condividi > Aggiungi alla schermata Home" */
-  isIos: boolean
+  /** Browser: su iOS niente prompt, si spiega il gesto (Safari) o si rimanda a Safari */
+  platform: InstallPlatform
 }
 
-const DISMISSED_KEY = 'frigolo.install-dismissed'
-
 let deferredPrompt: BeforeInstallPromptEvent | null = null
-let installState: InstallState = { installed: false, canPrompt: false, isIos: false }
+let installState: InstallState = { installed: false, canPrompt: false, platform: 'other' }
 const installListeners = new Set<() => void>()
 
 function setInstallState(patch: Partial<InstallState>) {
@@ -139,9 +247,13 @@ export function isStandalone(): boolean {
 
 /** Da chiamare una volta all'avvio: cattura il prompt di installazione */
 export function setupInstallPrompt() {
-  const ua = navigator.userAgent
-  const isIos = /iphone|ipad|ipod/i.test(ua) && !/crios|fxios/i.test(ua)
-  setInstallState({ installed: isStandalone(), isIos })
+  // Debug in sviluppo: window.__frigoloPwa.setSwState({ needRefresh: true }) simula una
+  // versione nuova, setInstallState({ canPrompt: true }) il prompt di installazione
+  if (import.meta.env.DEV) Object.assign(window, { __frigoloPwa: { setSwState, setInstallState } })
+  setInstallState({
+    installed: isStandalone(),
+    platform: detectInstallPlatform(navigator.userAgent, navigator.maxTouchPoints),
+  })
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault()
@@ -150,6 +262,7 @@ export function setupInstallPrompt() {
   })
   window.addEventListener('appinstalled', () => {
     deferredPrompt = null
+    markInstalled()
     setInstallState({ installed: true, canPrompt: false })
   })
 }
@@ -166,33 +279,19 @@ export function getInstallState() {
 }
 
 /**
- * Il banner compare solo dopo il primo prodotto aggiunto (prima l'app deve
- * servire a qualcosa), se non è stato chiuso e non si è già installata.
+ * Mostra il prompt nativo e registra l'esito (localStorage, vedi
+ * installNudge). Ritorna true se l'utente ha accettato.
  */
-export function shouldOfferInstall(firstProductAdded: boolean): boolean {
-  try {
-    const dismissed = localStorage.getItem(DISMISSED_KEY) === '1'
-    return firstProductAdded && !dismissed && !installState.installed
-  } catch {
-    return false
-  }
-}
-
-export function dismissInstall() {
-  try {
-    localStorage.setItem(DISMISSED_KEY, '1')
-  } catch {
-    // ignorato
-  }
-  setInstallState({})
-}
-
-/** Mostra il prompt nativo; ritorna true se l'utente ha accettato */
 export async function promptInstall(): Promise<boolean> {
   if (!deferredPrompt) return false
   await deferredPrompt.prompt()
   const { outcome } = await deferredPrompt.userChoice
   deferredPrompt = null
   setInstallState({ canPrompt: false })
+  recordInstallOutcome(outcome)
+  // metriche anonime (import dinamico: telemetry importa già pwa)
+  void import('./telemetry').then((m) =>
+    m.recordEvent(outcome === 'accepted' ? 'install_prompt_accettato' : 'install_prompt_rifiutato'),
+  )
   return outcome === 'accepted'
 }

@@ -18,6 +18,8 @@ export const SUPPORT_EMAIL = 'frigolo@dascanfe.com'
 
 /** Link delle donazioni (docs/DECISIONI.md) */
 export const DONATION_URL = 'https://paypal.me/DanieleScanferlato'
+export const DONATION_SATISPAY_URL =
+  'https://web.satispay.com/download/qrcode/S6Y-CON--F40C52A4-F320-4CE4-81CE-67CD69DAA88E'
 
 /** Indirizzo dell'app senza protocollo, per il messaggio d'invito */
 export function appHost(): string {
@@ -207,11 +209,30 @@ export const it = {
     checking: "Guardo l'invito...",
   },
   nav: {
-    label: 'Navigazione principale',
-    list: 'Lista',
+    back: 'Torna alla lista',
     catalog: 'Catalogo',
+    openCatalog: 'Sfoglia il catalogo',
     analytics: 'Analitiche',
+    openAnalytics: (listName: string) => `Analitiche della lista ${listName}`,
     settings: 'Impostazioni',
+    inspiration: 'Ispirazioni',
+    inspirationCta: 'Non sai cosa comprare? Prendi ispirazione!',
+  },
+  inspiration: {
+    title: (month: string) => `Ispirazioni di ${month}`,
+    ctaTitle: 'Non sai cosa comprare?',
+    ctaSubtitle: (month: string) => `Prendi ispirazione: cosa è di stagione a ${month}`,
+    loading: 'Carico i prodotti...',
+    inSeason: 'Di stagione questo mese',
+    fruit: 'Frutta',
+    vegetables: 'Verdura',
+    fish: 'Pesce',
+    ideas: 'Idee per i piatti',
+    ingredients: 'Ingredienti',
+    hint: 'Tocca un prodotto per metterlo in lista, toccalo ancora per toglierlo.',
+  },
+  season: {
+    title: 'Di stagione',
   },
   list: {
     loading: 'Carico la lista...',
@@ -228,10 +249,7 @@ export const it = {
     noResultsHint: 'Prova con un altro nome.',
     create: (name: string) => `Crea "${name}"`,
     recent: 'Gli ultimi acquisti',
-    recentHint: 'Le cose comprate di recente: un tocco per rimetterle in lista.',
-    suggested: 'Suggeriti per te',
-    suggestedHint:
-      'In base a ogni quanto si ricompra una cosa e a cosa è di stagione. Tieni premuto per il motivo.',
+    recentHint: 'Quello che hai preso nelle ultime 3 spese: un tocco per rimetterlo in lista.',
     all: 'Tutti',
     filterByStore: 'Filtra per supermercato',
   },
@@ -323,12 +341,32 @@ export const it = {
     button: 'Invita',
     dismiss: 'Non ora',
   },
-  install: {
-    title: 'Tienila sulla schermata Home',
-    ios: 'Tocca Condividi e poi "Aggiungi alla schermata Home".',
-    android: "Si apre come un'app, anche senza rete.",
-    button: 'Installa',
-    dismiss: 'Non mostrare più',
+  updateBar: {
+    title: "C'è una versione nuova di Frigolo ✨",
+    button: 'Aggiorna ora',
+    dismiss: 'Più tardi',
+  },
+  installCard: {
+    text: 'Installala: si apre più veloce e funziona anche senza rete',
+    install: 'Installa Frigolo',
+    how: 'Come si fa',
+    dismiss: 'Non ora',
+  },
+  installGuide: {
+    title: 'Aggiungi Frigolo alla Home',
+    titleOther: 'Aprila con Safari',
+    subtitle: "Tre tocchi e si apre come un'app.",
+    close: 'Chiudi',
+    step1: 'Tocca Condividi, nella barra in basso di Safari.',
+    step2: 'Scorri e tocca "Aggiungi alla schermata Home".',
+    step3: 'Tocca "Aggiungi", in alto a destra.',
+    addShort: 'Aggiungi',
+    pointer: 'Condividi è qui sotto',
+    notSafari:
+      'Su iPhone si installa da Safari. Copia il link, aprilo con Safari e segui i tre passaggi.',
+    copyLink: 'Copia il link',
+    copied: 'Link copiato',
+    copyFailed: 'Non sono riuscito a copiare: aprilo con Safari a mano.',
   },
   emptyList: {
     title: 'Cosa manca?',
@@ -362,6 +400,12 @@ export const it = {
   errors: {
     network: 'Nessuna connessione. Controlla la rete e riprova.',
     loadLists: 'Non riesco a caricare le liste',
+  },
+  crash: {
+    title: 'Qualcosa è andato storto',
+    text: 'Non è colpa tua. Prova a ricaricare: la tua lista è al sicuro.',
+    reload: 'Ricarica',
+    home: 'Torna alla lista',
   },
   common: {
     wait: 'Un attimo...',

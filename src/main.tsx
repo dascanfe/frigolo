@@ -10,7 +10,7 @@ import '@/styles/global.css'
 import App from '@/App'
 import { captureInviteFromUrl } from '@/features/lists/inviteCode'
 import { captureAuthConfirm } from '@/lib/authConfirm'
-import { setupInstallPrompt, setupServiceWorker } from '@/lib/pwa'
+import { setupChunkErrorReload, setupInstallPrompt, setupServiceWorker } from '@/lib/pwa'
 import { setupTelemetry } from '@/lib/telemetry'
 import { applyStoredTheme } from '@/lib/theme'
 
@@ -24,6 +24,7 @@ applyStoredTheme()
 captureInviteFromUrl()
 // link delle email (/auth/confirm?token_hash=...): lo verifica useSession
 captureAuthConfirm()
+setupChunkErrorReload()
 setupServiceWorker()
 setupInstallPrompt()
 // metriche anonime: durata delle sessioni ed errori (vedi telemetry.ts)

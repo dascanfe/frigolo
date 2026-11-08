@@ -1,7 +1,7 @@
 {
   "name": "frigolo",
   "private": true,
-  "version": "1.4.0",
+  "version": "2.2.2",
   "type": "module",
   "description": "Lista della spesa condivisa, installabile come PWA",
   "packageManager": "pnpm@10.34.5",

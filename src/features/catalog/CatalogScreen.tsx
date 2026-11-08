@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useStuck } from '@/lib/useStuck'
+import { useMemo, useRef, useState } from 'react'
 import { CategoryChips } from '@/components/CategoryChips'
+import { PageHeader, STICKY_CHIPS_TOP, StickyGlass } from '@/components/PageHeader'
 import { AddTile, ProductTile } from '@/components/ProductTile'
 import type { TileState } from '@/components/ProductTile'
 import { CategoryDivider, ProductGrid } from '@/components/ProductGrid'
@@ -8,10 +10,13 @@ import type { EntrySheetTarget } from '@/features/list/EntrySheet'
 import { useList } from '@/features/list/useList'
 import { useListMutations } from '@/features/list/useToggleItem'
 import type { Item, ListEntryWithItem } from '@/types/domain'
+import { it as t } from '@/i18n/it'
 import { badgeQuantity } from '@/lib/format'
 import { CreateItemSheet } from './CreateItemSheet'
 import type { CreateItemRequest } from './CreateItemSheet'
+import { currentMonth, SEASONAL_CATALOG_SLUGS, seasonalItems } from './seasonal'
 import { useCatalog } from './useCatalog'
+import { categoryAnchorId, useCategoryScrollSpy } from './useCategoryScrollSpy'
 
 function tileState(entry: ListEntryWithItem | undefined): TileState {
   if (!entry) return 'idle'
@@ -22,13 +27,20 @@ export function CatalogScreen() {
   const catalog = useCatalog()
   const list = useList()
   const mutations = useListMutations()
-  const [selected, setSelected] = useState<string | null>(null)
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const endRef = useRef<HTMLDivElement>(null)
+  const stuck = useStuck(stickyRef)
+  const slugs = catalog.categories.map((c) => c.slug)
+  const { active, goTo } = useCategoryScrollSpy(slugs, stickyRef, endRef)
   const [sheetTarget, setSheetTarget] = useState<EntrySheetTarget | null>(null)
   const [createRequest, setCreateRequest] = useState<CreateItemRequest | null>(null)
 
-  const visibleCategories = selected
-    ? catalog.categories.filter((c) => c.slug === selected)
-    : catalog.categories
+  // frutta e verdura del mese: in cima, prima delle categorie
+  const month = currentMonth()
+  const inSeason = useMemo(
+    () => seasonalItems(catalog.items, catalog.categoryById, month, SEASONAL_CATALOG_SLUGS),
+    [catalog.items, catalog.categoryById, month],
+  )
 
   function toggle(item: Item) {
     const entry = list.entryByItemId.get(item.id)
@@ -38,32 +50,70 @@ export function CatalogScreen() {
 
   return (
     <main className="flex flex-col pb-6">
-      <header className="px-4 pt-6 pb-1">
-        <h1 className="font-display text-4xl font-bold text-primary">Catalogo</h1>
-        <p className="text-sm text-secondary">
-          {catalog.isPending ? 'Carico il catalogo...' : `${catalog.items.length} prodotti`}
-        </p>
-      </header>
+      <PageHeader
+        title={t.nav.catalog}
+        subtitle={catalog.isPending ? 'Carico il catalogo...' : `${catalog.items.length} prodotti`}
+      />
 
       <div
-        className="sticky top-0 z-10 bg-app/95 backdrop-blur-sm"
-        style={{ top: 'var(--safe-top)' }}
+        ref={stickyRef}
+        className={`sticky z-10 transition-[padding] duration-300 ease-(--ease-organic) ${stuck ? 'pl-[56px]' : ''}`}
+        style={{ top: STICKY_CHIPS_TOP }}
       >
+        <StickyGlass visible={stuck} top={STICKY_CHIPS_TOP} />
         <CategoryChips
           categories={catalog.categories}
-          selected={selected}
-          onSelect={setSelected}
+          selected={active}
+          onSelect={goTo}
+          toggle={false}
+          followSelected
           allLabel="Tutte"
+          rowClassName={
+            stuck
+              ? // le chip scorrono dentro la riga e sfumano prima di arrivare alla freccia
+                'pl-2 pr-4 [mask-image:linear-gradient(to_right,transparent,black_10px)]'
+              : 'px-4'
+          }
         />
       </div>
 
       <ProductGrid label="Catalogo prodotti" className="pt-2">
-        {visibleCategories.map((category) => {
+        {inSeason.length > 0 && [
+          <CategoryDivider
+            key="divider-season"
+            name={t.season.title}
+            id="cat-di-stagione"
+            slug="verdura"
+            icon="Sprout"
+          />,
+          ...inSeason.map((item) => {
+            const category = catalog.categoryById.get(item.category_id)
+            const entry = list.entryByItemId.get(item.id)
+            return (
+              <ProductTile
+                key={`season-${item.id}`}
+                name={item.name}
+                icon={item.icon}
+                state={tileState(entry)}
+                quantity={
+                  entry
+                    ? badgeQuantity(entry.quantity, entry.unit, entry.item.default_unit)
+                    : undefined
+                }
+                unit={entry?.unit}
+                onTap={() => toggle(item)}
+                onLongPress={category ? () => setSheetTarget({ item, category, entry }) : undefined}
+              />
+            )
+          }),
+        ]}
+        {catalog.categories.map((category) => {
           const items = catalog.itemsByCategory.get(category.id) ?? []
           return [
             <CategoryDivider
               key={`divider-${category.id}`}
               name={category.name}
+              id={categoryAnchorId(category.slug)}
               slug={category.slug}
               icon={category.icon}
             />,
@@ -90,6 +140,7 @@ export function CatalogScreen() {
           ]
         })}
       </ProductGrid>
+      <div ref={endRef} aria-hidden="true" />
 
       <EntrySheet target={sheetTarget} onClose={() => setSheetTarget(null)} />
       <CreateItemSheet

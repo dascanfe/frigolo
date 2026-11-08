@@ -73,7 +73,8 @@
   /* ---------------------------------------------------------------------- */
   --cat-frutta: #ce5f36;
   --cat-verdura: #9ba86a;
-  --cat-carne-pesce: #d9695c;
+  --cat-carne: #d9695c;
+  --cat-pesce: #5a82b4;
   --cat-latticini-uova: #f0cb74;
   --cat-pane-forno: #ebd5b3;
   --cat-dispensa: #c2902f;
@@ -91,7 +92,8 @@
      Le percentuali sono tarate per token: più chiaro il colore, più inchiostro. */
   --cat-frutta-text: color-mix(in srgb, var(--cat-frutta) 55%, var(--c-ink));
   --cat-verdura-text: color-mix(in srgb, var(--cat-verdura) 50%, var(--c-ink));
-  --cat-carne-pesce-text: color-mix(in srgb, var(--cat-carne-pesce) 55%, var(--c-ink));
+  --cat-carne-text: color-mix(in srgb, var(--cat-carne) 55%, var(--c-ink));
+  --cat-pesce-text: color-mix(in srgb, var(--cat-pesce) 55%, var(--c-ink));
   --cat-latticini-uova-text: color-mix(in srgb, var(--cat-latticini-uova) 35%, var(--c-ink));
   --cat-pane-forno-text: color-mix(in srgb, var(--cat-pane-forno) 35%, var(--c-ink));
   --cat-dispensa-text: color-mix(in srgb, var(--cat-dispensa) 55%, var(--c-ink));
@@ -109,7 +111,8 @@
      altri restano identici. L'inchiostro è fisso (#3a2c21): non cambia col tema. */
   --cat-frutta-solid: var(--cat-frutta);
   --cat-verdura-solid: color-mix(in srgb, var(--cat-verdura) 85%, #3a2c21);
-  --cat-carne-pesce-solid: var(--cat-carne-pesce);
+  --cat-carne-solid: var(--cat-carne);
+  --cat-pesce-solid: var(--cat-pesce);
   --cat-latticini-uova-solid: color-mix(in srgb, var(--cat-latticini-uova) 70%, #3a2c21);
   --cat-pane-forno-solid: color-mix(in srgb, var(--cat-pane-forno) 65%, #3a2c21);
   --cat-dispensa-solid: var(--cat-dispensa);
@@ -138,10 +141,8 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  /* Bottom nav flottante: altezza, distanza dal bordo e spazio totale occupato */
-  --nav-height: 56px;
-  --nav-gap: 6px;
-  --nav-offset: calc(var(--nav-height) + var(--nav-gap) + var(--safe-bottom));
+  /* Spazio in basso occupato da elementi fissi: oggi solo l'area sicura di iOS */
+  --nav-offset: var(--safe-bottom);
 
   /* Vetro: sfondo semitrasparente + blur */
   --glass-bg: color-mix(in srgb, var(--c-cream) 58%, transparent);
@@ -155,6 +156,15 @@
   --dur-press: 80ms;
   --dur-color: 180ms;
   --dur-sheet: 240ms;
+  /* animazioni morbide: partenza decisa, arrivo lento (riempimenti, pill, barre) */
+  --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
+  /* come sopra ma con un piccolo rimbalzo finale, per ciò che si sposta */
+  --ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1);
+  --dur-organic: 320ms;
+  --dur-fill: 480ms;
+  /* riempimento liquido delle tile: parte piano, accelera e si posa lentamente */
+  --ease-liquid: cubic-bezier(0.55, 0.05, 0.2, 1);
+  --dur-liquid: 820ms;
 }
 
 /* -------------------------------------------------------------------------- */

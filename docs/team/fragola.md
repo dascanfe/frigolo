@@ -32,6 +32,103 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-11-08 - Nuova home, catalogo esteso, Ispirazioni (branch `fragola/nuova-home`, versione 2.2.0)
+
+Richiesta di Daniele, tutto in locale (niente produzione):
+
+- Via la barra in basso (`BottomNav` e `useKeyboardOpen` eliminati; `--nav-offset` ora vale solo l'area sicura di iOS).
+  Impostazioni: ingranaggio in alto a destra, staccato dagli avatar. Gli avatar sono un solo link alle analitiche della lista
+  (la gestione persone resta in Impostazioni). "Sfoglia il catalogo" sulla riga di "Da comprare". Catalogo, Analitiche,
+  Impostazioni e Ispirazioni hanno `PageHeader` con la freccia per tornare alla lista.
+- "Gli ultimi acquisti": prodotti unici delle ultime 3 spese chiuse (`useRecentTripItems`, chiave sotto `['purchases', lista]`).
+- Migration `0029_catalogo_esteso.sql` e `seed.sql`: Carne e Pesce separati (slug `carne` al posto di `carne-pesce`, nuovo `pesce`,
+  ordine 40 e 45), 263 prodotti base nuovi (da 234 a 497). Elenco in `docs/catalogo-proposta.md`. Il test `catalogSeed.test.ts`
+  legge `seed.sql` e controlla icone, unità, mesi, nomi unici e che gli ingredienti di Ispirazioni esistano.
+- Catalogo: sezione "Di stagione" (frutta e verdura con i mesi del mese corrente) in cima.
+- Ispirazioni (`/ispirazioni`, dati in `src/features/inspiration/mesi.ts`): intro del mese, frutta/verdura/pesce di stagione
+  dai `season_months` del catalogo, 5 idee di piatto per mese con gli ingredienti come tile.
+- Colori categoria: `--cat-pesce` nuovo (#5a82b4), `--cat-carne` prende il posto di `--cat-carne-pesce`.
+
+Da sapere: la migration sposta in Pesce anche `purchases.category_id` dei 9 prodotti base di pesce, così le analitiche per
+categoria restano coerenti. Le app aperte con la versione vecchia vedono per un attimo la categoria "carne" senza colore
+finché non si aggiornano.
+
+### 2026-10-24 - Schermo bianco da lista a catalogo (branch `fragola/schermo-bianco`, versione 2.0.1)
+
+Segnalazione: su iPhone (PWA, build "1.4.0" tra il 18 e il 23 ottobre) passando dalla lista al catalogo
+lo schermo diventa bianco con "Script error."; in telemetria 4 errori `errore`, `Script error.`, pagina `/`.
+
+Fatto (rete di sicurezza):
+
+- `ErrorBoundary` in `App.tsx` (fuori da provider, accesso e router) e `errorElement` sulle rotte
+  (`RouteError`): schermata `CrashScreen` con la mascotte, "Qualcosa è andato storto", "Ricarica" e
+  "Torna alla lista" (senza router né query, quindi funziona anche se quelli sono rotti). Per gli errori
+  delle schermate resta la barra in basso, si può cambiare pagina. Prima gli errori di render nelle rotte
+  mostravano la pagina grigia di react-router ("Unexpected Application Error!", verificato), quelli fuori
+  dalle rotte (accesso, provider, toast) davvero lo schermo bianco.
+- Telemetria: `reportError('render', errore, { componentStack })` manda al server il tipo già ammesso
+  `errore` con messaggio `[render] Nome: messaggio @ Componente file.js:riga:colonna` (200 caratteri,
+  ripulito) e la pagina reale. Nessuna migration 0028 necessaria: se un giorno si vorrà separarli, basta
+  aggiungere `render` all'elenco di `metrics_record_error` e togliere la mappa `TIPO_SERVER` in `telemetry.ts`.
+  In produzione i nomi dei componenti sono accorciati dal minificatore: senza sourcemap restano file:riga
+  e il messaggio vero, che di solito bastano.
+- Un pezzo lazy non caricato (versione nuova uscita) ricarica una volta sola (`reloadOnceForNewVersion`).
+- Dati imprevisti: `indexCatalog` e `useList` tollerano cache vecchie o righe malformate.
+- Scroll-spy: il tocco su una chip non lascia più listener e timer uscendo dalla pagina (correggeva
+  lo scroll della schermata successiva).
+
+Ipotesi sulla causa, con probabilità (non riproducibile in locale):
+
+1. 35%, rumore cross-origin non legato al catalogo: "Script error." è il messaggio mascherato di uno script
+   di un'altra origine (Turnstile di Cloudflare sulla schermata di accesso, che sta su `/` e invia la metrica
+   appena c'è la sessione; oppure estensioni e traduzione di Safari). Conferma: gli errori arrivano subito
+   dopo l'accesso, mai da `/catalogo`; smentita: compare un `[render]` con la stessa pagina.
+2. 20%, aggiornamento del service worker mentre l'app è aperta (il 23 ottobre sono uscite 3 versioni
+   con lo stesso "1.4.0", skipWaiting e clientsClaim). Il catalogo non è un pezzo lazy (solo Analitiche
+   lo è, verificato nel build), quindi può colpire al massimo la scheda Analitiche. Ora gestito.
+3. 10%, cache persistita (IndexedDB) di una build vecchia letta da una nuova con lo stesso buster `1.4.0`.
+   Dal diff tra il 18 e il 23 ottobre le forme dei dati delle query non cambiano: poco probabile. Da qui in
+   avanti: cambiare la versione ogni volta che cambia la forma di un dato in cache.
+4. 10%, iPhone con iOS vecchio (sotto 16.4: il build usa il target `baseline-widely-available` di Vite)
+   con errore di sintassi o API mancante. Un errore di analisi dello script non è catturabile da React.
+5. 7%, scroll-spy e IntersectionObserver: provati 6 cicli rapidi lista, catalogo, chip, lista nel build
+   di produzione, nessun errore; trovato solo il bug dello scroll corretto sopra.
+6. 3%, icone, categorie, prodotti personalizzati: tutti i 132 nomi di icona del database sono nel catalogo
+   (test `iconsInUse.test.ts`); nomi come `constructor`, `__proto__`, vuoto, emoji ricadono sul cestino;
+   prodotti con nome da 60 caratteri e icona da 40 reggono. Provati in locale con 12 prodotti limite.
+7. 15%, altro non riconducibile con i dati che abbiamo.
+
+Da guardare nei prossimi giorni: `metrics.error_counts` con messaggi `[render]`: se ce ne sono, la causa
+è nell'app e il messaggio la dice; se restano solo `Script error.`, è il caso 1 o 4.
+
+Da decidere: testi della schermata di cortesia con Zenzero (`it.crash` in `src/i18n/it.ts`); una mascotte
+dispiaciuta vera da Paprika (oggi è quella di sempre, inclinata, con un punto interrogativo).
+
+### 2026-10-23 - Rifiniture di ottobre (branch `fragola/rifiniture-ottobre`)
+
+1. Barra in basso: `useKeyboardOpen` (focus su un campo di testo o `visualViewport` ridotto di oltre
+   120px) la nasconde con la tastiera aperta; il body non viene mai fissato.
+2. Ricerca (`features/search/fuzzy.ts`): esatto, nome che inizia, parola che inizia, sottostringa
+   (da 4 caratteri), refusi solo se i risultati esatti sono meno di 5 e con tolleranza legata alla
+   lunghezza della query (sotto 5 lettere nessuna). A parità: acquisti, poi alfabetico.
+   Resta che "cacc" trova ancora "Focaccia" (sottostringa), ma da sola e senza rumore.
+3. Installazione: `InstallCard` in pagina (sostituisce `InstallBanner`), `IosInstallGuide` (3 passaggi
+   e freccia verso Condividi), stato in `lib/installNudge.ts` (ricompare dopo 3 giorni, al massimo
+   3 volte), `lib/installPlatform.ts` riconosce Safari e gli altri browser su iOS. L'esito del
+   prompt di Android è solo in localStorage: mandarlo alle metriche richiede una RPC di Basilio.
+4. `UpdateBar`: barra in alto con accento del tema e mascotte, "Aggiorna ora" (`applyUpdate`) e X
+   (chiusa solo in memoria: torna alla riapertura). Il controllo orario resta.
+5. Home: tolta la sezione "Suggeriti per te", resta il motore in `features/suggestions`.
+6. Catalogo: scroll-spy con IntersectionObserver (`useCategoryScrollSpy`); le pill non filtrano più,
+   portano alla categoria; l'evidenziazione resta ferma durante lo scorrimento animato.
+7. "I più acquistati": solo accento del tema, opacità decrescente.
+
+Debug in sviluppo: `window.__frigoloPwa.setSwState({ needRefresh: true })` e
+`setInstallState({ canPrompt: true })`.
+
+Non provato su dispositivi veri: tastiera iOS, installazione reale su Android e iPhone (l'indicatore
+punta in basso al centro: con Safari di iOS 26 il tasto Condividi sta nel menu "...").
+
 ### 2026-10-20 - Primo uso: più prodotti aggiunti e invito a condividere
 
 Dati: su 16 iscritti solo 9 (56%) aggiungono un prodotto; 1 lista su 17 è condivisa.
@@ -73,6 +170,15 @@ lista, con acquisti o a chi ha già prodotti. Toast con mascotte opzionale (`toa
 - Da fare: sostituire gli screenshot ancora segnaposto (s03, s04, s14, s17), mettere il video di
   Paprika, rigenerare con la chiave delle statistiche, caricare via FTP (lo fa il PM).
 - Aggiunte due domande alle FAQ (iPhone e Android, codice aperto): da far rivedere a Zenzero.
+
+### 2026-10-23 - Aggiornamenti automatici della PWA
+
+- `vite.config.ts`: `skipWaiting: true` (con `clientsClaim`), `registerType` resta `prompt` così il plugin non ricarica mai da solo. Il nuovo worker si attiva appena installato.
+- `src/lib/pwa.ts`: il `controllerchange` (con pagina già controllata) accende `needRefresh` e quindi `UpdateBar`. La pagina si ricarica da sola solo alla ripresa dopo 3 minuti o più in background (`shouldReloadOnResume`), mai mentre è visibile. `applyUpdate` ricarica subito se il worker nuovo è già attivo.
+- `setupChunkErrorReload`: `vite:preloadError` e import dinamici falliti ricaricano una volta sola (flag `frigolo-preload-reload` in sessionStorage, azzerato 10 s dopo il caricamento).
+- Coda offline: `savePendingMutations` / `restorePendingMutations` in `offlineQueue.ts` tengono una copia delle mutation in pausa su IndexedDB (chiave `frigolo-pending-mutations`), scritta a ogni cambio e prima di ogni ricarica; riletta in `App.tsx` prima di `resumePausedMutations`. Serve perché il `buster` (versione) scarta la cache principale a ogni release.
+- Provato in locale con due build di `pnpm preview` e Chrome vero: worker nuovo attivo da solo, pagina aperta non ricaricata, ricarica alla ripresa simulata, preloadError ricarica una volta. La barra non l'ho vista perché sta dopo il login.
+- Rischio: i telefoni con la versione vecchia (senza skipWaiting) si aggiornano solo quando il vecchio worker rilascia (chiusura completa dell'app); dopo quella volta è tutto automatico.
 
 ### 2026-10-10 - Landing (Fase 2)
 
