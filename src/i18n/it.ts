@@ -18,6 +18,8 @@ export const SUPPORT_EMAIL = 'frigolo@dascanfe.com'
 
 /** Link delle donazioni (docs/DECISIONI.md) */
 export const DONATION_URL = 'https://paypal.me/DanieleScanferlato'
+export const DONATION_SATISPAY_URL =
+  'https://web.satispay.com/download/qrcode/S6Y-CON--F40C52A4-F320-4CE4-81CE-67CD69DAA88E'
 
 /** Indirizzo dell'app senza protocollo, per il messaggio d'invito */
 export function appHost(): string {
