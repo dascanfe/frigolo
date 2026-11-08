@@ -40,6 +40,7 @@ import type { EntrySheetTarget } from './EntrySheet'
 import { ShareNudge } from './ShareNudge'
 import { useList } from './useList'
 import { useRecentTripItems } from './useRecentTripItems'
+import { captureFlip, useFlipPlay } from '@/lib/flip'
 import { useListMutations } from './useToggleItem'
 
 function tileState(entry: ListEntryWithItem | undefined): TileState {
@@ -57,6 +58,8 @@ export function ListScreen() {
   const list = useList()
   const mutations = useListMutations()
   const [cartOpen, setCartOpen] = useState(true)
+  // prodotti che volano nel carrello e vicine che scivolano
+  useFlipPlay()
   const [sheetTarget, setSheetTarget] = useState<EntrySheetTarget | null>(null)
   const [query, setQuery] = useState('')
   const [createRequest, setCreateRequest] = useState<CreateItemRequest | null>(null)
@@ -372,6 +375,7 @@ export function ListScreen() {
         </>
       ) : (
         <>
+          <div data-flip-target="todo" />
           <SectionHeader
             title={t.list.toBuy}
             count={todo.length}
@@ -401,7 +405,11 @@ export function ListScreen() {
                   unit={entry.unit}
                   store={entry.store}
                   note={entry.note}
-                  onTap={() => mutations.setStatus(entry.id, 'cart')}
+                  flipId={entry.id}
+                  onTap={() => {
+                    captureFlip(entry.id, 'cart')
+                    mutations.setStatus(entry.id, 'cart')
+                  }}
                   onLongPress={() =>
                     setSheetTarget({ item: entry.item, category: entry.category, entry })
                   }
@@ -411,7 +419,7 @@ export function ListScreen() {
           )}
 
           {cart.length > 0 && (
-            <>
+            <div data-flip-target="cart">
               <SectionHeader
                 title={t.list.cart}
                 count={cart.length}
@@ -432,7 +440,11 @@ export function ListScreen() {
                         icon={entry.item.icon}
                         state="done"
                         store={entry.store}
-                        onTap={() => mutations.setStatus(entry.id, 'todo')}
+                        flipId={entry.id}
+                        onTap={() => {
+                          captureFlip(entry.id, 'todo')
+                          mutations.setStatus(entry.id, 'todo')
+                        }}
                         onLongPress={() =>
                           setSheetTarget({ item: entry.item, category: entry.category, entry })
                         }
@@ -441,7 +453,7 @@ export function ListScreen() {
                   </ProductGrid>
                 </div>
               )}
-            </>
+            </div>
           )}
         </>
       )}
