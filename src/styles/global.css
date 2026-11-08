@@ -753,3 +753,18 @@
     animation: starter-nudge 3.2s ease-in-out 0.8s infinite;
   }
 }
+
+/* Card "Non sai cosa comprare?": sfumatura morbida dall'accento del tema, testo sempre a inchiostro */
+.inspiration-card {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 14%, var(--bg-surface)),
+    color-mix(in srgb, var(--accent) 32%, var(--bg-surface))
+  );
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--c-ink) 12%, transparent);
+  transition: transform var(--dur-press, 120ms) ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+.inspiration-card:active {
+  transform: scale(0.98);
+}

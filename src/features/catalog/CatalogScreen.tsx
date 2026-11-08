@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { CategoryChips } from '@/components/CategoryChips'
-import { PageHeader } from '@/components/PageHeader'
+import { BACK_BAR_OFFSET, PageHeader } from '@/components/PageHeader'
 import { AddTile, ProductTile } from '@/components/ProductTile'
 import type { TileState } from '@/components/ProductTile'
 import { CategoryDivider, ProductGrid } from '@/components/ProductGrid'
@@ -56,7 +56,7 @@ export function CatalogScreen() {
       <div
         ref={stickyRef}
         className="sticky top-0 z-10 bg-app/95 backdrop-blur-sm"
-        style={{ top: 'var(--safe-top)' }}
+        style={{ top: `calc(var(--safe-top) + ${BACK_BAR_OFFSET})` }}
       >
         <CategoryChips
           categories={catalog.categories}

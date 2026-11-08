@@ -17,7 +17,7 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { LinkButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { PageHeader } from '@/components/PageHeader'
+import { BACK_BAR_OFFSET, PageHeader } from '@/components/PageHeader'
 import { useCatalog } from '@/features/catalog/useCatalog'
 import { it as t } from '@/i18n/it'
 import { CategoryDonut } from './CategoryDonut'
@@ -73,7 +73,7 @@ export function AnalyticsScreen() {
           {/* Filtri: una sola riga sopra tutti i grafici */}
           <div
             className="sticky top-0 z-10 flex flex-col gap-2 px-4 py-2"
-            style={{ top: 'var(--safe-top)' }}
+            style={{ top: `calc(var(--safe-top) + ${BACK_BAR_OFFSET})` }}
           >
             <div
               className="glass grid grid-cols-5 gap-1 rounded-full p-1"

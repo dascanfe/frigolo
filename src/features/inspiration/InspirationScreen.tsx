@@ -78,11 +78,15 @@ export function InspirationScreen() {
 
   return (
     <main className="flex flex-col pb-10">
-      <PageHeader title={t.nav.inspiration} subtitle={contenuto.nome} />
-
-      <p className="mx-4 mt-2 rounded-3xl bg-surface px-4 py-3 text-base text-primary ring-1 ring-subtle">
-        {contenuto.intro}
-      </p>
+      <PageHeader
+        title={t.inspiration.title(contenuto.nome.toLowerCase())}
+        subtitle={
+          <div className="flex flex-col gap-2 pt-1">
+            <p className="text-base text-primary">{contenuto.intro}</p>
+            <p className="text-sm text-secondary">{t.inspiration.hint}</p>
+          </div>
+        }
+      />
 
       {catalog.isPending ? (
         <p className="px-4 pt-6 text-sm text-secondary">{t.inspiration.loading}</p>
@@ -119,7 +123,6 @@ export function InspirationScreen() {
               </section>
             )
           })}
-          <p className="px-4 text-sm text-secondary">{t.inspiration.hint}</p>
         </>
       )}
     </main>

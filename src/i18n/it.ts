@@ -217,6 +217,9 @@ export const it = {
     inspirationCta: 'Non sai cosa comprare? Prendi ispirazione!',
   },
   inspiration: {
+    title: (month: string) => `Ispirazioni di ${month}`,
+    ctaTitle: 'Non sai cosa comprare?',
+    ctaSubtitle: (month: string) => `Prendi ispirazione: cosa è di stagione a ${month}`,
     loading: 'Carico i prodotti...',
     inSeason: 'Di stagione questo mese',
     fruit: 'Frutta',

@@ -1,11 +1,11 @@
 import {
   ChevronDown,
+  ChevronRight,
   History,
   LayoutGrid,
   Pointer,
   SearchX,
   Settings,
-  Sparkles,
   Store,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -25,6 +25,8 @@ import { InstallCard } from '@/features/install/InstallCard'
 import { ListSwitcherSheet } from '@/features/lists/ListSwitcherSheet'
 import { armShareNudge } from '@/features/tips/shareNudge'
 import { dismissTip, triggerTip } from '@/features/tips/tips'
+import { currentMonth } from '@/features/catalog/seasonal'
+import { MESI } from '@/features/inspiration/mesi'
 import { useSearch } from '@/features/search/useSearch'
 import { recordEvent } from '@/lib/telemetry'
 import { usePurchaseHistoryQuery } from '@/features/suggestions/useSuggestions'
@@ -232,7 +234,7 @@ export function ListScreen() {
             to="/impostazioni"
             aria-label={t.nav.settings}
             title={t.nav.settings}
-            className="-mr-2 flex size-11 items-center justify-center rounded-full text-secondary active:bg-sand/40"
+            className="glass flex size-11 items-center justify-center rounded-full text-secondary transition-transform active:scale-95"
           >
             <Settings size={26} strokeWidth={2} aria-hidden="true" />
           </Link>
@@ -471,10 +473,30 @@ export function ListScreen() {
       {!searching && (
         <Link
           to="/ispirazioni"
-          className="mx-4 mt-8 flex min-h-12 items-center justify-center gap-2 rounded-full bg-surface px-5 py-3 text-center text-sm font-bold text-primary ring-1 ring-subtle active:bg-sand/40"
+          className="inspiration-card mx-4 mt-8 flex min-h-[104px] items-center gap-3 overflow-hidden rounded-3xl py-3 pr-3 pl-5 text-left ring-1 ring-subtle"
         >
-          <Sparkles size={18} className="shrink-0 text-accent" aria-hidden="true" />
-          {t.nav.inspirationCta}
+          <span className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="font-display text-xl leading-tight font-bold text-primary">
+              {t.inspiration.ctaTitle}
+            </span>
+            <span className="text-sm leading-snug text-secondary">
+              {t.inspiration.ctaSubtitle(MESI[currentMonth() - 1]?.nome.toLowerCase() ?? '')}
+            </span>
+          </span>
+          <img
+            src="/mascot-happy.webp"
+            alt=""
+            width={72}
+            height={72}
+            className="size-[72px] shrink-0 object-contain"
+            draggable={false}
+          />
+          <ChevronRight
+            size={22}
+            strokeWidth={2.5}
+            className="shrink-0 text-accent"
+            aria-hidden="true"
+          />
         </Link>
       )}
 
