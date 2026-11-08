@@ -35,7 +35,7 @@ const snap = async (page, name, wait = 700) => {
   })
   await snap(p, 'n06-volo', 900)
   await p.context().close()
-  sql(`update public.list_entries set status='todo' where status='cart'`)
+  sql(`update public.list_entries set status='todo' where status='cart' and household_id in (select household_id from public.household_members m join auth.users u on u.id=m.user_id where u.email like 'giulia@%')`)
 }
 {
   const p = await open('/')
