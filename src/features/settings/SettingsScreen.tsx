@@ -156,11 +156,11 @@ export function SettingsScreen() {
         : t.app.offlineNone
 
   return (
-    <main className="flex flex-col gap-items pb-section">
+    <main className="flex flex-col gap-2 pb-6">
       <PageHeader title={t.nav.settings} />
 
       {/* ---------------- Profilo ---------------- */}
-      <SectionHeader title={t.profile.sheetTitle} lead="none" />
+      <SectionHeader title={t.profile.sheetTitle} />
       <button
         type="button"
         onClick={() => setProfileOpen(true)}

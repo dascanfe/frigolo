@@ -49,7 +49,7 @@ export function CatalogScreen() {
   }
 
   return (
-    <main className="flex flex-col pb-section">
+    <main className="flex flex-col pb-6">
       <PageHeader
         title={t.nav.catalog}
         subtitle={catalog.isPending ? 'Carico il catalogo...' : `${catalog.items.length} prodotti`}
@@ -70,7 +70,7 @@ export function CatalogScreen() {
         />
       </div>
 
-      <ProductGrid label="Catalogo prodotti" className="pt-items">
+      <ProductGrid label="Catalogo prodotti" className="pt-2">
         {inSeason.length > 0 && [
           <CategoryDivider
             key="divider-season"

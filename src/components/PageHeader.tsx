@@ -24,7 +24,7 @@ export const STICKY_LEFT_GAP = 'pl-[62px]'
  */
 export function PageHeader({ title, subtitle, className }: PageHeaderProps) {
   return (
-    <header className={['px-4 pt-3 pb-header', className ?? ''].filter(Boolean).join(' ')}>
+    <header className={['px-4 pt-3 pb-1', className ?? ''].filter(Boolean).join(' ')}>
       {/* area di tocco 44px, cerchio di vetro visibile 36px: il bordo destro del cerchio sta a 52px */}
       <Link
         to="/"
@@ -48,7 +48,7 @@ export function PageHeader({ title, subtitle, className }: PageHeaderProps) {
         </h1>
       </div>
       {typeof subtitle === 'string' ? (
-        <p className="mt-title text-sm text-secondary">{subtitle}</p>
+        <p className="text-sm text-secondary">{subtitle}</p>
       ) : (
         subtitle
       )}

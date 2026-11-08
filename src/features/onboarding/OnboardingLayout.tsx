@@ -25,7 +25,7 @@ export function OnboardingLayout({
   showSignOut = true,
 }: OnboardingLayoutProps) {
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-block px-6 pt-safe pb-safe">
+    <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-6 pt-safe pb-safe">
       <header className="flex flex-col gap-1 pt-8">
         {mascot && (
           <img

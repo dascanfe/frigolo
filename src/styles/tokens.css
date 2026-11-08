@@ -135,15 +135,8 @@
   /* Layout                                                                  */
   /* ---------------------------------------------------------------------- */
   --tile-radius: 20px;
-  /* Scala di spaziatura unica (base 4px). Vedi docs/design/spaziature.md:
-     usare solo questi valori per l'aria tra sezioni, blocchi, titoli e tile. */
-  --space-section: 40px; /* tra sezioni principali di una pagina */
-  --space-block: 24px; /* titolo di sezione -> contenuto, o blocchi dentro una sezione */
-  --space-title: 8px; /* titolo -> sottotitolo o descrizione */
-  --space-items: 12px; /* tra tile, card e righe di un elenco */
-  --space-header: 24px; /* sotto la testata delle pagine interne */
-  --grid-gap: var(--space-items);
-  --page-gutter: 16px; /* margini laterali di ogni pagina */
+  --grid-gap: 12px;
+  --page-gutter: 16px;
   --tap-min: 44px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);

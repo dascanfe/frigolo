@@ -6,13 +6,6 @@
 /* "inline" fa riferire le utility alle variabili CSS invece di copiarne il valore */
 /* -------------------------------------------------------------------------- */
 @theme inline {
-  /* spaziature: pt-section, mt-block, gap-items, mt-title, pb-header... (token in tokens.css) */
-  --spacing-section: var(--space-section);
-  --spacing-block: var(--space-block);
-  --spacing-title: var(--space-title);
-  --spacing-items: var(--space-items);
-  --spacing-header: var(--space-header);
-
   /* palette grezza */
   --color-cream: var(--c-cream);
   --color-bg: var(--c-bg);
