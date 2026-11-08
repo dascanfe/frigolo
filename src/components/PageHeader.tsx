@@ -12,6 +12,12 @@ interface PageHeaderProps {
 /** Distanza dal bordo alto (oltre l'area sicura) del cerchio con la freccia: le barre appiccicose si attaccano alla stessa altezza */
 export const STICKY_TOP = 'calc(var(--safe-top) + 14px)'
 
+/**
+ * Top di una riga di chip (alte 44px, con 8px di margine sopra) appiccicata in
+ * alto: così il centro delle chip coincide con il centro del cerchio della freccia.
+ */
+export const STICKY_CHIPS_TOP = 'calc(var(--safe-top) + 6px)'
+
 /** Spazio a sinistra di una barra appiccicosa attaccata in alto: ci sta il cerchio della freccia */
 export const STICKY_LEFT_GAP = 'pl-[62px]'
 

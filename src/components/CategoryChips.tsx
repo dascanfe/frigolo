@@ -19,6 +19,8 @@ interface CategoryChipsProps {
   toggle?: boolean
   /** Tiene in vista la chip attiva scorrendo la riga in orizzontale */
   followSelected?: boolean
+  /** Classi in più per la riga che scorre (di default i margini laterali sono px-4) */
+  rowClassName?: string
 }
 
 /** Chip orizzontali scrollabili per filtrare per categoria */
@@ -29,6 +31,7 @@ export function CategoryChips({
   allLabel,
   toggle = true,
   followSelected = false,
+  rowClassName = 'px-4',
 }: CategoryChipsProps) {
   const rowRef = useRef<HTMLDivElement>(null)
 
@@ -46,7 +49,7 @@ export function CategoryChips({
   return (
     <div
       ref={rowRef}
-      className="scrollbar-none flex gap-2 overflow-x-auto px-4 py-2"
+      className={`scrollbar-none flex gap-2 overflow-x-auto py-2 ${rowClassName}`}
       role="group"
       aria-label="Filtra per categoria"
     >
