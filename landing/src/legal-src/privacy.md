@@ -1,12 +1,6 @@
 # Informativa sulla privacy di Frigolo
 
-> **Bozza** preparata da Aglio il 2026-10-10, aggiornata con le decisioni di Daniele dello stesso
-> giorno. Non è ancora in vigore: va completata nei punti tra parentesi quadre e, prima del lancio,
-> è consigliata una revisione professionale (vedi "Punti da far verificare a un professionista" in
-> fondo).
-> Le note per la squadra sono nei blocchi come questo e vanno tolte nella versione pubblicata.
-
-Ultimo aggiornamento: [DATA DI PUBBLICAZIONE]
+Ultimo aggiornamento: 17 ottobre 2026
 
 Frigolo è una lista della spesa condivisa, gratuita e open source. Questa pagina spiega in parole
 semplici quali dati usa Frigolo, perché, con chi li condivide, per quanto li tiene e come puoi
@@ -28,7 +22,7 @@ controllarli. Vale per l'app su frigolo.dascanfe.com e per le pagine di Frigolo 
 Il titolare del trattamento è **Daniele Scanferlato**, persona fisica, che sviluppa e gestisce
 Frigolo a titolo personale e senza scopo di lucro.
 
-- Recapito: [CITTÀ (PROVINCIA)], Italia
+- Recapito: Venezia (VE), Italia
 - Email per la privacy: [frigolo@dascanfe.com](mailto:frigolo@dascanfe.com)
 
 Non è stato nominato un responsabile della protezione dei dati (DPO), perché non è obbligatorio
@@ -66,8 +60,28 @@ sulla salute). Frigolo non ne ha bisogno e non le usa.
 - Il controllo anti-bot di Cloudflare Turnstile, al momento della registrazione e dell'accesso,
   analizza alcuni segnali tecnici del browser per distinguere una
   persona da un programma automatico.
-- [QUANDO SARÀ ATTIVO] Statistiche d'uso anonime e aggregate (per esempio quante persone aprono
-  l'app in un giorno), raccolte **senza cookie** e senza identificativi che ti seguano nel tempo.
+- Giorni di utilizzo: per contare quante persone usano Frigolo ogni giorno e ogni settimana,
+  salviamo i giorni in cui hai usato l'app, collegati al tuo account. Servono solo a calcolare
+  totali e non vengono mostrati a nessuno; si cancellano dopo 180 giorni o quando cancelli
+  l'account. Nessun cookie.
+- Durata di utilizzo e dati tecnici: quando usi l'app con il tuo account, registriamo in forma
+  anonima quanto dura ogni utilizzo, la versione dell'app, se è installata o aperta nel browser, il
+  tipo di dispositivo (iPhone, Android o computer), il tema scelto e se eri offline. Questi dati
+  vengono sommati in conteggi giornalieri senza alcun collegamento al tuo account.
+- Errori tecnici: se l'app incontra un errore, inviamo un messaggio tecnico privato di email,
+  codici e numeri, con la versione dell'app e la pagina (senza parametri). Anche questi dati sono
+  conteggi giornalieri non collegati al tuo account.
+
+**Statistiche delle pagine di presentazione**
+
+Sulle pagine di Frigolo su dascanfe.com (non nell'app) contiamo le visite **senza cookie** e
+senza identificativi che ti seguano nel tempo: pagina vista, sito di provenienza (senza
+parametri, tranne quelli di campagna `utm_`), dimensione dello schermo, tipo di dispositivo e
+browser, lingua, quanto resti sulla pagina e i clic sui bottoni principali. Dal tuo indirizzo IP,
+che non viene salvato, ricaviamo solo paese e città e un'impronta non reversibile che cambia
+ogni giorno, per stimare quante persone diverse visitano la pagina. Non contiamo le visite se il
+browser chiede di non essere tracciato (Do Not Track o Global Privacy Control) e puoi
+disattivarle sul tuo dispositivo aprendo la pagina con `?no-stats` alla fine dell'indirizzo.
 
 **Dati salvati sul tuo dispositivo**
 
@@ -118,21 +132,17 @@ Nessun'altra persona che usa Frigolo può vedere le tue liste.
 Frigolo si appoggia a questi fornitori, nominati responsabili del trattamento (art. 28 GDPR) con i
 loro accordi standard sul trattamento dei dati:
 
-| Fornitore                                                                       | A cosa serve                                             | Dove                                                                |
-| ------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
-| Supabase Inc.                                                                   | Database, accesso, file (foto profilo), sincronizzazione | Dati salvati a Francoforte (UE). Società con sede negli Stati Uniti |
-| Vercel Inc.                                                                     | Pubblicazione dell'app e consegna delle pagine           | Rete globale, società con sede negli Stati Uniti                    |
-| Resend (Plus Five Five, Inc.)                                                   | Invio delle email di servizio dal dominio dascanfe.com   | Stati Uniti (trattamento principale negli USA, con DPF e SCC)       |
-| Cloudflare Inc. (Turnstile)                                                     | Controllo anti-bot alla registrazione e all'accesso      | Rete globale, società con sede negli Stati Uniti                    |
-| [QUANDO SARÀ ATTIVO] Supabase Inc. (progetto delle statistiche di dascanfe.com) | Statistiche anonime aggregate                            | Francoforte (UE)                                                    |
-| Aruba S.p.A.                                                                    | Hosting del sito dascanfe.com (pagina di presentazione)  | Italia                                                              |
+| Fornitore                                                  | A cosa serve                                             | Dove                                                                |
+| ---------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
+| Supabase Inc.                                              | Database, accesso, file (foto profilo), sincronizzazione | Dati salvati a Francoforte (UE). Società con sede negli Stati Uniti |
+| Vercel Inc.                                                | Pubblicazione dell'app e consegna delle pagine           | Rete globale, società con sede negli Stati Uniti                    |
+| Resend (Plus Five Five, Inc.)                              | Invio delle email di servizio dal dominio dascanfe.com   | Stati Uniti (trattamento principale negli USA, con DPF e SCC)       |
+| Cloudflare Inc. (Turnstile)                                | Controllo anti-bot alla registrazione e all'accesso      | Rete globale, società con sede negli Stati Uniti                    |
+| Supabase Inc. (progetto delle statistiche di dascanfe.com) | Statistiche anonime aggregate                            | Francoforte (UE)                                                    |
+| Aruba S.p.A.                                               | Hosting del sito dascanfe.com (pagina di presentazione)  | Italia                                                              |
 
 I caratteri tipografici sono serviti direttamente dall'app: aprendo Frigolo il tuo browser non
 contatta servizi di terzi per i font.
-
-> Nota per la squadra: vale dopo il rilascio della PR #18 (font da `@fontsource`). Se la
-> pubblicazione dell'informativa avvenisse prima, va aggiunta la riga "Google Ireland Ltd. (Google
-> Fonts)".
 
 **Trasferimenti fuori dall'UE.** Alcuni fornitori sono società statunitensi e potrebbero accedere ai
 dati dagli Stati Uniti (per esempio per assistenza tecnica). Questi trasferimenti avvengono sulla
@@ -142,16 +152,21 @@ scrivendo a frigolo@dascanfe.com.
 
 ## 6. Per quanto tempo li teniamo
 
-| Dati                                   | Per quanto                                                                                                                                         |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Account e profilo                      | Finché non cancelli l'account. Dopo 24 mesi senza accessi l'account viene cancellato, con un'email di avviso 30 giorni prima                       |
-| Liste e storico delle spese            | Finché nella lista c'è almeno una persona. Quando l'ultima persona esce o cancella l'account, la lista viene cancellata con tutto il contenuto     |
-| Le tue attività in una lista condivisa | Se cancelli l'account, le voci che hai aggiunto restano nella lista delle altre persone, ma senza il tuo nome né la tua foto                       |
-| Foto profilo                           | Cancellata quando la cambi o cancelli l'account                                                                                                    |
-| Log tecnici dei fornitori              | Pochi giorni, secondo le impostazioni dei fornitori [VERIFICARE: durata dei log di Supabase e Vercel sul piano in uso]                             |
-| Copie di sicurezza (backup)            | [VERIFICARE: durata dei backup di Supabase sul piano in uso, di norma fino a 7 giorni]; i dati cancellati spariscono dai backup alla loro scadenza |
-| Email scambiate con il titolare        | Il tempo necessario a rispondere, poi al massimo 12 mesi                                                                                           |
-| Dati delle donazioni                   | Per il tempo richiesto dalla legge (fino a 10 anni per gli obblighi fiscali) [VERIFICARE]                                                          |
+| Dati                                             | Per quanto                                                                                                                                     |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Account e profilo                                | Finché non cancelli l'account. Dopo 24 mesi senza accessi l'account viene cancellato, con un'email di avviso 30 giorni prima                   |
+| Liste e storico delle spese                      | Finché nella lista c'è almeno una persona. Quando l'ultima persona esce o cancella l'account, la lista viene cancellata con tutto il contenuto |
+| Le tue attività in una lista condivisa           | Se cancelli l'account, le voci che hai aggiunto restano nella lista delle altre persone, ma senza il tuo nome né la tua foto                   |
+| Foto profilo                                     | Cancellata quando la cambi o cancelli l'account                                                                                                |
+| Giorni in cui hai usato l'app                    | 180 giorni, solo per contare quante persone usano Frigolo; cancellati con l'account                                                            |
+| Conteggi anonimi di utilizzo ed errori           | Al massimo 400 giorni                                                                                                                          |
+| Numero di invii tecnici per account (anti abuso) | Al massimo 24 ore, poi cancellato                                                                                                              |
+| Tentativi di invito sbagliati (anti abuso)       | Al massimo 24 ore, poi cancellati                                                                                                              |
+| Statistiche delle pagine di presentazione        | Al massimo 26 mesi, poi cancellate                                                                                                             |
+| Log tecnici dei fornitori                        | Pochi giorni, secondo le impostazioni dei fornitori                                                                                            |
+| Copie di sicurezza (backup)                      | Per il periodo previsto dal fornitore (di norma pochi giorni); i dati cancellati spariscono dai backup alla loro scadenza                      |
+| Email scambiate con il titolare                  | Il tempo necessario a rispondere, poi al massimo 12 mesi                                                                                       |
+| Dati delle donazioni                             | Per il tempo richiesto dalla legge (fino a 10 anni per gli obblighi fiscali)                                                                   |
 
 ## 7. I tuoi diritti
 
@@ -191,36 +206,3 @@ esempio un nuovo fornitore o un nuovo uso dei dati) lo segnaliamo nell'app prima
 vigore.
 
 ---
-
-## Punti da far verificare a un professionista
-
-> Questa sezione non va pubblicata.
-
-1. **Titolare persona fisica senza partita IVA**: va bene così per un servizio gratuito aperto al
-   pubblico? Daniele ha scelto città, provincia ed email come recapito: basta, o serve un indirizzo
-   postale completo (anche ai sensi del d.lgs. 70/2003 sui servizi della società
-   dell'informazione)?
-2. **Basi giuridiche**: confermare "contratto" per il servizio e "legittimo interesse" per
-   sicurezza e statistiche anonime (serve un bilanciamento scritto?).
-3. **Età minima di 14 anni** (art. 2-quinquies del Codice privacy): corretta anche se la base è il
-   contratto e non il consenso? Serve un controllo dell'età alla registrazione?
-4. **Vercel sul piano Hobby**: il DPA di Vercel dichiara di valere per i piani Pro ed Enterprise e il
-   piano Hobby è per uso personale non commerciale (le donazioni sono ammesse). Serve passare a Pro
-   per avere un contratto art. 28 con Vercel, o bastano i termini e l'informativa di Vercel?
-5. **Trasferimenti negli USA**: Supabase, Vercel, Resend e Cloudflare aderiscono al Data Privacy
-   Framework? Verificare l'elenco aggiornato e gli accordi (DPA) da accettare su ciascun pannello.
-6. **Strumenti sul dispositivo** (localStorage, IndexedDB, service worker): confermare che sono
-   tecnici e che non serve un banner di consenso (art. 122 del Codice privacy e linee guida del
-   Garante del 2021 sui cookie).
-7. **Statistiche senza cookie** nel progetto di dascanfe.com: confermare che non serve il consenso
-   e che il progetto è "lo stesso titolare".
-8. **Turnstile**: confermare la base giuridica (legittimo interesse) e se va citato anche nella
-   cookie policy della landing.
-9. **Donazioni PayPal a persona fisica**: trattamento fiscale (liberalità? redditi diversi?) e
-   tempi di conservazione dei dati dei donatori.
-10. **Conservazione**: confermare la cancellazione automatica degli account inattivi dopo 24 mesi e
-    i tempi di log e backup dei fornitori.
-11. **Registro dei trattamenti**: confermare che la versione sintetica in
-    `docs/legale/registro-trattamenti.md` è sufficiente.
-12. **Valutazione d'impatto (DPIA)**: secondo Aglio non serve (niente dati particolari, niente
-    profilazione, niente monitoraggio sistematico); chiedere conferma.
