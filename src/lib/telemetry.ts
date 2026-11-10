@@ -34,6 +34,8 @@ export type EventoApp =
   | 'install_guida_ios'
   | 'aggiorna_barra'
   | 'aggiorna_tocco'
+  | 'sostegno_1'
+  | 'sostegno_2'
 
 let inizio: number | null = null
 let nascostaDa: number | null = null

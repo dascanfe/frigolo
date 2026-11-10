@@ -1,5 +1,6 @@
 import { Coffee } from 'lucide-react'
 import { DONATION_SATISPAY_URL, DONATION_URL, it as t } from '@/i18n/it'
+import { recordEvent } from '@/lib/telemetry'
 
 /** Marchio PayPal (Simple Icons, CC0) nel blu del marchio */
 function PayPalLogo() {
@@ -26,9 +27,9 @@ function SatispayLogo() {
 }
 
 const METHODS = [
-  { label: 'PayPal', href: DONATION_URL, Logo: PayPalLogo },
-  { label: 'Satispay', href: DONATION_SATISPAY_URL, Logo: SatispayLogo },
-]
+  { label: 'PayPal', href: DONATION_URL, Logo: PayPalLogo, evento: 'sostegno_1' },
+  { label: 'Satispay', href: DONATION_SATISPAY_URL, Logo: SatispayLogo, evento: 'sostegno_2' },
+] as const
 
 /** Riga discreta "Offrimi un caffè" con PayPal e Satispay: in fondo alla home e alle impostazioni */
 export function DonationNote({ className }: { className?: string }) {
@@ -50,6 +51,7 @@ export function DonationNote({ className }: { className?: string }) {
             href={m.href}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => recordEvent(m.evento)}
             aria-label={`${t.donation.label} con ${m.label}`}
             className="inline-flex h-11 min-w-28 items-center justify-center gap-2 rounded-full bg-surface pr-5 pl-4 text-sm font-bold text-primary ring-1 ring-subtle transition-transform active:scale-95"
           >
