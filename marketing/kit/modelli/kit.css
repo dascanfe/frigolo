@@ -1,0 +1,199 @@
+/*
+ * Kit visivo di Frigolo: font, colori e blocchi comuni ai modelli.
+ * I font sono gli stessi dell'app (fontsource, già nelle dipendenze): servono
+ * le node_modules installate (pnpm install) per vederli nel rendering.
+ */
+@font-face {
+  font-family: 'Lato';
+  font-weight: 400;
+  src: url('../../../node_modules/@fontsource/lato/files/lato-latin-400-normal.woff2')
+    format('woff2');
+}
+@font-face {
+  font-family: 'Lato';
+  font-weight: 700;
+  src: url('../../../node_modules/@fontsource/lato/files/lato-latin-700-normal.woff2')
+    format('woff2');
+}
+@font-face {
+  font-family: 'Lato';
+  font-weight: 900;
+  src: url('../../../node_modules/@fontsource/lato/files/lato-latin-900-normal.woff2')
+    format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-weight: 700;
+  src: url('../../../node_modules/@fontsource/playfair-display/files/playfair-display-latin-700-normal.woff2')
+    format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-weight: 700;
+  font-style: italic;
+  src: url('../../../node_modules/@fontsource/playfair-display/files/playfair-display-latin-700-italic.woff2')
+    format('woff2');
+}
+
+:root {
+  /* tema Autunno (default dell'app) */
+  --bg: #f4ece2;
+  --cream: #faf3ec;
+  --sand: #ebd5b3;
+  --burnt: #db6a2e;
+  --brick: #ce5f36;
+  --sage: #86a79b;
+  --peach: #e5987a;
+  --ink: #3a2c21;
+  --ink-soft: #6b5844;
+  /* dalla mascotte */
+  --mint: #9de0d1;
+  --mint-deep: #04342f;
+  --spark: #f7a017;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Lato', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: var(--w);
+  height: var(--h);
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Sfondi ammessi */
+.s-crema {
+  --fg: var(--ink);
+  --fg-soft: var(--ink-soft);
+  --accent: var(--brick);
+  --chip-bg: var(--cream);
+  --chip-fg: var(--ink);
+  background: var(--bg);
+}
+.s-arancio {
+  --fg: var(--cream);
+  --fg-soft: var(--cream);
+  --accent: var(--ink);
+  --chip-bg: var(--cream);
+  --chip-fg: var(--ink);
+  background: var(--burnt);
+}
+.s-menta {
+  --fg: var(--mint-deep);
+  --fg-soft: #1e5a52;
+  --accent: var(--brick);
+  --chip-bg: var(--cream);
+  --chip-fg: var(--mint-deep);
+  background: var(--mint);
+}
+.s-inchiostro {
+  --fg: var(--cream);
+  --fg-soft: var(--sand);
+  --accent: var(--peach);
+  --chip-bg: var(--burnt);
+  --chip-fg: var(--cream);
+  background: var(--ink);
+}
+
+.canvas {
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  overflow: hidden;
+  color: var(--fg);
+}
+
+/* forma morbida di sfondo, dietro la mascotte */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--blob, color-mix(in srgb, var(--cream) 70%, transparent));
+}
+.s-crema .blob {
+  --blob: var(--sand);
+}
+.s-arancio .blob {
+  --blob: color-mix(in srgb, var(--cream) 18%, transparent);
+}
+.s-menta .blob {
+  --blob: color-mix(in srgb, var(--cream) 45%, transparent);
+}
+.s-inchiostro .blob {
+  --blob: color-mix(in srgb, var(--cream) 10%, transparent);
+}
+
+.mascotte {
+  position: absolute;
+  object-fit: contain;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--fg);
+}
+.brand img {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: var(--mint);
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+.testo {
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--fg-soft);
+  text-wrap: pretty;
+}
+.chip {
+  display: inline-block;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+  border-radius: 999px;
+  padding: 0.55em 1.1em;
+}
+
+/* cornice telefono per uno screenshot dell'app (facoltativa) */
+.telefono {
+  position: absolute;
+  border-radius: 64px;
+  background: var(--ink);
+  padding: 16px;
+  box-shadow: 0 30px 60px color-mix(in srgb, var(--ink) 30%, transparent);
+}
+.telefono img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 50px;
+}

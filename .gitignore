@@ -41,4 +41,6 @@ coverage
 .claude/*
 !.claude/agents/
 pacchetto-ftp/
+
+# Pacchetto Instagram (materiali di Daniele, fuori dal repo)
 pacchetto-instagram/
