@@ -1,6 +1,6 @@
 # Informativa sulla privacy di Frigolo
 
-Ultimo aggiornamento: 17 ottobre 2026
+Ultimo aggiornamento: 10 novembre 2026
 
 Frigolo è una lista della spesa condivisa, gratuita e open source. Questa pagina spiega in parole
 semplici quali dati usa Frigolo, perché, con chi li condivide, per quanto li tiene e come puoi
@@ -70,8 +70,8 @@ sulla salute). Frigolo non ne ha bisogno e non le usa.
   vengono sommati in conteggi giornalieri senza alcun collegamento al tuo account.
 - Gesti anonimi nell'app: registriamo in forma anonima anche l'ora in cui apri l'app e alcuni gesti
   da un elenco fisso: una ricerca che non ha dato risultati (mai il testo cercato), l'invito a
-  installare l'app e la tua risposta, la guida per iPhone, l'avviso di nuova versione e il pulsante
-  "Aggiorna ora". Quando entri in una lista contiamo se hai usato il link o il codice e quanto tempo
+  installare l'app e la tua risposta, la guida per iPhone, l'avviso di nuova versione, il pulsante
+  "Aggiorna ora" e i pulsanti per sostenere il progetto. Quando entri in una lista contiamo se hai usato il link o il codice e quanto tempo
   è passato dall'invito. Sono sommati in conteggi giornalieri, senza collegamento al tuo account.
 - Statistiche sulla spesa: in forma aggregata guardiamo quali prodotti del catalogo di Frigolo
   vengono aggiunti più spesso, quali supermercati vengono scelti tra quelli proposti e in quali
@@ -101,9 +101,9 @@ o disinstallando l'app.
 
 **Donazioni**
 
-Puoi sostenere Frigolo con una donazione volontaria su PayPal. Il pagamento avviene interamente sul
-sito di PayPal, che tratta i tuoi dati come titolare autonomo secondo la propria informativa.
-Frigolo non vede né salva i dati della tua carta o del tuo conto. Il titolare riceve da PayPal le
+Puoi sostenere Frigolo con una donazione volontaria su PayPal o Satispay. Il pagamento avviene interamente sul
+sito o nell'app del servizio che scegli, che tratta i tuoi dati come titolare autonomo secondo la propria informativa.
+Frigolo non vede né salva i dati della tua carta o del tuo conto. Il titolare riceve dal servizio le
 informazioni della donazione (nome, email, importo, data) e le conserva solo per gli obblighi di
 legge. La donazione non è collegata al tuo account Frigolo.
 
