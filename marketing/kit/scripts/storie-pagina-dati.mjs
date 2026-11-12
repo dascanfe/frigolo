@@ -45,10 +45,10 @@ Dopo la pubblicazione
     nome: 'Come funziona',
     quando: 'Stasera, domenica 18 ottobre, dopo la raccolta Installa (circa 19:50)',
     storie: [
-      ['01-tocca-e-aggiungi.png', ph({ tema: 'chiaro', n: '1/4', titolo: 'Tocchi un prodotto, *è in lista*', schermata: S + 's02-catalogo-dopo.png' })],
-      ['02-lo-vede-subito.png', ph({ tema: 'menta', n: '2/4', titolo: 'Chi è con te *lo vede subito*', schermata: S + 's03-lista-avatar-a.png' })],
-      ['03-in-ordine-di-corsia.png', ph({ tema: 'lampone', n: '3/4', titolo: 'In ordine di *corsia*', schermata: S + 's05-lista-corsia.png' })],
-      ['04-carrello-e-spesa-finita.png', ph({ tema: 'chiaro', n: '4/4', titolo: 'Nel carrello e *Spesa finita*', schermata: S + 's07-spesa-finita.png' })],
+      ['01-tocca-e-aggiungi.png', ph({ tema: 'chiaro', n: '1/4', titolo: 'Tocchi un prodotto, *è in lista*', schermata: S + 'h01-catalogo-dopo.png' })],
+      ['02-lo-vede-subito.png', ph({ tema: 'menta', n: '2/4', titolo: 'Chi è con te *lo vede subito*', schermata: S + 'h02-lista-lele.png' })],
+      ['03-in-ordine-di-corsia.png', ph({ tema: 'lampone', n: '3/4', titolo: 'In ordine di *corsia*', schermata: S + 'h03-lista-corsia.png' })],
+      ['04-carrello-e-spesa-finita.png', ph({ tema: 'chiaro', n: '4/4', titolo: 'Nel carrello e *Spesa finita*', schermata: S + 'h05-spesa-finita.png' })],
     ],
     istruzioni: `RACCOLTA IN EVIDENZA: Come funziona
 Storie: 4, nell'ordine dei numeri. Pubblicale dalla pagina ${PAGINA}.

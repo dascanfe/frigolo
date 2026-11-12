@@ -1,6 +1,5 @@
 // Rende le storie e le copertine in evidenza della pagina da storie-pagina-dati.mjs.
 //   node marketing/kit/scripts/storie-pagina.mjs
-// Uscita: PACCHETTO/00-storie-pagina (default: Frigolo published/pacchetto-instagram).
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
@@ -13,11 +12,13 @@ import { RACCOLTE, COPERTINE, LEGGIMI } from './storie-pagina-dati.mjs'
 const run = promisify(execFile)
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
 const MODEL = path.join(root, 'marketing/kit/modelli/storie-pagina.html')
+// Uscita: PACCHETTO/0-profilo/storie-in-evidenza. SOLO=2-come-funziona rende una sola raccolta.
 const OUT = path.join(
   process.env.PACCHETTO ||
     path.join(os.homedir(), 'Library/Mobile Documents/com~apple~CloudDocs/Works/Frigolo published/pacchetto-instagram'),
-  '00-storie-pagina',
+  '0-profilo/storie-in-evidenza',
 )
+const SOLO = process.env.SOLO
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 if (!existsSync(CHROME)) throw new Error('Chrome non trovato: imposta CHROME')
 
@@ -34,8 +35,9 @@ async function render(cfg, dest) {
 
 const jobs = []
 mkdirSync(OUT, { recursive: true })
-writeFileSync(path.join(OUT, 'LEGGIMI.txt'), LEGGIMI)
+if (!SOLO) writeFileSync(path.join(OUT, 'LEGGIMI.txt'), LEGGIMI)
 for (const r of RACCOLTE) {
+  if (SOLO && r.cartella !== SOLO) continue
   const dir = path.join(OUT, r.cartella)
   mkdirSync(dir, { recursive: true })
   for (const [name, cfg] of r.storie) jobs.push({ cfg, dest: path.join(dir, name) })
@@ -43,7 +45,7 @@ for (const r of RACCOLTE) {
 }
 const cop = path.join(OUT, 'copertine-in-evidenza')
 mkdirSync(cop, { recursive: true })
-for (const [name, icona] of COPERTINE) jobs.push({ cfg: { tipo: 'icona', icona }, dest: path.join(cop, name) })
+for (const [name, icona] of SOLO ? [] : COPERTINE) jobs.push({ cfg: { tipo: 'icona', icona }, dest: path.join(cop, name) })
 
 for (let i = 0; i < jobs.length; i += 4) {
   await Promise.all(jobs.slice(i, i + 4).map((j) => render(j.cfg, j.dest)))

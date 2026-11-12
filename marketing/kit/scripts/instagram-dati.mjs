@@ -291,20 +291,20 @@ Link nella bio 🛒`,
     formato: 'Carosello 4:5, 4 slide',
     obiettivo: 'Mostrare la profondità: cosa compri, chi mette in lista, e i colori da scegliere.',
     immagini: nn([
-      P({ tema: 'chiaro', titolo: 'Cosa compri, *quanto spesso*', testo: 'Le analitiche contano prodotti e spese.', schermata: S + 's13-analitiche.png' }),
-      P({ tema: 'menta', titolo: 'Come cambia *nel tempo*', testo: 'L\'andamento è a colpo d\'occhio.', schermata: S + 's13c-analitiche-andamento.png' }),
-      P({ tema: 'chiaro', titolo: 'Gli ultimi acquisti *a un tocco*', testo: 'Quello che hai già comprato lo rimetti in lista subito.', schermata: S + 's14-ultimi-acquisti.png' }),
-      P({ tema: 'lampone', titolo: 'Sei *temi* a scelta', testo: 'Lampone, Basilico, Mare e gli altri.', schermata: S + 's15-temi.png' }),
+      P({ tema: 'chiaro', titolo: 'Cosa compri, *quanto spesso*', testo: 'Le analitiche contano prodotti e spese.', schermata: S + 'g01-analitiche.png' }),
+      P({ tema: 'menta', titolo: 'Come cambia *nel tempo*', testo: 'L\'andamento è a colpo d\'occhio.', schermata: S + 'g02-analitiche-andamento.png' }),
+      P({ tema: 'chiaro', titolo: 'Gli ultimi acquisti *a un tocco*', testo: 'Quello che hai già comprato lo rimetti in lista subito.', schermata: S + 'g11-ultimi-acquisti.png' }),
+      P({ tema: 'lampone', titolo: 'Sei *temi* a scelta', testo: 'Lampone, Basilico, Mare e gli altri.', schermata: S + 'g21-temi.png' }),
     ]),
     didascalia: `Frigolo è semplice, ma sotto c'è altro ✨
 
-📊 Le analitiche mostrano cosa compri più spesso, chi mette cosa in lista e l'andamento delle spese nel tempo
+📊 Le analitiche (le apri toccando gli avatar in alto) mostrano cosa compri più spesso, chi mette cosa in lista e l'andamento delle spese nel tempo
 🥑 Gli ultimi acquisti ti fanno rimettere in lista i soliti prodotti con un tocco
 🎨 Il colore lo scegli tu: ci sono sei temi
 
 Niente cookie, niente pubblicità, il codice è pubblico 💚 Link nella bio.`,
     hashtag: '#frigolo #listadellaspesa #design #temi #analitiche #uxdesign #appitaliane #opensource',
-    alt: 'Carosello di 4 slide: le analitiche di Frigolo, l\'andamento nel tempo, gli ultimi acquisti e i sei temi di colore.',
+    alt: 'Carosello di 4 slide: le analitiche di Frigolo, che si aprono toccando gli avatar, l\'andamento nel tempo, gli ultimi acquisti e i sei temi di colore.',
     sticker: 'Storia: condividi la slide 4 con uno sticker Sondaggio "Quale tema?" (Lampone / Basilico / Mare / Altro).',
   },
   {

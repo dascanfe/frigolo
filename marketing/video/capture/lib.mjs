@@ -36,6 +36,16 @@ export async function newCtx(storageState, theme = 'lampone', dsf = 3) {
     s.textContent = ':root{--safe-bottom:34px !important}'
     document.addEventListener('DOMContentLoaded', () => document.head.appendChild(s))
   })
+  // .env.development.local può puntare a un IP di rete che non c'è più: riporta le chiamate su 127.0.0.1
+  await ctx.route(/^http:\/\/192\.168\.[\d.]+:54321\//, (r) => r.continue({ url: r.request().url().replace(/\/\/192\.168\.[\d.]+:/, '//127.0.0.1:') }))
+  // Turnstile finto: il Supabase locale non ha il captcha, basta che il modulo riceva un token
+  await ctx.addInitScript(() => {
+    window.turnstile = {
+      render: (_el, o) => { setTimeout(() => o.callback('locale'), 50); return 'w1' },
+      reset: () => {},
+      remove: () => {},
+    }
+  })
   return ctx
 }
 
