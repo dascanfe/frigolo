@@ -43,6 +43,17 @@ const CSS_MESE = `
 .nota { position:absolute; left:80px; right:80px; font-weight:700; font-size:38px; color:var(--soft) }
 .col { position:absolute; left:80px; right:80px; bottom:130px; display:flex; flex-direction:column; gap:24px }
 .col > h1, .col > p.t { position:static }
+/* prodotti più piccoli e leggeri (richiesta di Daniele, 19 novembre) */
+.riga { font-size:38px; font-weight:400; padding:14px 0 }
+.fit .riga { padding:9px 0 }
+.riga .ic svg { width:52px; height:52px }
+.riga .spunta { width:38px; height:38px; border-width:3px }
+.tile .nm { font-size:28px; font-weight:400 }
+.tile .ic svg { width:72px; height:72px }
+.scontrino .voce { font-size:38px; font-weight:400; padding:10px 0 }
+.scontrino.fit .voce { font-size:34px; padding:6px 0 }
+.chipP { font-size:28px; font-weight:400; gap:12px; padding:10px 22px 10px 14px }
+.chipP .ic svg { width:40px; height:40px }
 .num { position:absolute; right:80px; font-family:var(--font-display); font-style:italic; font-weight:700; font-size:150px; line-height:1; color:var(--acc); opacity:.9 }
 `
 
