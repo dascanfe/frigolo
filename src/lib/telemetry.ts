@@ -36,6 +36,8 @@ export type EventoApp =
   | 'aggiorna_tocco'
   | 'sostegno_1'
   | 'sostegno_2'
+  | 'scontrino_creato'
+  | 'scontrino_condiviso'
 
 let inizio: number | null = null
 let nascostaDa: number | null = null

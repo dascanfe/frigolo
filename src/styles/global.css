@@ -637,6 +637,22 @@
     }
   }
 
+  /* Scontrino: l'anteprima esce dall'alto come dalla stampante (ridotta con reduced-motion) */
+  .receipt-print {
+    animation: receipt-print 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes receipt-print {
+    from {
+      clip-path: inset(0 0 100% 0 round 16px);
+      transform: translateY(-24px);
+    }
+    to {
+      clip-path: inset(0 0 0 0 round 16px);
+      transform: none;
+    }
+  }
+
   @keyframes fab-pop {
     0% {
       opacity: 0;
