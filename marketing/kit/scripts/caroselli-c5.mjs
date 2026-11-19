@@ -37,7 +37,7 @@ const tipi = [
     frigolo: 'La lista è già nel telefono, anche senza rete. E il pane lo vedi prima di uscire.' },
   { nome: 'Il *"già che ci sei"*', cita: '"Già che ci sei, prendi anche..."', sfondo: 'arancio',
     scena: sc(`<div style="display:flex;gap:26px;align-items:center">${cerchio('Pane')}${cerchio('Mele')}${cerchio('Uova')}</div>`),
-    frigolo: 'Lo aggiunge lui dal suo telefono e tu lo vedi comparire in lista, mentre sei già in giro.' },
+    frigolo: 'Lo aggiunge dal suo telefono e tu lo vedi comparire in lista, mentre sei già in giro.' },
   { nome: 'Quello del *volantino*', cita: '"Era in offerta!"', sfondo: 'crema',
     scena: sc(`<div class="offerta">3x2<small>OFFERTA</small></div><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:flex;gap:10px">${cerchio('Yogurt bianco').replace('width:210', '')}</div></div>`),
     frigolo: 'Accanto al prodotto metti la quantità: ne servono 2, non 6.' },

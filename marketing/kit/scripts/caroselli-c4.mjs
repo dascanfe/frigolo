@@ -64,7 +64,7 @@ for (const [k, sfondo, titolo, sotto, altn] of grandi) {
 }
 if (N.novita?.length) {
   lista.push({ nome: 'novita', sfondo: 'crema', extraCss: CSS, body:
-    `<div class="etichetta" style="top:92px">Dai vostri messaggi</div>` +
+    `<div class="etichetta" style="top:92px">In due mesi</div>` +
     `<h1 style="top:150px;font-size:104px">${fmt('Cosa è *cambiato*')}</h1>` +
     `<div style="position:absolute;left:80px;right:80px;top:480px;display:flex;flex-direction:column;gap:24px">${N.novita.slice(0, 4).map((x) => `<div class="voce"><i>✓</i>${esc(x)}</div>`).join('')}</div>` +
     piede(lista.length + 1, '?') })
@@ -98,7 +98,7 @@ Come avere i numeri veri (li dà il PM dal cruscotto: persone, liste condivise, 
      Le immagini si rigenerano qui, senza il bollino PROVA.`,
   didascalia: `Due mesi di Frigolo 🎉
 
-Dal 18 ottobre a oggi: grazie per ogni lista, ogni spesa finita e ogni messaggio. Molte delle novità di questi mesi sono nate dai vostri messaggi.
+Dal 18 ottobre a oggi: grazie per ogni lista, ogni spesa finita e ogni messaggio. Dimmi cosa vuoi nella prossima versione.
 
 Frigolo è un progetto fatto da una persona sola, e leggere come lo usate è la parte più bella. Buone feste e buona spesa, a tutti 💚
 

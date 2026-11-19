@@ -33,7 +33,7 @@ const passo = (n, sfondo, titolo, testo, schermo, lato, extra = '') => {
 }
 const slides = [
   { nome: 'copertina', sfondo: 'arancio', extraCss: CSS, body:
-    `<div class="etichetta" style="top:92px;color:var(--cream)">Natale in due, tre, dieci</div>` +
+    `<div class="etichetta" style="top:92px;color:var(--cream)">Natale in due, tre, cinque</div>` +
     `<h1 style="top:150px;font-size:118px;text-align:left;right:120px">${fmt('Il *cenone* si organizza in una lista')}</h1>` +
     schermoCrop('c2-3-lista-cenone.png', { left: 90, top: 760, width: 520, da: 0.05, a: 0.82, rot: -3 }) +
     mascotte('contenta', 'width:340px;left:690px;top:960px') + stelle([720, 800, 70], [900, 700, 46], [960, 880, 40], [640, 1110, 42]) +
