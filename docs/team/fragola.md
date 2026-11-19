@@ -32,6 +32,22 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-11-19 - Lo scontrino di Frigolo (branch `fragola/scontrino`, versione 2.3.0)
+
+- Scheda "Lo scontrino" in cima alle analitiche (sopra i filtri, perché ha il suo periodo):
+  mini scontrino decorativo, scelta tra mese in corso, mese scorso e "Tutto il 2026", pulsante
+  "Crea lo scontrino". Il foglio è un pezzo caricato solo al tocco (`ReceiptSheet`, 8 KB gzip
+  con il QR di `uqr`, MIT) e il carattere JetBrains Mono (OFL, 400 e 700) arriva con lui.
+- Voci calcolate da `src/features/receipt/receiptModel.ts` (funzione pura con test): spese
+  chiuse, prodotti presi, re del mese (almeno x2), chi ha messo più cose (2+ persone e "Mostra i
+  nomi"), record (2+ spese), di stagione (diverso dal re se si può). Periodo senza spese:
+  scontrino ironico, con l'invito.
+- Disegno in `drawReceipt.ts` (canvas 1080x1920, carta seghettata, fondo dell'accento del tema,
+  mascotte contenta, QR con margine bianco verificato con BarcodeDetector). Condividi con
+  `navigator.share({ files })`, altrimenti scarica il PNG.
+- Migration 0031 (0030 + `scontrino_creato`, `scontrino_condiviso`), informativa aggiornata.
+- Provato in locale con i dati demo (Casa, Monolocale da sola, mese vuoto, tema Mare).
+
 ### 2026-11-08 - Nuova home, catalogo esteso, Ispirazioni (branch `fragola/nuova-home`, versione 2.2.0)
 
 Richiesta di Daniele, tutto in locale (niente produzione):
