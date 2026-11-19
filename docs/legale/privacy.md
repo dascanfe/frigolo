@@ -71,8 +71,9 @@ sulla salute). Frigolo non ne ha bisogno e non le usa.
 - Gesti anonimi nell'app: registriamo in forma anonima anche l'ora in cui apri l'app e alcuni gesti
   da un elenco fisso: una ricerca che non ha dato risultati (mai il testo cercato), l'invito a
   installare l'app e la tua risposta, la guida per iPhone, l'avviso di nuova versione, il pulsante
-  "Aggiorna ora", i pulsanti per sostenere il progetto, la creazione e la condivisione dello scontrino. Quando entri in una lista contiamo se hai usato il link o il codice e quanto tempo
-  è passato dall'invito. Sono sommati in conteggi giornalieri, senza collegamento al tuo account.
+  "Aggiorna ora", i pulsanti per sostenere il progetto e la creazione e la condivisione dello
+  scontrino. Quando entri in una lista contiamo se hai usato il link o il codice e quanto tempo è
+  passato dall'invito. Sono sommati in conteggi giornalieri, senza collegamento al tuo account.
 - Statistiche sulla spesa: in forma aggregata guardiamo quali prodotti del catalogo di Frigolo
   vengono aggiunti più spesso, quali supermercati vengono scelti tra quelli proposti e in quali
   giorni e orari si chiude la spesa. I nomi dei prodotti che crei tu non vengono mai mostrati né
