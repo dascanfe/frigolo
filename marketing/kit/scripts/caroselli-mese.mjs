@@ -130,7 +130,7 @@ Salvalo per la prossima spesa. Quale piatto fai questa settimana? Scrivilo nei c
 
 Link nella bio 💚
 
-#frigolo #listadellaspesa #novembre #difrutta #cosadicucinare #cucinaitaliana #spesaintelligente #ricetteautunnali`,
+#frigolo #listadellaspesa #novembre #distagione #cosadicucinare #cucinaitaliana #spesaintelligente #ricetteautunnali`,
     alt: [
       'Copertina arancione: "Cosa mettere nel carrello a novembre", con sei tessere di prodotti (fagioli borlotti, gorgonzola, verza, melograno, castagne, noci) e il frigorifero Frigolo contento.',
       'Pasta e fagioli: una lista della spesa con nove ingredienti (ditalini, fagioli borlotti, pancetta, passata di pomodoro, sedano, carote, cipolle, rosmarino, olio extravergine) e la riga "Il procedimento è nell\'app".',
