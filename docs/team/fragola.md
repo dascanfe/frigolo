@@ -43,8 +43,13 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
   `aria-controls`, pannello che si apre in altezza (`grid-template-rows`, `--dur-organic`) e da
   chiuso è `visibility: hidden`; fermo con prefers-reduced-motion. Numero e unità ("500 g") non
   vanno a capo separati.
-- Migration `0032_catalogo_ricette.sql` (idempotente, provata due volte in locale) e `seed.sql`:
-  Alloro, Carne per brodo, Ricotta salata, Giardiniera (501 prodotti base).
+- Migration `0032_catalogo_ricette_e_nuovi_prodotti.sql` (idempotente, provata due volte in
+  locale: 120 inseriti, poi 0) e `seed.sql`: 124 prodotti base nuovi, da 497 a 621. Gli
+  ingredienti delle ricette (Alloro, Carne per brodo, Ricotta salata, Giardiniera) e quelli giusti
+  al posto dei "vicini": Ditalini (pasta e ceci, pasta e fagioli), Trofie (pesto), Riso parboiled
+  (insalata di riso), Fagioli borlotti (pasta e fagioli, minestrone), Fagioli cannellini
+  (ribollita), Gallina (tortellini in brodo), Lievito di birra (schiacciata). Più 113 prodotti
+  comuni in tutte le categorie, scritti da conoscenza generale (mai dai prodotti personalizzati).
 - Test: 5 piatti per mese, 4-10 ingredienti del catalogo, 3-5 passi non vuoti senza dosi "per 4",
   nomi unici, prodotti della 0032 identici nel seed e usati.
 - Screenshot 375x812 in `Frigolo published/pacchetto-instagram/0-profilo/prove-app/`.

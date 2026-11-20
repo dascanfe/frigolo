@@ -5,8 +5,8 @@ import { CATEGORY_SLUGS } from '@/types/domain'
 import { isIconName } from './icons'
 
 /**
- * Il catalogo base vive in supabase/seed.sql (e la migration 0029 aggiunge i
- * prodotti nuovi a un database già in uso). Qui si legge il testo SQL e si
+ * Il catalogo base vive in supabase/seed.sql (e le migration 0029 e 0032 aggiungono
+ * i prodotti nuovi a un database già in uso). Qui si legge il testo SQL e si
  * controlla che ogni prodotto sia valido per l'app: icona esistente, unità
  * ammessa, mesi 1-12, nomi unici, categoria conosciuta.
  */
@@ -39,12 +39,14 @@ function righe(file: string): Riga[] {
 
 const seed = righe('../../supabase/seed.sql')
 const migration = righe('../../supabase/migrations/0029_catalogo_esteso.sql')
-const migrationRicette = righe('../../supabase/migrations/0032_catalogo_ricette.sql')
+const migrationRicette = righe(
+  '../../supabase/migrations/0032_catalogo_ricette_e_nuovi_prodotti.sql',
+)
 
 describe('catalogo base (seed.sql)', () => {
-  it('ha tra 450 e 520 prodotti', () => {
-    expect(seed.length).toBeGreaterThanOrEqual(450)
-    expect(seed.length).toBeLessThanOrEqual(520)
+  it('ha tra 600 e 660 prodotti', () => {
+    expect(seed.length).toBeGreaterThanOrEqual(600)
+    expect(seed.length).toBeLessThanOrEqual(660)
   })
 
   it('ogni icona esiste nel catalogo delle icone', () => {
@@ -110,19 +112,31 @@ describe('migration 0029', () => {
   })
 })
 
-describe('migration 0032 (ingredienti delle ricette)', () => {
-  it('i 4 prodotti nuovi sono anche nel seed, identici, e servono a Ispirazioni', () => {
-    expect(migrationRicette.map((r) => r.nome)).toEqual([
+describe('migration 0032 (ingredienti delle ricette e prodotti nuovi)', () => {
+  it('i 124 prodotti nuovi sono anche nel seed, identici', () => {
+    expect(migrationRicette).toHaveLength(124)
+    const perNome = new Map(seed.map((r) => [r.nome, r]))
+    for (const r of migrationRicette) expect(perNome.get(r.nome), r.nome).toEqual(r)
+  })
+
+  it('gli ingredienti aggiunti per le ricette servono a Ispirazioni', () => {
+    const usati = new Set(MESI.flatMap((m) => m.piatti.flatMap((p) => p.ingredienti)))
+    const nuovi = new Set(migrationRicette.map((r) => r.nome))
+    for (const nome of [
       'Alloro',
       'Carne per brodo',
       'Ricotta salata',
       'Giardiniera',
-    ])
-    const perNome = new Map(seed.map((r) => [r.nome, r]))
-    const usati = new Set(MESI.flatMap((m) => m.piatti.flatMap((p) => p.ingredienti)))
-    for (const r of migrationRicette) {
-      expect(perNome.get(r.nome), r.nome).toEqual(r)
-      expect(usati.has(r.nome), r.nome).toBe(true)
+      'Ditalini',
+      'Trofie',
+      'Riso parboiled',
+      'Fagioli borlotti',
+      'Fagioli cannellini',
+      'Gallina',
+      'Lievito di birra',
+    ]) {
+      expect(nuovi.has(nome), nome).toBe(true)
+      expect(usati.has(nome), nome).toBe(true)
     }
   })
 })

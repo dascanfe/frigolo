@@ -61,7 +61,7 @@ Catalogo a griglia stile Bring!, un tap per aggiungere e uno per togliere, con i
 ## Database
 
 Lo schema vive in `supabase/migrations/` (file numerati, applicati in ordine) e i dati iniziali in
-`supabase/seed.sql` (14 categorie, 234 prodotti di catalogo base). Entrambi sono
+`supabase/seed.sql` (15 categorie, 621 prodotti di catalogo base). Entrambi sono
 idempotenti: rilanciare il seed non crea duplicati.
 
 | File                       | Contenuto                                                           |
@@ -220,7 +220,7 @@ select
   (select count(*) from pg_policies where schemaname = 'public') as policy;
 ```
 
-Atteso: 14 categorie, 234 prodotti, 15 policy.
+Atteso: 15 categorie, 621 prodotti, 15 policy.
 
 ## Autenticazione
 

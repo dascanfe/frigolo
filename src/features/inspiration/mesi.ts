@@ -37,7 +37,7 @@ export const MESI: readonly MeseIspirazioni[] = [
         nome: 'Pasta e ceci',
         idea: 'Una pentola sola, un rametto di rosmarino e tanta pazienza.',
         ingredienti: [
-          'Pasta',
+          'Ditalini',
           'Ceci',
           'Pancetta',
           'Passata di pomodoro',
@@ -51,7 +51,7 @@ export const MESI: readonly MeseIspirazioni[] = [
           "Trita mezza cipolla, mezza carota e un pezzo di sedano e falli appassire in pentola con 2 cucchiai d'olio per 5 minuti. Aggiungi 50 g di pancetta a dadini e il rosmarino tritato.",
           "Unisci 250 g di ceci già cotti e 120 g di passata, copri con due mestoli d'acqua calda e lascia sobbollire 15 minuti.",
           "Frulla un terzo dei ceci con un po' del loro liquido e rimetti la crema in pentola: la pasta verrà più cremosa.",
-          "Cuoci nella pentola 140 g di pasta corta, aggiungendo acqua calda quando serve. Servi con un filo d'olio a crudo e pepe.",
+          "Cuoci nella pentola 140 g di ditalini, aggiungendo acqua calda quando serve. Servi con un filo d'olio a crudo e pepe.",
         ],
       },
       {
@@ -60,7 +60,7 @@ export const MESI: readonly MeseIspirazioni[] = [
         ingredienti: [
           'Cavolo nero',
           'Verza',
-          'Fagioli in scatola',
+          'Fagioli cannellini',
           'Patate',
           'Carote',
           'Sedano',
@@ -71,7 +71,7 @@ export const MESI: readonly MeseIspirazioni[] = [
         ],
         procedimento: [
           "Trita mezza cipolla, una carota e un gambo di sedano e falli appassire in pentola con 3 cucchiai d'olio, a fuoco basso, per 10 minuti.",
-          "Aggiungi una patata a cubetti, 250 g tra cavolo nero e verza tagliati a strisce e 2 pelati schiacciati. Frulla metà di una scatola di fagioli con un po' d'acqua e versala in pentola.",
+          "Aggiungi una patata a cubetti, 250 g tra cavolo nero e verza tagliati a strisce e 2 pelati schiacciati. Frulla metà di una scatola di fagioli cannellini con un po' d'acqua e versala in pentola.",
           "Copri d'acqua, sala e cuoci 45 minuti a fuoco medio-basso. Negli ultimi minuti unisci il resto dei fagioli.",
           "Metti nei piatti 2-3 fette di pane raffermo, versaci sopra la zuppa e lascia riposare. Il giorno dopo riscaldala e servila con un giro d'olio a crudo.",
         ],
@@ -171,14 +171,14 @@ export const MESI: readonly MeseIspirazioni[] = [
           'Carote',
           'Sedano',
           'Cipolle',
-          'Fagioli in scatola',
+          'Fagioli borlotti',
           'Parmigiano Reggiano',
           'Olio extravergine',
         ],
         procedimento: [
           "Taglia a pezzetti mezza cipolla, un pezzo di porro, una carota e un gambo di sedano e falli appassire in pentola con 2 cucchiai d'olio per 10 minuti.",
           "Aggiungi una patata e un quarto di verza a pezzetti, copri con circa un litro d'acqua, sala e cuoci 30 minuti dal bollore.",
-          'Unisci mezza scatola di fagioli sgocciolati e cuoci altri 10 minuti, finché il minestrone è denso come piace a te.',
+          'Unisci mezza scatola di fagioli borlotti sgocciolati e cuoci altri 10 minuti, finché il minestrone è denso come piace a te.',
           "Servilo con parmigiano grattugiato e un filo d'olio a crudo.",
         ],
       },
@@ -547,7 +547,7 @@ export const MESI: readonly MeseIspirazioni[] = [
         nome: 'Insalata di riso',
         idea: 'Si prepara la sera prima e il giorno dopo è ancora meglio.',
         ingredienti: [
-          'Riso',
+          'Riso parboiled',
           'Tonno in scatola',
           'Pomodorini',
           'Prosciutto cotto',
@@ -558,7 +558,7 @@ export const MESI: readonly MeseIspirazioni[] = [
           'Olio extravergine',
         ],
         procedimento: [
-          "Cuoci 160 g di riso in abbondante acqua salata, scolalo al dente, stendilo su un vassoio con un filo d'olio e lascialo raffreddare. Intanto rassoda 2 uova in 9 minuti.",
+          "Cuoci 160 g di riso parboiled in abbondante acqua salata, scolalo al dente, stendilo su un vassoio con un filo d'olio e lascialo raffreddare. Intanto rassoda 2 uova in 9 minuti.",
           'Taglia a dadini 60 g di prosciutto cotto e 60 g di scamorza, a spicchi 150 g di pomodorini e le uova sode.',
           'In una ciotola mescola tutto con una scatoletta di tonno sgocciolato, 3 cucchiai di mais e una manciata di olive.',
           "Unisci il riso freddo, condisci con olio e un pizzico di sale e tieni in frigo almeno un'ora.",
@@ -568,7 +568,7 @@ export const MESI: readonly MeseIspirazioni[] = [
         nome: 'Pasta al pesto genovese',
         idea: 'Pesto fatto in casa, con patate e fagiolini cotti insieme alla pasta.',
         ingredienti: [
-          'Linguine',
+          'Trofie',
           'Basilico',
           'Pinoli',
           'Parmigiano Reggiano',
@@ -580,7 +580,7 @@ export const MESI: readonly MeseIspirazioni[] = [
         ],
         procedimento: [
           "Per il pesto frulla a scatti, perché non si scaldi, 40 g di foglie di basilico con mezzo spicchio d'aglio, 15 g di pinoli, 20 g di parmigiano, 10 g di pecorino, un pizzico di sale e 50 ml d'olio.",
-          "Porta a bollore l'acqua salata e cuoci 160 g di linguine. Dopo 2-3 minuti aggiungi una patata a dadini piccoli e 100 g di fagiolini tagliati a metà.",
+          "Porta a bollore l'acqua salata e cuoci 160 g di trofie. Dopo 2-3 minuti aggiungi una patata a dadini piccoli e 100 g di fagiolini tagliati a metà.",
           "Stempera il pesto in una ciotola con 2 cucchiai d'acqua di cottura.",
           'Scola pasta e verdure insieme e condiscile con il pesto, senza rimetterle sul fuoco.',
         ],
@@ -901,7 +901,14 @@ export const MESI: readonly MeseIspirazioni[] = [
       {
         nome: "Schiacciata all'uva",
         idea: 'Un dolce toscano di vendemmia, con rosmarino.',
-        ingredienti: ['Uva', 'Farina 00', 'Lievito', 'Zucchero', 'Rosmarino', 'Olio extravergine'],
+        ingredienti: [
+          'Uva',
+          'Farina 00',
+          'Lievito di birra',
+          'Zucchero',
+          'Rosmarino',
+          'Olio extravergine',
+        ],
         procedimento: [
           "Sciogli 4 g di lievito di birra secco in 150 ml d'acqua tiepida con un cucchiaino di zucchero, poi impasta con 250 g di farina, 2 cucchiai d'olio, 2 cucchiai di zucchero e un pizzico di sale. Lascia lievitare coperto per 2 ore.",
           "Stendi metà dell'impasto in una teglia unta (circa 20x25 cm) e coprilo con metà di 400 g di uva nera e un cucchiaio di zucchero.",
@@ -1015,8 +1022,8 @@ export const MESI: readonly MeseIspirazioni[] = [
         nome: 'Pasta e fagioli',
         idea: "Densa, con un giro d'olio e pepe appena macinato.",
         ingredienti: [
-          'Pasta',
-          'Fagioli in scatola',
+          'Ditalini',
+          'Fagioli borlotti',
           'Pancetta',
           'Passata di pomodoro',
           'Sedano',
@@ -1029,7 +1036,7 @@ export const MESI: readonly MeseIspirazioni[] = [
           "Trita mezza cipolla, mezza carota e un pezzo di sedano e falli soffriggere in pentola con 2 cucchiai d'olio per 5 minuti, poi aggiungi 50 g di pancetta a dadini.",
           "Unisci una scatola di fagioli borlotti sgocciolati, 100 g di passata e un rametto di rosmarino, copri con mezzo litro d'acqua calda e cuoci 20 minuti.",
           'Togli il rosmarino, frulla un mestolo di fagioli e rimetti la crema in pentola.',
-          'Cuoci dentro 140 g di pasta mista o ditalini, aggiungendo acqua calda se serve. Lascia riposare 2 minuti e servi con olio a crudo e pepe.',
+          'Cuoci dentro 140 g di ditalini, aggiungendo acqua calda se serve. Lascia riposare 2 minuti e servi con olio a crudo e pepe.',
         ],
       },
       {
@@ -1103,14 +1110,14 @@ export const MESI: readonly MeseIspirazioni[] = [
         ingredienti: [
           'Tortellini',
           'Carne per brodo',
-          'Cosce di pollo',
+          'Gallina',
           'Carote',
           'Sedano',
           'Cipolle',
           'Parmigiano Reggiano',
         ],
         procedimento: [
-          "Metti in una pentola 500 g di carne per brodo, una coscia di pollo, una carota, un gambo di sedano e mezza cipolla. Copri con 2 litri d'acqua fredda e un pizzico di sale.",
+          "Metti in una pentola 500 g di carne per brodo, un quarto di gallina, una carota, un gambo di sedano e mezza cipolla. Copri con 2 litri d'acqua fredda e un pizzico di sale.",
           'Porta a bollore e cuoci a fuoco basso, con il coperchio socchiuso, per almeno 2 ore e mezza, togliendo la schiuma nei primi minuti.',
           'Filtra il brodo e riportane a bollore circa un litro. La carne è ottima come bollito per il giorno dopo.',
           'Cuoci 200 g di tortellini per il tempo indicato e servili nel brodo con una spolverata di parmigiano.',
