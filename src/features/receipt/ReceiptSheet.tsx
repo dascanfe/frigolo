@@ -60,6 +60,9 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
   const trips = useReceiptTrips(range)
   const themeId = useSyncExternalStore(subscribeTheme, getTheme, getTheme)
   const [showNames, setShowNames] = useState(true)
+  // colore dello sfondo: parte dal tema dell'app, si può cambiare solo per lo scontrino
+  const [bgChoice, setBgChoice] = useState<string | null>(null)
+  const bgTheme = bgChoice ?? themeId
   const [rendered, setRendered] = useState<Rendered | null>(null)
   const [failed, setFailed] = useState(false)
   const [sharing, setSharing] = useState(false)
@@ -83,7 +86,7 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
   useEffect(() => {
     if (!model) return
     let cancelled = false
-    const palette = (THEMES.find((t) => t.id === themeId) ?? THEMES[0])?.palette
+    const palette = (THEMES.find((t) => t.id === bgTheme) ?? THEMES[0])?.palette
     if (!palette) return
     void (async () => {
       try {
@@ -102,7 +105,7 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
     return () => {
       cancelled = true
     }
-  }, [model, themeId])
+  }, [model, bgTheme])
 
   // l'indirizzo dell'immagine precedente si libera quando arriva la nuova
   useEffect(() => {
@@ -147,6 +150,36 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
       title={title}
       footer={
         <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-2.5 ring-1 ring-subtle">
+            <span id={`${switchId}-sfondo`} className="text-[15px] font-bold text-primary">
+              Sfondo
+            </span>
+            <div
+              role="radiogroup"
+              aria-labelledby={`${switchId}-sfondo`}
+              className="flex flex-wrap justify-end gap-2"
+            >
+              {THEMES.map((t) => {
+                const scelto = bgTheme === t.id
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={scelto}
+                    aria-label={t.name}
+                    title={t.name}
+                    onClick={() => setBgChoice(t.id)}
+                    style={{ backgroundColor: t.palette.burnt }}
+                    className={[
+                      'size-8 rounded-full ring-offset-2 ring-offset-surface transition-transform active:scale-90',
+                      scelto ? 'ring-2 ring-primary' : 'ring-1 ring-subtle',
+                    ].join(' ')}
+                  />
+                )
+              })}
+            </div>
+          </div>
           {together && (
             <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-2.5 ring-1 ring-subtle">
               <label htmlFor={switchId} className="flex flex-col leading-tight">
