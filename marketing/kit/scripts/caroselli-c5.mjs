@@ -72,7 +72,7 @@ slides.push({ nome: 'tagga', sfondo: 'crema', extraCss: CSS, body:
   `<div class="pill" style="left:50%;transform:translateX(-50%);top:1170px;background:var(--brick);color:#fff;white-space:nowrap">Link nella bio</div>` + piede(9, tot, { destra: '' }) })
 
 await pubblica({
-  cartella: '2026-11-24-C5-carosello-compagni-di-spesa', slides,
+  cartella: '2026-11-26-C5-carosello-compagni-di-spesa', slides,
   quando: "Martedì 24 novembre 2026 alle 12:30 (piano d'inverno, settimana 4). Carosello 9 slide, formato 4:5: tocca l'icona del formato prima di Seleziona più. Fatto per essere condiviso e commentato: rispondi ai commenti con il tipo di compagno.",
   didascalia: `Che compagno di spesa sei? 🛒
 

@@ -9,7 +9,7 @@ const CATALOGO = JSON.parse(readFileSync(path.join(root, 'marketing/kit/scripts/
 
 const CONF = {
   C1: {
-    cartella: '2026-11-20-C1-carosello-novembre-nel-carrello', mese: 11, nome: 'novembre',
+    cartella: '2026-11-24-C1-carosello-novembre-nel-carrello', mese: 11, nome: 'novembre',
     titoli: ['Pasta e *fagioli*', 'Zuppa di *lenticchie*', 'Gnocchi al *gorgonzola* e noci', 'Insalata di *melograno* e finocchi', '*Verza* e salsiccia'],
     copertina: ['Fagioli in scatola', 'Lenticchie', 'Gorgonzola', 'Melograno', 'Verza', 'Noci'],
     frutta: null,
