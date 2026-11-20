@@ -52,10 +52,10 @@ if (vuole('carosello')) {
       `<h2 style="top:80px;font-size:104px;text-align:center">${fmt('Si fa in *3 passi*')}</h2>` +
       phone('home.png', 60, 330, 0, '<div class="hl" style="left:160px;top:4px;width:100px;height:66px"><i></i></div>') +
       phone('giulia-scheda.png', 395, 330, 50, '<div class="hl" style="left:72px;top:130px;width:172px;height:58px"><i></i></div>') +
-      phone('giulia-foglio.png', 730, 330, 80, '<div class="hl" style="left:132px;top:396px;width:136px;height:60px"><i></i></div>') +
+      phone('giulia-foglio.png', 730, 330, 80, '<div class="hl" style="left:6px;top:394px;width:258px;height:62px"><i></i></div>') +
       `<div class="cap" style="left:55px;top:900px"><span class="n">1</span>${fmt('Tocca gli *avatar* in alto')}</div>` +
       `<div class="cap" style="left:390px;top:900px"><span class="n">2</span>${fmt('In *Lo scontrino* scegli il periodo e tocca Crea')}</div>` +
-      `<div class="cap" style="left:725px;top:900px"><span class="n">3</span>${fmt('Scegli lo sfondo, poi *Condividi* o Scarica')}</div>` +
+      `<div class="cap" style="left:725px;top:900px"><span class="n">3</span>${fmt('Scegli lo sfondo, poi *Salva o condividi*')}</div>` +
       `<p class="t" style="top:1150px;text-align:center;font-size:34px;left:60px;right:60px">L'immagine si crea sul tuo telefono: non passa da nessun server.</p>` + piede(5, tot) },
     { nome: 'chiusura', sfondo: 'arancio', extraCss: CSS, body:
       `<div class="macchia" style="width:1000px;height:1000px;left:-420px;bottom:-440px"></div>` +
@@ -72,7 +72,7 @@ if (vuole('carosello')) {
 
 Da oggi in Frigolo trovi "Lo scontrino": un'immagine a forma di scontrino con la spesa della tua lista. Spese chiuse, prodotti presi, il "Re del mese", chi ha messo più cose, il record. E il totale, ovviamente, è 0,00.
 
-Si fa in tre passi: tocca gli avatar per aprire le Analitiche, in "Lo scontrino" scegli il periodo (questo mese, il mese scorso, tutto il 2026) e tocca "Crea lo scontrino". Scegli il colore dello sfondo tra sei, nascondi i nomi se vuoi e tocca "Condividi" per mandarlo nelle storie o in chat, oppure "Scarica" per salvarlo.
+Si fa in tre passi: tocca gli avatar per aprire le Analitiche, in "Lo scontrino" scegli il periodo (questo mese, il mese scorso, tutto il 2026) e tocca "Crea lo scontrino". Scegli il colore dello sfondo tra sei, nascondi i nomi se vuoi e tocca "Salva o condividi": lo metti in Foto, nelle storie o in chat.
 
 L'immagine si crea sul tuo telefono e non passa da nessun server.
 
@@ -86,7 +86,7 @@ Link nella bio.
       '"Cosa c\'è dentro": un pezzo di scontrino con quattro righe evidenziate: Re del mese, chi ha messo più cose, il record e il totale app, sempre 0,00.',
       '"Sei colori, scegli il tuo": sei scontrini affiancati con sfondo Autunno, Basilico, Mare, Prugna, Lampone e Liquirizia.',
       '"I nomi li nascondi tu": due scontrini a confronto, uno con i nomi e uno senza.',
-      '"Si fa in 3 passi": tre schermate dell\'app. 1 tocca gli avatar in alto, 2 in Lo scontrino scegli il periodo e tocca Crea, 3 scegli lo sfondo, poi Condividi o Scarica.',
+      '"Si fa in 3 passi": tre schermate dell\'app. 1 tocca gli avatar in alto, 2 in Lo scontrino scegli il periodo e tocca Crea, 3 scegli lo sfondo, poi Salva o condividi.',
       '"Fai il tuo, mettilo nelle storie": uno scontrino con sfondo blu, Frigolo contento, l\'invito a taggare @frigolo.app e la scritta Link nella bio.',
     ],
   })
@@ -111,7 +111,7 @@ if (vuole('storie')) {
       `<h1 style="top:260px;font-size:112px">${fmt('Fai il *tuo*')}</h1>` +
       `<div class="num" style="top:520px">1</div><div class="passo" style="top:520px">Tocca gli <em>avatar</em><small>si aprono le Analitiche</small></div>` +
       `<div class="num" style="top:730px">2</div><div class="passo" style="top:730px"><em>Lo scontrino</em><small>scegli il periodo e il colore</small></div>` +
-      `<div class="num" style="top:940px">3</div><div class="passo" style="top:940px"><em>Condividi</em><small>dritto nelle storie o in chat</small></div>` +
+      `<div class="num" style="top:940px">3</div><div class="passo" style="top:940px"><em>Salva o condividi</em><small>in Foto, nelle storie o in chat</small></div>` +
       mascotte('contenta', 'width:260px;right:70px;top:1190px') },
     { nome: 'storia-mandacelo', sfondo: 'arancio', extraCss: CSS + S, body:
       `<div class="macchia" style="width:1000px;height:1000px;left:-300px;bottom:-300px"></div>` +
@@ -124,7 +124,7 @@ if (vuole('storie')) {
     quando: 'Venerdì 20 novembre 2026, subito dopo il carosello L1 delle 19:00 (stesso giorno, 2.3.0 online). Tre storie 9:16, una dopo l\'altra.',
     alt: [
       'Novità: "Lo scontrino della tua spesa", con uno scontrino di Frigolo grande e un po\' inclinato.',
-      '"Fai il tuo" in tre passi: 1 tocca gli avatar, 2 Lo scontrino (scegli il periodo e il colore), 3 Condividi.',
+      '"Fai il tuo" in tre passi: 1 tocca gli avatar, 2 Lo scontrino (scegli il periodo e il colore), 3 Salva o condividi.',
       '"Mandacelo": menziona @frigolo.app e lo ricondividiamo, con tre scontrini di colori diversi.',
     ],
     istruzioni: `STL - Storie "Lo scontrino" (lancio 2.3.0)

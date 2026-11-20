@@ -80,7 +80,7 @@ if (vuole('c9')) {
       `<div class="ph" style="left:100px;top:330px;width:330px;height:760px"><img src="${M('anno-scheda.png')}" style="top:-40px" alt=""></div>` +
       `<div class="ph" style="left:650px;top:380px;width:330px;height:760px;transform:rotate(3deg)"><img src="${M('anno-foglio.png')}" style="top:-60px" alt=""></div>` +
       `<div class="pillb" style="left:130px;top:1120px;background:var(--brick);color:#fff">Tutto il 2026</div>` +
-      `<div class="pillb" style="left:690px;top:1170px;background:var(--brick);color:#fff">Condividi</div>` + piede(3, tot) },
+      `<div class="pillb" style="left:600px;top:1170px;background:var(--brick);color:#fff">Salva o condividi</div>` + piede(3, tot) },
     { nome: 'insieme', sfondo: 'menta', extraCss: CSS, body:
       `<h2 style="top:90px;font-size:100px;text-align:center">${fmt('Fatelo *insieme*')}</h2>` +
       `<p class="t" style="top:340px;text-align:center;font-size:44px;color:var(--mint-deep)">Con la lista in comune lo scontrino racconta anche chi ha messo più cose.</p>` +
@@ -102,7 +102,7 @@ if (vuole('c9')) {
 
 Prima di Natale, fai lo scontrino di tutto l'anno della tua lista. In Frigolo, nelle Analitiche (si aprono toccando gli avatar), nel riquadro "Lo scontrino" scegli "Tutto il 2026" e tocca "Crea lo scontrino". Dentro trovi le spese chiuse, i prodotti presi, il "Re dell'anno", chi ha messo più cose e il record. Il totale, come sempre, è 0,00.
 
-Fallo con chi fa la spesa con te: con la lista in comune lo scontrino è ancora più divertente. Scegli il colore dello sfondo, nascondi i nomi se preferisci e tocca "Condividi". L'immagine si crea sul tuo telefono.
+Fallo con chi fa la spesa con te: con la lista in comune lo scontrino è ancora più divertente. Scegli il colore dello sfondo, nascondi i nomi se preferisci e tocca "Salva o condividi". L'immagine si crea sul tuo telefono.
 
 Mettilo nelle storie e taggaci con @frigolo.app: li ricondividiamo tutti. Buone feste 💚
 
@@ -112,7 +112,7 @@ Link nella bio.
     alt: [
       'Copertina: "Lo scontrino del 2026", con uno scontrino di Frigolo inclinato su sfondo scuro.',
       '"Un anno in un foglio": un pezzo dello scontrino annuale con quattro righe evidenziate: spese chiuse, re dell\'anno, chi ha messo più cose, il record.',
-      '"Fallo prima di Natale": due schermate dell\'app, la scheda "Lo scontrino" con "Tutto il 2026" e il foglio con il tasto Condividi.',
+      '"Fallo prima di Natale": due schermate dell\'app, la scheda "Lo scontrino" con "Tutto il 2026" e il foglio con il tasto Salva o condividi.',
       '"Fatelo insieme": tre avatar e Frigolo contento, con la domanda "Chi sarà il re della spesa?".',
       '"Fai il tuo e mettilo nelle storie": uno scontrino con sfondo blu, Frigolo che regge una lettera, l\'invito a taggare @frigolo.app e Link nella bio.',
     ],
