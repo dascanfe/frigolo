@@ -230,6 +230,8 @@ export const it = {
     ideas: 'Idee per i piatti',
     ingredients: 'Ingredienti',
     hint: 'Tocca un prodotto per metterlo in lista, toccalo ancora per toglierlo.',
+    howTo: 'Come si fa',
+    servings: 'Dosi indicative per 2 persone',
   },
   season: {
     title: 'Di stagione',
@@ -343,6 +345,7 @@ export const it = {
   },
   updateBar: {
     title: "C'è una versione nuova di Frigolo ✨",
+    subtitle: 'Un tocco e hai le novità',
     button: 'Aggiorna ora',
     dismiss: 'Più tardi',
   },

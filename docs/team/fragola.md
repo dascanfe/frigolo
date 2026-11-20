@@ -32,6 +32,44 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-11-20 - Ricette nelle Ispirazioni (branch `fragola/ricette`, versione 2.4.0)
+
+- `mesi.ts`: 60 piatti rivisti (16 nuovi, scelti per stagione e varietà: primi, secondi, contorni,
+  qualche dolce), ingredienti completi (media 7,1 tessere, prima 5,2; mai acqua, sale e pepe) e nuovo
+  campo `procedimento` (3-4 passi con dosi per 2 persone). Testi scritti da zero: GialloZafferano
+  (e per pesche al vino, pomodori col riso, rucola e fragole qualche blog italiano) solo come
+  riferimento per ingredienti e passaggi.
+- `RecipeSteps.tsx`: "Come si fa" sotto le tessere, chiuso di default, `aria-expanded` e
+  `aria-controls`, pannello che si apre in altezza (`grid-template-rows`, `--dur-organic`) e da
+  chiuso è `visibility: hidden`; fermo con prefers-reduced-motion. Numero e unità ("500 g") non
+  vanno a capo separati.
+- Migration `0032_catalogo_ricette_e_nuovi_prodotti.sql` (idempotente, provata due volte in
+  locale: 120 inseriti, poi 0) e `seed.sql`: 124 prodotti base nuovi, da 497 a 621. Gli
+  ingredienti delle ricette (Alloro, Carne per brodo, Ricotta salata, Giardiniera) e quelli giusti
+  al posto dei "vicini": Ditalini (pasta e ceci, pasta e fagioli), Trofie (pesto), Riso parboiled
+  (insalata di riso), Fagioli borlotti (pasta e fagioli, minestrone), Fagioli cannellini
+  (ribollita), Gallina (tortellini in brodo), Lievito di birra (schiacciata). Più 113 prodotti
+  comuni in tutte le categorie, scritti da conoscenza generale (mai dai prodotti personalizzati).
+- Test: 5 piatti per mese, 4-10 ingredienti del catalogo, 3-5 passi non vuoti senza dosi "per 4",
+  nomi unici, prodotti della 0032 identici nel seed e usati.
+- Screenshot 375x812 in `Frigolo published/pacchetto-instagram/0-profilo/prove-app/`.
+
+### 2026-11-19 - Lo scontrino di Frigolo (branch `fragola/scontrino`, versione 2.3.0)
+
+- Scheda "Lo scontrino" in cima alle analitiche (sopra i filtri, perché ha il suo periodo):
+  mini scontrino decorativo, scelta tra mese in corso, mese scorso e "Tutto il 2026", pulsante
+  "Crea lo scontrino". Il foglio è un pezzo caricato solo al tocco (`ReceiptSheet`, 8 KB gzip
+  con il QR di `uqr`, MIT) e il carattere JetBrains Mono (OFL, 400 e 700) arriva con lui.
+- Voci calcolate da `src/features/receipt/receiptModel.ts` (funzione pura con test): spese
+  chiuse, prodotti presi, re del mese (almeno x2), chi ha messo più cose (2+ persone e "Mostra i
+  nomi"), record (2+ spese), di stagione (diverso dal re se si può). Periodo senza spese:
+  scontrino ironico, con l'invito.
+- Disegno in `drawReceipt.ts` (canvas 1080x1920, carta seghettata, fondo dell'accento del tema,
+  mascotte contenta, QR con margine bianco verificato con BarcodeDetector). Condividi con
+  `navigator.share({ files })`, altrimenti scarica il PNG.
+- Migration 0031 (0030 + `scontrino_creato`, `scontrino_condiviso`), informativa aggiornata.
+- Provato in locale con i dati demo (Casa, Monolocale da sola, mese vuoto, tema Mare).
+
 ### 2026-11-08 - Nuova home, catalogo esteso, Ispirazioni (branch `fragola/nuova-home`, versione 2.2.0)
 
 Richiesta di Daniele, tutto in locale (niente produzione):

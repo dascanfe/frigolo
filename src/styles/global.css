@@ -637,6 +637,22 @@
     }
   }
 
+  /* Scontrino: l'anteprima esce dall'alto come dalla stampante (ridotta con reduced-motion) */
+  .receipt-print {
+    animation: receipt-print 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes receipt-print {
+    from {
+      clip-path: inset(0 0 100% 0 round 16px);
+      transform: translateY(-24px);
+    }
+    to {
+      clip-path: inset(0 0 0 0 round 16px);
+      transform: none;
+    }
+  }
+
   @keyframes fab-pop {
     0% {
       opacity: 0;
@@ -794,6 +810,27 @@
     animation: update-bar-in 0.35s var(--ease-out) both;
   }
 
+  /* "Aggiorna ora" respira piano: un alone bianco che si allarga e svanisce */
+  @keyframes update-bar-glow {
+    0% {
+      box-shadow: 0 0 0 0 rgb(255 255 255 / 0.55);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 12px rgb(255 255 255 / 0);
+    }
+  }
+
+  .update-bar-cta {
+    animation: update-bar-glow 2.2s ease-out 0.6s infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .update-bar-cta {
+      animation: none;
+    }
+  }
+
   /* piccolo invito a toccare: un saltello, poi pausa */
   @keyframes starter-nudge {
     0%,
@@ -830,4 +867,43 @@
 }
 .inspiration-card:active {
   transform: scale(0.98);
+}
+
+/* "Come si fa" nelle Ispirazioni: il pannello si apre in altezza (0fr -> 1fr) con il
+   ritmo morbido dell'app. Da chiuso è nascosto anche a focus e screen reader:
+   visibility cambia subito all'apertura e solo a fine animazione alla chiusura. */
+.recipe-steps {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--dur-organic) var(--ease-organic),
+    visibility 0s linear var(--dur-organic);
+}
+.recipe-steps[data-open='true'] {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--dur-organic) var(--ease-organic),
+    visibility 0s;
+}
+.recipe-steps-inner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--dur-organic) var(--ease-organic),
+    transform var(--dur-organic) var(--ease-organic);
+}
+.recipe-steps[data-open='true'] .recipe-steps-inner {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .recipe-steps,
+  .recipe-steps[data-open='true'],
+  .recipe-steps-inner {
+    transition: none;
+  }
 }

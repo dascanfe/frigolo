@@ -5,8 +5,8 @@ import { CATEGORY_SLUGS } from '@/types/domain'
 import { isIconName } from './icons'
 
 /**
- * Il catalogo base vive in supabase/seed.sql (e la migration 0029 aggiunge i
- * prodotti nuovi a un database già in uso). Qui si legge il testo SQL e si
+ * Il catalogo base vive in supabase/seed.sql (e le migration 0029 e 0032 aggiungono
+ * i prodotti nuovi a un database già in uso). Qui si legge il testo SQL e si
  * controlla che ogni prodotto sia valido per l'app: icona esistente, unità
  * ammessa, mesi 1-12, nomi unici, categoria conosciuta.
  */
@@ -39,11 +39,14 @@ function righe(file: string): Riga[] {
 
 const seed = righe('../../supabase/seed.sql')
 const migration = righe('../../supabase/migrations/0029_catalogo_esteso.sql')
+const migrationRicette = righe(
+  '../../supabase/migrations/0032_catalogo_ricette_e_nuovi_prodotti.sql',
+)
 
 describe('catalogo base (seed.sql)', () => {
-  it('ha tra 450 e 520 prodotti', () => {
-    expect(seed.length).toBeGreaterThanOrEqual(450)
-    expect(seed.length).toBeLessThanOrEqual(520)
+  it('ha tra 600 e 660 prodotti', () => {
+    expect(seed.length).toBeGreaterThanOrEqual(600)
+    expect(seed.length).toBeLessThanOrEqual(660)
   })
 
   it('ogni icona esiste nel catalogo delle icone', () => {
@@ -109,15 +112,41 @@ describe('migration 0029', () => {
   })
 })
 
+describe('migration 0032 (ingredienti delle ricette e prodotti nuovi)', () => {
+  it('i 124 prodotti nuovi sono anche nel seed, identici', () => {
+    expect(migrationRicette).toHaveLength(124)
+    const perNome = new Map(seed.map((r) => [r.nome, r]))
+    for (const r of migrationRicette) expect(perNome.get(r.nome), r.nome).toEqual(r)
+  })
+
+  it('gli ingredienti aggiunti per le ricette servono a Ispirazioni', () => {
+    const usati = new Set(MESI.flatMap((m) => m.piatti.flatMap((p) => p.ingredienti)))
+    const nuovi = new Set(migrationRicette.map((r) => r.nome))
+    for (const nome of [
+      'Alloro',
+      'Carne per brodo',
+      'Ricotta salata',
+      'Giardiniera',
+      'Ditalini',
+      'Trofie',
+      'Riso parboiled',
+      'Fagioli borlotti',
+      'Fagioli cannellini',
+      'Gallina',
+      'Lievito di birra',
+    ]) {
+      expect(nuovi.has(nome), nome).toBe(true)
+      expect(usati.has(nome), nome).toBe(true)
+    }
+  })
+})
+
 describe('Ispirazioni (mesi.ts)', () => {
   const nomi = new Set(seed.map((r) => r.nome.toLowerCase()))
 
-  it('ci sono tutti i 12 mesi, con 4-6 idee ciascuno', () => {
+  it('ci sono tutti i 12 mesi, con 5 idee ciascuno', () => {
     expect(MESI).toHaveLength(12)
-    for (const mese of MESI) {
-      expect(mese.piatti.length, mese.nome).toBeGreaterThanOrEqual(4)
-      expect(mese.piatti.length, mese.nome).toBeLessThanOrEqual(6)
-    }
+    for (const mese of MESI) expect(mese.piatti, mese.nome).toHaveLength(5)
   })
 
   it('ogni ingrediente è un prodotto del catalogo', () => {
@@ -127,6 +156,37 @@ describe('Ispirazioni (mesi.ts)', () => {
         for (const ing of piatto.ingredienti)
           if (!nomi.has(ing.toLowerCase())) mancanti.push(`${mese.nome} / ${piatto.nome}: ${ing}`)
     expect(mancanti).toEqual([])
+  })
+
+  it('ogni piatto ha da 4 a 10 ingredienti, senza acqua, sale e pepe', () => {
+    const scontati = new Set(['acqua naturale', 'sale', 'sale grosso', 'pepe nero'])
+    for (const mese of MESI)
+      for (const piatto of mese.piatti) {
+        expect(piatto.ingredienti.length, piatto.nome).toBeGreaterThanOrEqual(4)
+        expect(piatto.ingredienti.length, piatto.nome).toBeLessThanOrEqual(10)
+        for (const ing of piatto.ingredienti)
+          expect(scontati.has(ing.toLowerCase()), `${piatto.nome}: ${ing}`).toBe(false)
+      }
+  })
+
+  it('ogni piatto ha un procedimento di 3-5 passi non vuoti, con dosi per 2 persone', () => {
+    for (const mese of MESI)
+      for (const piatto of mese.piatti) {
+        expect(piatto.procedimento.length, piatto.nome).toBeGreaterThanOrEqual(3)
+        expect(piatto.procedimento.length, piatto.nome).toBeLessThanOrEqual(5)
+        for (const passo of piatto.procedimento) {
+          expect(passo.trim().length, piatto.nome).toBeGreaterThan(20)
+          // passi brevi: una o due frasi
+          expect(passo.length, `${piatto.nome}: ${passo}`).toBeLessThanOrEqual(260)
+          // le dosi sono per 2: nessun residuo di ricette per 4 o 6 persone
+          expect(passo, piatto.nome).not.toMatch(/per [3-9] persone/i)
+        }
+      }
+  })
+
+  it("nomi dei piatti unici in tutto l'anno", () => {
+    const nomi = MESI.flatMap((m) => m.piatti.map((p) => p.nome.toLowerCase()))
+    expect(new Set(nomi).size).toBe(nomi.length)
   })
 
   it('testi senza trattini lunghi o medi e senza ingredienti ripetuti', () => {

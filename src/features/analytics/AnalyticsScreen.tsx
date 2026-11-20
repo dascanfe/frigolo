@@ -20,6 +20,7 @@ import { LinkButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { PageHeader, STICKY_LEFT_GAP, STICKY_PILL_TOP, StickyGlass } from '@/components/PageHeader'
 import { useCatalog } from '@/features/catalog/useCatalog'
+import { ReceiptCard } from '@/features/receipt/ReceiptCard'
 import { it as t } from '@/i18n/it'
 import { CategoryDonut } from './CategoryDonut'
 import { MembersBar } from './MembersBar'
@@ -73,6 +74,9 @@ export function AnalyticsScreen() {
         <EmptyHistory />
       ) : (
         <>
+          {/* Lo scontrino ha il suo periodo: sta sopra i filtri dei grafici */}
+          <ReceiptCard />
+
           {/* Filtri: una sola riga sopra tutti i grafici */}
           <div
             ref={filtersRef}
