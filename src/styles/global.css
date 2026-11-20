@@ -810,6 +810,27 @@
     animation: update-bar-in 0.35s var(--ease-out) both;
   }
 
+  /* "Aggiorna ora" respira piano: un alone bianco che si allarga e svanisce */
+  @keyframes update-bar-glow {
+    0% {
+      box-shadow: 0 0 0 0 rgb(255 255 255 / 0.55);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 12px rgb(255 255 255 / 0);
+    }
+  }
+
+  .update-bar-cta {
+    animation: update-bar-glow 2.2s ease-out 0.6s infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .update-bar-cta {
+      animation: none;
+    }
+  }
+
   /* piccolo invito a toccare: un saltello, poi pausa */
   @keyframes starter-nudge {
     0%,

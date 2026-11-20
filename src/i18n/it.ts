@@ -343,6 +343,7 @@ export const it = {
   },
   updateBar: {
     title: "C'è una versione nuova di Frigolo ✨",
+    subtitle: 'Un tocco e hai le novità',
     button: 'Aggiorna ora',
     dismiss: 'Più tardi',
   },
