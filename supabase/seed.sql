@@ -2,7 +2,8 @@
 -- Frigolo - seed: categorie globali e catalogo base italiano
 -- Idempotente: categorie aggiornate per slug, prodotti base aggiornati per nome
 -- (indice unico su household_id + lower(name), nulls not distinct).
--- 15 categorie, 497 prodotti (carne e pesce separati dalla migration 0029).
+-- 15 categorie, 501 prodotti (carne e pesce separati dalla migration 0029,
+-- 4 ingredienti delle ricette di Ispirazioni aggiunti dalla 0032).
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -131,6 +132,7 @@ from (values
   ('verdura', 'Menta', 'Leaf', 'pz', '{}'),
   ('verdura', 'Timo', 'Leaf', 'pz', '{}'),
   ('verdura', 'Erba cipollina', 'Leaf', 'pz', '{}'),
+  ('verdura', 'Alloro', 'Leaf', 'pz', '{}'),
   ('verdura', 'Funghi porcini', 'Mushroom', 'conf', '{9,10,11}'),
   ('verdura', 'Soffritto', 'Carrot', 'conf', '{}'),
   ('verdura', 'Peperoncini freschi', 'Flame', 'conf', '{6,7,8,9}'),
@@ -194,6 +196,7 @@ from (values
   ('carne', 'Coniglio', 'Rabbit', 'kg', '{}'),
   ('carne', 'Agnello', 'Beef', 'kg', '{3,4}'),
   ('carne', 'Polpette', 'Beef', 'conf', '{}'),
+  ('carne', 'Carne per brodo', 'Beef', 'kg', '{}'),
   -- Pesce
   ('pesce', 'Salmone', 'Fish', 'kg', '{}'),
   ('pesce', 'Merluzzo', 'Fish', 'kg', '{}'),
@@ -262,6 +265,7 @@ from (values
   ('latticini-uova', 'Caprino', 'Cloud', 'pz', '{}'),
   ('latticini-uova', 'Formaggio grattugiato', 'CakeSlice', 'conf', '{}'),
   ('latticini-uova', 'Albumi', 'Egg', 'conf', '{}'),
+  ('latticini-uova', 'Ricotta salata', 'CakeSlice', 'g', '{}'),
   -- Dispensa e secco
   ('dispensa', 'Pasta', 'Wheat', 'conf', '{}'),
   ('dispensa', 'Spaghetti', 'Utensils', 'conf', '{}'),
@@ -327,6 +331,7 @@ from (values
   ('dispensa', 'Concentrato di pomodoro', 'Jar', 'pz', '{}'),
   ('dispensa', 'Olive', 'Jar', 'pz', '{}'),
   ('dispensa', 'Capperi', 'Jar', 'pz', '{}'),
+  ('dispensa', 'Giardiniera', 'Jar', 'pz', '{}'),
   ('dispensa', 'Acciughe sott''olio', 'Can', 'pz', '{}'),
   ('dispensa', 'Piselli in scatola', 'Can', 'pz', '{}'),
   ('dispensa', 'Fagioli secchi', 'Bean', 'conf', '{}'),
