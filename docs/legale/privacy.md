@@ -1,6 +1,6 @@
 # Informativa sulla privacy di Frigolo
 
-Ultimo aggiornamento: 10 novembre 2026
+Ultimo aggiornamento: 20 novembre 2026
 
 Frigolo è una lista della spesa condivisa, gratuita e open source. Questa pagina spiega in parole
 semplici quali dati usa Frigolo, perché, con chi li condivide, per quanto li tiene e come puoi
