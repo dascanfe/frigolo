@@ -868,3 +868,42 @@
 .inspiration-card:active {
   transform: scale(0.98);
 }
+
+/* "Come si fa" nelle Ispirazioni: il pannello si apre in altezza (0fr -> 1fr) con il
+   ritmo morbido dell'app. Da chiuso è nascosto anche a focus e screen reader:
+   visibility cambia subito all'apertura e solo a fine animazione alla chiusura. */
+.recipe-steps {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--dur-organic) var(--ease-organic),
+    visibility 0s linear var(--dur-organic);
+}
+.recipe-steps[data-open='true'] {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--dur-organic) var(--ease-organic),
+    visibility 0s;
+}
+.recipe-steps-inner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--dur-organic) var(--ease-organic),
+    transform var(--dur-organic) var(--ease-organic);
+}
+.recipe-steps[data-open='true'] .recipe-steps-inner {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .recipe-steps,
+  .recipe-steps[data-open='true'],
+  .recipe-steps-inner {
+    transition: none;
+  }
+}

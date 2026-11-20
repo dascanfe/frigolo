@@ -32,6 +32,23 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-11-20 - Ricette nelle Ispirazioni (branch `fragola/ricette`, versione 2.4.0)
+
+- `mesi.ts`: 60 piatti rivisti (14 nuovi, scelti per stagione e varietà: primi, secondi, contorni,
+  qualche dolce), ingredienti completi (media 7,1 tessere, prima 5,2; mai acqua, sale e pepe) e nuovo
+  campo `procedimento` (3-4 passi con dosi per 2 persone). Testi scritti da zero: GialloZafferano
+  (e per pesche al vino, pomodori col riso, rucola e fragole qualche blog italiano) solo come
+  riferimento per ingredienti e passaggi.
+- `RecipeSteps.tsx`: "Come si fa" sotto le tessere, chiuso di default, `aria-expanded` e
+  `aria-controls`, pannello che si apre in altezza (`grid-template-rows`, `--dur-organic`) e da
+  chiuso è `visibility: hidden`; fermo con prefers-reduced-motion. Numero e unità ("500 g") non
+  vanno a capo separati.
+- Migration `0032_catalogo_ricette.sql` (idempotente, provata due volte in locale) e `seed.sql`:
+  Alloro, Carne per brodo, Ricotta salata, Giardiniera (501 prodotti base).
+- Test: 5 piatti per mese, 4-10 ingredienti del catalogo, 3-5 passi non vuoti senza dosi "per 4",
+  nomi unici, prodotti della 0032 identici nel seed e usati.
+- Screenshot 375x812 in `Frigolo published/pacchetto-instagram/0-profilo/prove-app/`.
+
 ### 2026-11-19 - Lo scontrino di Frigolo (branch `fragola/scontrino`, versione 2.3.0)
 
 - Scheda "Lo scontrino" in cima alle analitiche (sopra i filtri, perché ha il suo periodo):

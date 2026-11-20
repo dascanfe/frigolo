@@ -230,6 +230,8 @@ export const it = {
     ideas: 'Idee per i piatti',
     ingredients: 'Ingredienti',
     hint: 'Tocca un prodotto per metterlo in lista, toccalo ancora per toglierlo.',
+    howTo: 'Come si fa',
+    servings: 'Dosi indicative per 2 persone',
   },
   season: {
     title: 'Di stagione',
