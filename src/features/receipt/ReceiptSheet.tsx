@@ -124,26 +124,31 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
 
   async function share() {
     if (!rendered) return
-    const name = receiptFileName(range)
+    if (!shareFiles) {
+      toast(
+        "Qui non si può condividere direttamente: scarica l'immagine e condividila dalla galleria",
+      )
+      return
+    }
     setSharing(true)
     try {
-      if (shareFiles) {
-        const file = new File([rendered.blob], name, { type: 'image/png' })
-        try {
-          await navigator.share({ files: [file], text: receiptShareText(range) })
-          recordEvent('scontrino_condiviso')
-          return
-        } catch (error) {
-          // chiusa senza scegliere: va bene così
-          if (error instanceof DOMException && error.name === 'AbortError') return
-        }
-      }
-      download(rendered.blob, name)
+      const file = new File([rendered.blob], receiptFileName(range), { type: 'image/png' })
+      await navigator.share({ files: [file], text: receiptShareText(range) })
       recordEvent('scontrino_condiviso')
-      toast('Scontrino salvato tra i download', 'success')
+    } catch (error) {
+      // chiusa senza scegliere: va bene così
+      if (!(error instanceof DOMException && error.name === 'AbortError'))
+        toast("Non sono riuscito a condividere: prova a scaricare l'immagine", 'error')
     } finally {
       setSharing(false)
     }
+  }
+
+  function save() {
+    if (!rendered) return
+    download(rendered.blob, receiptFileName(range))
+    recordEvent('scontrino_condiviso')
+    toast('Scontrino salvato tra i download', 'success')
   }
 
   const title =
@@ -224,20 +229,25 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
               />
             </button>
           </div>
-          <Button
-            fullWidth
-            onClick={() => void share()}
-            disabled={!rendered || sharing}
-            icon={
-              shareFiles ? (
-                <Share2 size={18} aria-hidden="true" />
-              ) : (
-                <Download size={18} aria-hidden="true" />
-              )
-            }
-          >
-            {shareFiles ? 'Condividi' : "Scarica l'immagine"}
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={save}
+              disabled={!rendered}
+              icon={<Download size={18} aria-hidden="true" />}
+            >
+              Scarica
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={() => void share()}
+              disabled={!rendered || sharing}
+              icon={<Share2 size={18} aria-hidden="true" />}
+            >
+              Condividi
+            </Button>
+          </div>
         </div>
       }
     >
