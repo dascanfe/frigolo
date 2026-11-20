@@ -144,6 +144,7 @@ export const COPERTINE = [
   ['03-novita.png', 'novita'],
   ['04-domande.png', 'domande'],
   ['05-caffe.png', 'caffe'],
+  ['06-scontrini.png', 'scontrino'],
 ]
 
 export const LEGGIMI = `STORIE DELLA PAGINA ${PAGINA}: come usarle
