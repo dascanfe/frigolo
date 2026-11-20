@@ -57,8 +57,14 @@ export function ForgotPasswordScreen({ initialEmail = '', onBack }: ForgotPasswo
     })
     setBusy(false)
     turnstile.current?.reset()
-    // un account che non esiste non è un errore da mostrare: stesso riscontro
-    if (resetError && resetError.code !== 'user_not_found') {
+    // stesso riscontro per tutti: un account che non esiste o un secondo invio entro
+    // il minuto (la mail di prima è già partita) non sono errori da mostrare, così
+    // non si può capire se un'email è registrata
+    const silenzioso =
+      resetError?.code === 'user_not_found' ||
+      resetError?.code === 'over_email_send_rate_limit' ||
+      (resetError?.status === 429 && resetError.message.includes('email'))
+    if (resetError && !silenzioso) {
       setError(describeAuthError(resetError))
       return
     }
