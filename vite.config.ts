@@ -10,6 +10,7 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 }
 
 const ONE_WEEK = 7 * 24 * 60 * 60
+const ONE_YEAR = 365 * 24 * 60 * 60
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -23,7 +24,13 @@ export default defineConfig({
       // "prompt": il plugin non ricarica mai la pagina da solo (lo fa pwa.ts, e solo quando
       // l'app e' in background); il nuovo service worker si attiva comunque da solo (skipWaiting)
       registerType: 'prompt',
-      includeAssets: ['favicon.png', 'mascot.png', 'mascot-avatar.webp', 'mascot-sad.webp', 'icons/*.png'],
+      includeAssets: [
+        'favicon.png',
+        'mascot.png',
+        'mascot-avatar.webp',
+        'mascot-sad.webp',
+        'icons/*.png',
+      ],
       manifest: {
         id: '/',
         name: 'Frigolo',
@@ -59,6 +66,18 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         runtimeCaching: [
+          {
+            // foto delle ricette (Ispirazioni): fuori dal precache perché pesano; quelle già
+            // viste restano in cache e funzionano anche senza rete
+            urlPattern: ({ url, sameOrigin }) =>
+              sameOrigin && url.pathname.startsWith('/ricette/') && url.pathname.endsWith('.webp'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'foto-ricette',
+              expiration: { maxEntries: 80, maxAgeSeconds: ONE_YEAR },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             // letture Supabase (tabelle e RPC in GET): rete prima, cache se manca
             urlPattern: /^https:\/\/[a-z0-9-]+\.supabase\.co\/rest\/v1\/.*/i,

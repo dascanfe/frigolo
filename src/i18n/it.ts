@@ -254,6 +254,7 @@ export const it = {
     hint: 'Tocca un prodotto per metterlo in lista, toccalo ancora per toglierlo.',
     howTo: 'Come si fa',
     servings: 'Dosi indicative per 2 persone',
+    photoBy: 'Foto:',
   },
   season: {
     title: 'Di stagione',
