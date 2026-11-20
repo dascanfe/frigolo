@@ -301,7 +301,7 @@ export function receiptAltText(model: ReceiptModel): string {
   const parts = [`Scontrino di Frigolo. ${model.listLine}, ${model.stamp.toLowerCase()}.`]
   for (const line of model.lines) parts.push(`${line.label}: ${line.value}.`)
   parts.push(...model.note)
-  parts.push(`Totale app 0,00. Fai la lista con noi: ${RECEIPT_SITE}, con un codice QR.`)
+  parts.push(`Totale app 0,00. Fai anche tu la tua lista della spesa, gratis: ${RECEIPT_SITE}, con un codice QR.`)
   return parts.join(' ')
 }
 
@@ -313,5 +313,5 @@ export function receiptFileName(range: ReceiptRange): string {
 /** Testo che accompagna l'immagine quando si condivide */
 export function receiptShareText(range: ReceiptRange): string {
   const what = range.kind === 'anno' ? `del ${range.stamp}` : `di ${range.long.split(' ')[0]}`
-  return `Lo scontrino ${what} della nostra spesa, fatto con Frigolo. Fai la lista con noi: ${RECEIPT_QR_URL}`
+  return `Lo scontrino ${what} della nostra spesa, fatto con Frigolo. Fai anche tu la tua lista della spesa, gratis: ${RECEIPT_QR_URL}`
 }
