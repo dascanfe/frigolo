@@ -95,6 +95,8 @@ describe('buildReceipt', () => {
     const model = buildReceipt(input({ trips, showNames: false }))
     expect(model.lines.map((l) => l.id)).not.toContain('persona')
     expect(receiptAltText(model)).not.toContain('Lele')
+    expect(model.listLine).toBe('La nostra spesa')
+    expect(receiptAltText(model)).not.toContain('Casa')
   })
 
   it('in una lista da sola niente "Chi ha messo più cose"', () => {

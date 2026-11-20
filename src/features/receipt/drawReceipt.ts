@@ -257,7 +257,6 @@ export function drawReceipt(
     centered('FRIGOLO', `700 112px ${DISPLAY}`, palette.ink, 112, 26),
     centered(model.listLine, `400 34px ${MONO}`, colors.ink, 34, 18),
     centered(model.stamp, `700 38px ${MONO}`, palette.ink, 38, 14),
-    centered('scontrino non fiscale', `400 24px ${MONO}`, colors.soft, 24, 10),
     dashed(colors.soft),
     spacer(6),
     ...model.lines.map((l) => line(ctx, l.label, l.value, colors)),
@@ -276,7 +275,8 @@ export function drawReceipt(
     centered('della spesa, gratis:', `400 34px ${MONO}`, colors.ink, 34, 14),
     centered(RECEIPT_SITE, `700 40px ${MONO}`, palette.ink, 40, 12),
     qrBlock(palette.ink),
-    centered('*** GRAZIE E A PRESTO ***', `400 26px ${MONO}`, colors.soft, 26, 10),
+    centered('Frigolo è una web app', `400 26px ${MONO}`, colors.soft, 26, 4),
+    centered('libera e gratuita', `400 26px ${MONO}`, colors.soft, 26, 10),
     spacer(TOOTH_H + 40),
   )
   const paperH = blocks.reduce((sum, b) => sum + b.height, 0)

@@ -236,7 +236,8 @@ export function buildReceipt(input: ReceiptInput): ReceiptModel {
   const { range, trips } = input
   const listName = input.listName.trim()
   const base = {
-    listLine: listName ? `Spesa di "${listName}"` : 'La nostra spesa',
+    // senza "Mostra i nomi" sparisce anche il nome della lista (potrebbe contenere un cognome)
+    listLine: listName && input.showNames ? `Spesa di "${listName}"` : 'La nostra spesa',
     stamp: range.stamp,
   }
   const productCount = trips.reduce((sum, t) => sum + t.purchases.length, 0)
@@ -301,7 +302,7 @@ export function receiptAltText(model: ReceiptModel): string {
   const parts = [`Scontrino di Frigolo. ${model.listLine}, ${model.stamp.toLowerCase()}.`]
   for (const line of model.lines) parts.push(`${line.label}: ${line.value}.`)
   parts.push(...model.note)
-  parts.push(`Totale app 0,00. Fai anche tu la tua lista della spesa, gratis: ${RECEIPT_SITE}, con un codice QR.`)
+  parts.push(`Totale app 0,00. Fai anche tu la tua lista della spesa, gratis: ${RECEIPT_SITE}, con un codice QR. Frigolo è una web app libera e gratuita.`)
   return parts.join(' ')
 }
 

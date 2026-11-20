@@ -180,41 +180,41 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
               })}
             </div>
           </div>
-          {together && (
-            <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-2.5 ring-1 ring-subtle">
-              <label htmlFor={switchId} className="flex flex-col leading-tight">
-                <span id={`${switchId}-nome`} className="text-[15px] font-bold text-primary">
-                  Mostra i nomi
-                </span>
-                <span id={`${switchId}-nota`} className="text-xs text-secondary">
-                  {showNames
-                    ? "Sullo scontrino c'è chi ha messo più cose"
-                    : 'Nessun nome sullo scontrino'}
-                </span>
-              </label>
-              <button
-                id={switchId}
-                type="button"
-                role="switch"
-                aria-checked={showNames}
-                aria-labelledby={`${switchId}-nome`}
-                aria-describedby={`${switchId}-nota`}
-                onClick={() => setShowNames((v) => !v)}
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-2.5 ring-1 ring-subtle">
+            <label htmlFor={switchId} className="flex flex-col leading-tight">
+              <span id={`${switchId}-nome`} className="text-[15px] font-bold text-primary">
+                Mostra i nomi
+              </span>
+              <span id={`${switchId}-nota`} className="text-xs text-secondary">
+                {!showNames
+                  ? 'Nessun nome sullo scontrino'
+                  : together
+                    ? 'Nome della lista e chi ha messo più cose'
+                    : 'Il nome della lista'}
+              </span>
+            </label>
+            <button
+              id={switchId}
+              type="button"
+              role="switch"
+              aria-checked={showNames}
+              aria-labelledby={`${switchId}-nome`}
+              aria-describedby={`${switchId}-nota`}
+              onClick={() => setShowNames((v) => !v)}
+              className={[
+                'relative h-8 w-13 shrink-0 rounded-full transition-colors',
+                showNames ? 'bg-accent' : 'bg-sand',
+              ].join(' ')}
+            >
+              <span
+                aria-hidden="true"
                 className={[
-                  'relative h-8 w-13 shrink-0 rounded-full transition-colors',
-                  showNames ? 'bg-accent' : 'bg-sand',
+                  'absolute top-1 left-1 size-6 rounded-full bg-cream shadow-tile transition-transform',
+                  showNames ? 'translate-x-5' : '',
                 ].join(' ')}
-              >
-                <span
-                  aria-hidden="true"
-                  className={[
-                    'absolute top-1 left-1 size-6 rounded-full bg-cream shadow-tile transition-transform',
-                    showNames ? 'translate-x-5' : '',
-                  ].join(' ')}
-                />
-              </button>
-            </div>
-          )}
+              />
+            </button>
+          </div>
           <Button
             fullWidth
             onClick={() => void share()}
