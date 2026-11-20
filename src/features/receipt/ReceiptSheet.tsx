@@ -1,9 +1,9 @@
 /**
- * Il foglio dello scontrino: anteprima grande, "Mostra i nomi" e "Condividi".
+ * Il foglio dello scontrino: anteprima grande, sfondo, "Mostra i nomi" e "Salva o condividi".
  * Si carica solo quando si apre (carattere monospazio, codice QR e disegno
  * stanno in questo pezzo dell'app). L'immagine si crea sul telefono.
  */
-import { Download, Share2 } from 'lucide-react'
+import { Download } from 'lucide-react'
 import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
@@ -13,7 +13,7 @@ import { recordEvent } from '@/lib/telemetry'
 import { THEMES, getTheme, subscribeTheme } from '@/lib/theme'
 import { toast } from '@/lib/toast'
 import { canvasToPng, drawReceipt, loadMascot, loadReceiptFonts } from './drawReceipt'
-import { buildReceipt, receiptAltText, receiptFileName, receiptShareText } from './receiptModel'
+import { buildReceipt, receiptAltText, receiptFileName } from './receiptModel'
 import type { ReceiptRange } from './receiptModel'
 import { useReceiptTrips } from './useReceiptData'
 
@@ -122,44 +122,27 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
     return () => URL.revokeObjectURL(rendered.url)
   }, [rendered])
 
-  async function share() {
-    if (!rendered) return
-    if (!shareFiles) {
-      toast(
-        "Qui non si può condividere direttamente: scarica l'immagine e condividila dalla galleria",
-      )
-      return
-    }
-    setSharing(true)
-    try {
-      const file = new File([rendered.blob], receiptFileName(range), { type: 'image/png' })
-      await navigator.share({ files: [file], text: receiptShareText(range) })
-      recordEvent('scontrino_condiviso')
-    } catch (error) {
-      // chiusa senza scegliere: va bene così
-      if (!(error instanceof DOMException && error.name === 'AbortError'))
-        toast("Non sono riuscito a condividere: prova a scaricare l'immagine", 'error')
-    } finally {
-      setSharing(false)
-    }
-  }
-
-  // Sul telefono "Salva" apre il foglio di condivisione con la sola immagine: da lì
-  // "Salva immagine" la mette in Foto (Safari non può scrivere da solo nella libreria;
-  // con un testo insieme all'immagine iOS nasconde "Salva immagine"). Altrove: download.
-  async function save() {
+  // Un solo pulsante "Salva o condividi". Sul telefono apre il foglio di condivisione
+  // con la sola immagine: da lì "Salva immagine" la mette in Foto, oppure si manda in
+  // chat o nelle storie (con un testo insieme all'immagine iOS nasconderebbe "Salva
+  // immagine"; il link è già sullo scontrino, con il QR). Altrove: download del PNG.
+  async function saveOrShare() {
     if (!rendered) return
     const name = receiptFileName(range)
     if (shareFiles) {
+      setSharing(true)
       try {
         const file = new File([rendered.blob], name, { type: 'image/png' })
         await navigator.share({ files: [file] })
         recordEvent('scontrino_condiviso')
       } catch (error) {
+        // chiusa senza scegliere: va bene così; altri errori: si scarica il PNG
         if (!(error instanceof DOMException && error.name === 'AbortError')) {
           download(rendered.blob, name)
           toast('Scontrino salvato tra i download', 'success')
         }
+      } finally {
+        setSharing(false)
       }
       return
     }
@@ -246,25 +229,14 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
               />
             </button>
           </div>
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => void save()}
-              disabled={!rendered}
-              icon={<Download size={18} aria-hidden="true" />}
-            >
-              {shareFiles ? 'Salva' : 'Scarica'}
-            </Button>
-            <Button
-              className="flex-1"
-              onClick={() => void share()}
-              disabled={!rendered || sharing}
-              icon={<Share2 size={18} aria-hidden="true" />}
-            >
-              Condividi
-            </Button>
-          </div>
+          <Button
+            fullWidth
+            onClick={() => void saveOrShare()}
+            disabled={!rendered || sharing}
+            icon={<Download size={18} aria-hidden="true" />}
+          >
+            Salva o condividi
+          </Button>
         </div>
       }
     >
