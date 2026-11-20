@@ -2,7 +2,6 @@ import type { EmailOtpType } from '@supabase/supabase-js'
 import { LogIn, MailCheck, UserPlus } from 'lucide-react'
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
-import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { PasswordField } from '@/components/PasswordField'
 import { TextField } from '@/components/TextField'
@@ -12,6 +11,8 @@ import { readPendingInvite } from '@/features/lists/inviteCode'
 import { PRIVACY_URL, TERMS_URL, it as t } from '@/i18n/it'
 import { MIN_PASSWORD_LENGTH, describeAuthError } from '@/lib/authErrors'
 import { supabase } from '@/lib/supabase'
+import { ForgotPasswordScreen } from './ForgotPasswordScreen'
+import { useSignedOutRoute } from './useSignedOutRoute'
 
 type Mode = 'signin' | 'signup'
 
@@ -51,7 +52,7 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
   const [hasInvite] = useState(() => readPendingInvite() !== null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [forgotSentTo, setForgotSentTo] = useState<string | null>(null)
+  const { route, openForgotPassword, openLogin } = useSignedOutRoute()
   const [notice, setNotice] = useState<string | null>(() => readUrlOutcome())
   // captcha: con la site key serve un token nuovo per ogni invio
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
@@ -122,6 +123,10 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
       return
     }
     setNotice(t.checkEmail.resent)
+  }
+
+  if (route === 'forgot-password') {
+    return <ForgotPasswordScreen initialEmail={cleanEmail} onBack={openLogin} />
   }
 
   if (sentTo) {
@@ -199,6 +204,44 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
     setNotice(t.authLink.sent(cleanEmail))
   }
 
+  if (linkError?.type === 'recovery') {
+    return (
+      <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6 pb-safe pt-safe">
+        <header className="flex flex-col items-center gap-3 text-center">
+          <img
+            src="/mascot-sad.webp"
+            alt=""
+            width={112}
+            height={112}
+            className="size-28 drop-shadow-[0_8px_16px_rgb(58_44_33/0.15)]"
+            draggable={false}
+          />
+          <h1 className="font-display text-3xl font-bold text-primary">
+            {t.authLink.expiredRecoveryTitle}
+          </h1>
+          <p className="text-secondary" role="alert">
+            {t.authLink.expiredRecovery}
+          </p>
+        </header>
+        <div className="flex flex-col items-center gap-1">
+          <Button
+            fullWidth
+            autoFocus
+            onClick={() => {
+              onLinkErrorDone?.()
+              openForgotPassword()
+            }}
+          >
+            {t.authLink.newRecoveryLink}
+          </Button>
+          <Button variant="ghost" onClick={() => onLinkErrorDone?.()}>
+            {t.authLink.backToLogin}
+          </Button>
+        </div>
+      </main>
+    )
+  }
+
   if (linkError) {
     const emailChange = linkError.type === 'email_change'
     return (
@@ -259,27 +302,6 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
         </div>
       </main>
     )
-  }
-
-  async function handleForgotPassword() {
-    if (!cleanEmail) {
-      setError(t.login.forgotNoEmail)
-      return
-    }
-    setBusy(true)
-    setError(null)
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-      redirectTo: window.location.origin,
-      captchaToken: captcha,
-    })
-    setBusy(false)
-    renewCaptcha()
-    if (resetError) {
-      setError(describeAuthError(resetError))
-      return
-    }
-    // stesso riscontro se l'account esiste o no: non lo si rivela
-    setForgotSentTo(cleanEmail)
   }
 
   return (
@@ -398,25 +420,25 @@ export function LoginScreen({ linkError = null, onLinkErrorDone }: LoginScreenPr
         </Button>
         {mode === 'signin' && (
           <div className="flex justify-center">
-            <Button variant="ghost" onClick={handleForgotPassword} disabled={busy}>
-              {t.login.forgot}
+            <Button
+              variant="ghost"
+              className="px-3 text-sm"
+              onClick={() => {
+                setError(null)
+                openForgotPassword()
+              }}
+              disabled={busy}
+            >
+              <span>
+                <span className="font-normal">{t.login.forgotQuestion}</span>{' '}
+                <span className="text-accent underline underline-offset-4">
+                  {t.login.forgotAction}
+                </span>
+              </span>
             </Button>
           </div>
         )}
       </form>
-      <BottomSheet
-        open={forgotSentTo !== null}
-        onClose={() => setForgotSentTo(null)}
-        title={t.login.forgotSheetTitle}
-      >
-        <div className="flex flex-col items-center gap-4 pb-2 text-center">
-          <img src="/mascot-happy.webp" alt="" width={96} height={96} className="size-24" />
-          <p className="text-primary">{t.login.forgotSheetMessage(forgotSentTo ?? '')}</p>
-          <Button fullWidth onClick={() => setForgotSentTo(null)}>
-            {t.login.forgotSheetOk}
-          </Button>
-        </div>
-      </BottomSheet>
     </main>
   )
 }

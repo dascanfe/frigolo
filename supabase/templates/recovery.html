@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light" />
-    <title>Scegli una nuova password</title>
+    <title>Crea una nuova password</title>
   </head>
   <!-- Frigolo: recovery. Testi in docs/comunicazione/email.md. Il link porta a /auth/confirm dell app (verifyOtp con token_hash e type=recovery). -->
   <body style="margin: 0; padding: 0; background-color: #f4ece2">
     <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all">
-      Hai chiesto di cambiare la password di Frigolo.
+      Un tocco e scegli la nuova password. Il link vale 1 ora.
     </div>
     <table
       role="presentation"
@@ -52,7 +52,8 @@
               >
                 <p style="margin: 0 0 16px 0">Ciao!</p>
                 <p style="margin: 0 0 16px 0">
-                  Qualcuno, probabilmente tu, ha chiesto di cambiare la password di Frigolo per {{ .Email }}.
+                  Qualcuno, probabilmente tu, ha chiesto una nuova password di Frigolo per
+                  {{ .Email }}. Tocca il pulsante e sceglila.
                 </p>
               </td>
             </tr>
@@ -74,7 +75,7 @@
                           text-decoration: none;
                           border-radius: 999px;
                         "
-                        >Scegli la nuova password</a
+                        >Crea una nuova password</a
                       >
                     </td>
                   </tr>
@@ -89,13 +90,12 @@
                   font-size: 13px;
                   line-height: 20px;
                   color: #6b5844;
-                  word-break: break-all;
                 "
               >
                 Il bottone non funziona? Copia questo link nel browser:<br />
                 <a
                   href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery"
-                  style="color: #a85641"
+                  style="color: #a85641; word-break: break-all"
                   >{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery</a
                 >
               </td>
@@ -111,7 +111,9 @@
                 "
               >
                 <p style="margin: 0 0 16px 0">
-                  Il link vale 1 ora e funziona da qualunque telefono o browser.
+                  Il link vale <strong>1 ora</strong> e si può usare una volta sola, da qualunque
+                  telefono o browser. Se è scaduto, chiedine uno nuovo da "Non ricordi la password?"
+                  nella schermata di accesso.
                 </p>
                 <p style="margin: 0">
                   Se non hai chiesto tu, ignora questa email: la password resta quella di prima.
