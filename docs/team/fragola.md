@@ -34,7 +34,7 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ### 2026-11-20 - Ricette nelle Ispirazioni (branch `fragola/ricette`, versione 2.4.0)
 
-- `mesi.ts`: 60 piatti rivisti (14 nuovi, scelti per stagione e varietà: primi, secondi, contorni,
+- `mesi.ts`: 60 piatti rivisti (16 nuovi, scelti per stagione e varietà: primi, secondi, contorni,
   qualche dolce), ingredienti completi (media 7,1 tessere, prima 5,2; mai acqua, sale e pepe) e nuovo
   campo `procedimento` (3-4 passi con dosi per 2 persone). Testi scritti da zero: GialloZafferano
   (e per pesche al vino, pomodori col riso, rucola e fragole qualche blog italiano) solo come
