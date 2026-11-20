@@ -1,6 +1,6 @@
 # Informativa sulla privacy di Frigolo
 
-Ultimo aggiornamento: 10 novembre 2026
+Ultimo aggiornamento: 20 novembre 2026
 
 Frigolo è una lista della spesa condivisa, gratuita e open source. Questa pagina spiega in parole
 semplici quali dati usa Frigolo, perché, con chi li condivide, per quanto li tiene e come puoi
@@ -71,8 +71,9 @@ sulla salute). Frigolo non ne ha bisogno e non le usa.
 - Gesti anonimi nell'app: registriamo in forma anonima anche l'ora in cui apri l'app e alcuni gesti
   da un elenco fisso: una ricerca che non ha dato risultati (mai il testo cercato), l'invito a
   installare l'app e la tua risposta, la guida per iPhone, l'avviso di nuova versione, il pulsante
-  "Aggiorna ora" e i pulsanti per sostenere il progetto. Quando entri in una lista contiamo se hai usato il link o il codice e quanto tempo
-  è passato dall'invito. Sono sommati in conteggi giornalieri, senza collegamento al tuo account.
+  "Aggiorna ora", i pulsanti per sostenere il progetto e la creazione e la condivisione dello
+  scontrino. Quando entri in una lista contiamo se hai usato il link o il codice e quanto tempo è
+  passato dall'invito. Sono sommati in conteggi giornalieri, senza collegamento al tuo account.
 - Statistiche sulla spesa: in forma aggregata guardiamo quali prodotti del catalogo di Frigolo
   vengono aggiunti più spesso, quali supermercati vengono scelti tra quelli proposti e in quali
   giorni e orari si chiude la spesa. I nomi dei prodotti che crei tu non vengono mai mostrati né
@@ -98,6 +99,16 @@ L'app salva sul tuo telefono la sessione di accesso, una copia della lista per f
 senza rete, il tema scelto e poche preferenze. Sono strumenti tecnici necessari al funzionamento:
 non sono cookie di profilazione e non vengono letti da terzi. Si cancellano uscendo dall'account
 o disinstallando l'app.
+
+**Lo scontrino della spesa**
+
+Nelle analitiche puoi creare lo scontrino della tua lista: un'immagine con il riepilogo della
+spesa del periodo (quante spese, il prodotto preso più volte e simili). L'immagine si crea sul tuo
+telefono con i dati che l'app ha già: non passa dai nostri server e non la salviamo. La condividi
+solo se vuoi, con l'app che scegli tu, che la tratta secondo le sue regole. Prima di condividerla
+puoi nascondere i nomi delle persone e della lista; i nomi dei prodotti invece restano, quindi
+controllali se ne hai creati con nomi personali. Contiamo solo, in forma anonima, quante volte uno
+scontrino viene creato e condiviso.
 
 **Donazioni**
 
