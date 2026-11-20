@@ -104,7 +104,7 @@ Prima di Natale, fai lo scontrino di tutto l'anno della tua lista. In Frigolo, n
 
 Fallo con chi fa la spesa con te: con la lista in comune lo scontrino è ancora più divertente. Scegli il colore dello sfondo, nascondi i nomi se preferisci e tocca "Condividi". L'immagine si crea sul tuo telefono.
 
-Mettilo nelle storie e taggaci con @frigolo.app: ricondividiamo i più belli. Buone feste 💚
+Mettilo nelle storie e taggaci con @frigolo.app: li ricondividiamo tutti. Buone feste 💚
 
 Link nella bio.
 

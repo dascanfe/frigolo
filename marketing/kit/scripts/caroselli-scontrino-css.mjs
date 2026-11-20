@@ -19,4 +19,6 @@ export const CSS = `
 .cap em { font-family:var(--font-display); font-style:italic; color:var(--brick) }
 .cap .n { display:block; margin:0 auto 12px; width:56px; height:56px; border-radius:50%; background:var(--brick); color:#fff; font-family:var(--font-display); font-size:34px; line-height:56px }
 .pillb { position:absolute; font-weight:900; font-size:30px; padding:10px 28px; border-radius:999px; background:var(--cream); color:var(--ink); white-space:nowrap; box-shadow:0 6px 0 rgba(0,0,0,.12) }
+.hl { position:absolute; border-radius:999px; border:4px solid #fff; box-shadow:0 0 0 7px rgba(214,98,52,.85), 0 0 0 18px rgba(214,98,52,.22), 0 10px 26px rgba(40,10,20,.25) }
+.hl i { position:absolute; right:-16px; bottom:-18px; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.95); box-shadow:0 0 0 6px rgba(214,98,52,.9), 0 6px 14px rgba(40,10,20,.3) }
 `

@@ -19,24 +19,22 @@ if (vuole('carosello')) {
   // carta di uno scontrino ritagliata alle righe (x 131-949 del PNG 1080x1920)
   const SCALA = 1
   const Y0 = 586
-  const cartaRighe = `<div class="cr" style="left:130px;top:330px;width:820px;height:540px"><img src="${M('nov-autunno.png')}" style="width:1080px;left:-130px;top:${-Y0}px" alt=""></div>`
-  const riga = (yImg) => yImg - Y0 + 330
-  const marker = (n, yImg) => `<div class="evid" style="left:140px;right:150px;top:${riga(yImg) - 28}px;height:56px"></div><div class="badge" style="left:50px;top:${riga(yImg) - 29}px">${n}</div>`
+  const TOP2 = 440
+  const cartaRighe = `<div class="cr" style="left:130px;top:${TOP2}px;width:820px;height:540px"><img src="${M('nov-autunno.png')}" style="width:1080px;left:-130px;top:${-Y0}px" alt=""></div>`
+  const riga = (yImg) => yImg - Y0 + TOP2
+  const marker = (n, yImg) => `<div class="evid" data-n="${n}" style="left:140px;right:150px;top:${riga(yImg) - 28}px;height:56px"></div>`
   const slides = [
     { nome: 'copertina', sfondo: 'crema', extraCss: CSS, body:
       `<div class="macchia" style="width:900px;height:900px;left:-380px;top:-320px"></div>` +
       `<div class="etichetta" style="top:92px">Novità di Frigolo 2.3</div>` +
       `<h1 style="top:150px;font-size:112px;text-align:left;right:360px">${fmt('La tua spesa ha uno *scontrino*')}</h1>` +
-      `<p class="t" style="top:760px;left:80px;right:auto;width:400px;font-size:42px">Il riepilogo di quello che avete messo in lista, da mandare o mettere nelle storie.</p>` +
+      `<p class="t" style="top:760px;left:80px;right:auto;width:400px;font-size:42px">Il riepilogo di quello che avete messo in lista, da salvare o pubblicare nelle storie!</p>` +
       sc('nov-autunno.png', 560, 330, 520, 6) +
       `<div class="pill" style="left:80px;top:1130px;background:var(--brick);color:#fff">Scorri ${'→'}</div>` + piede(1, tot, { destra: '' }) },
     { nome: 'cosa-ce-dentro', sfondo: 'arancio', extraCss: CSS, body:
       `<h2 style="top:80px;font-size:90px;text-align:center">${fmt('Cosa c\'è *dentro*')}</h2>` + cartaRighe +
       marker(1, 749) + marker(2, 813) + marker(3, 875) + marker(4, 1048) +
-      `<div class="chip" style="top:905px;left:140px"><span class="n">1</span>Re del mese <small>il prodotto più preso</small></div>` +
-      `<div class="chip" style="top:990px;left:140px"><span class="n">2</span>Chi ha messo più cose</div>` +
-      `<div class="chip" style="top:1075px;left:140px"><span class="n">3</span>Il record <small>la spesa più piena</small></div>` +
-      `<div class="chip" style="top:1160px;left:140px"><span class="n">4</span>Totale app: sempre 0,00</div>` + piede(2, tot) },
+      piede(2, tot) },
     { nome: 'sei-colori', sfondo: 'menta', extraCss: CSS, body:
       `<h2 style="top:80px;font-size:96px;text-align:center">${fmt('Sei colori, *scegli il tuo*')}</h2>` +
       ['autunno', 'basilico', 'mare', 'prugna', 'lampone', 'liquirizia'].map((t, i) => {
@@ -52,9 +50,9 @@ if (vuole('carosello')) {
       `<div class="pillb" style="left:195px;top:1100px">Con i nomi</div><div class="pillb" style="left:665px;top:1100px">Senza nomi</div>` + piede(4, tot) },
     { nome: 'tre-passi', sfondo: 'crema', extraCss: CSS, body:
       `<h2 style="top:80px;font-size:104px;text-align:center">${fmt('Si fa in *3 passi*')}</h2>` +
-      phone('home.png', 60, 330, 0, '<div class="ring" style="left:162px;top:6px;width:96px;height:62px"></div>') +
-      phone('giulia-scheda.png', 395, 330, 50, '<div class="ring" style="left:74px;top:132px;width:168px;height:54px"></div>') +
-      phone('giulia-foglio.png', 730, 330, 80, '<div class="ring" style="left:134px;top:398px;width:132px;height:56px"></div>') +
+      phone('home.png', 60, 330, 0, '<div class="hl" style="left:160px;top:4px;width:100px;height:66px"><i></i></div>') +
+      phone('giulia-scheda.png', 395, 330, 50, '<div class="hl" style="left:72px;top:130px;width:172px;height:58px"><i></i></div>') +
+      phone('giulia-foglio.png', 730, 330, 80, '<div class="hl" style="left:132px;top:396px;width:136px;height:60px"><i></i></div>') +
       `<div class="cap" style="left:55px;top:900px"><span class="n">1</span>${fmt('Tocca gli *avatar* in alto')}</div>` +
       `<div class="cap" style="left:390px;top:900px"><span class="n">2</span>${fmt('In *Lo scontrino* scegli il periodo e tocca Crea')}</div>` +
       `<div class="cap" style="left:725px;top:900px"><span class="n">3</span>${fmt('Scegli lo sfondo, poi *Condividi* o Scarica')}</div>` +
@@ -62,7 +60,7 @@ if (vuole('carosello')) {
     { nome: 'chiusura', sfondo: 'arancio', extraCss: CSS, body:
       `<div class="macchia" style="width:1000px;height:1000px;left:-420px;bottom:-440px"></div>` +
       `<h1 style="top:110px;font-size:84px;text-align:left;right:520px">${fmt('Fai il tuo, mettilo *nelle storie*')}</h1>` +
-      `<p class="t" style="top:640px;left:80px;right:auto;width:440px;font-size:42px;color:var(--cream)">Taggaci con <b style="color:var(--ink)">@frigolo.app</b>: ricondividiamo i più belli.</p>` +
+      `<p class="t" style="top:640px;left:80px;right:auto;width:440px;font-size:42px;color:var(--cream)">Taggaci con <b style="color:var(--ink)">@frigolo.app</b>: li ricondividiamo tutti!</p>` +
       sc('nov-mare.png', 590, 150, 420, -5) +
       mascotte('contenta', 'width:300px;left:100px;top:960px') +
       `<div class="pill" style="left:420px;top:1140px;background:var(--ink);color:var(--cream);white-space:nowrap">Link nella bio</div>` + piede(6, tot, { destra: '' }) },
@@ -78,14 +76,14 @@ Si fa in tre passi: tocca gli avatar per aprire le Analitiche, in "Lo scontrino"
 
 L'immagine si crea sul tuo telefono e non passa da nessun server.
 
-Fai il tuo, mettilo nelle storie e taggaci con @frigolo.app: ricondividiamo i più belli 💚
+Fai il tuo, mettilo nelle storie e taggaci con @frigolo.app: li ricondividiamo tutti 💚
 
 Link nella bio.
 
 #frigolo #listadellaspesa #scontrino #spesa #app #appitaliane #spesaintelligente #storieinstagram`,
     alt: [
       'Copertina: "La tua spesa ha uno scontrino", con uno scontrino di Frigolo inclinato su sfondo arancione e la scritta Scorri.',
-      '"Cosa c\'è dentro": un pezzo di scontrino con quattro righe evidenziate e numerate: Re del mese, chi ha messo più cose, il record e il totale app, sempre 0,00.',
+      '"Cosa c\'è dentro": un pezzo di scontrino con quattro righe evidenziate: Re del mese, chi ha messo più cose, il record e il totale app, sempre 0,00.',
       '"Sei colori, scegli il tuo": sei scontrini affiancati con sfondo Autunno, Basilico, Mare, Prugna, Lampone e Liquirizia.',
       '"I nomi li nascondi tu": due scontrini a confronto, uno con i nomi e uno senza.',
       '"Si fa in 3 passi": tre schermate dell\'app. 1 tocca gli avatar in alto, 2 in Lo scontrino scegli il periodo e tocca Crea, 3 scegli lo sfondo, poi Condividi o Scarica.',
