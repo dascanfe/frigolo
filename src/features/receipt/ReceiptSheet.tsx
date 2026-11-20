@@ -4,7 +4,7 @@
  * stanno in questo pezzo dell'app). L'immagine si crea sul telefono.
  */
 import { Download, Share2 } from 'lucide-react'
-import { useEffect, useId, useMemo, useState, useSyncExternalStore } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { memberName, useHousehold } from '@/features/auth/useHousehold'
@@ -82,6 +82,12 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
     })
   }, [trips.data, catalog.isPending, catalog.itemById, household.name, range, members, showNames])
 
+  // "scontrino_creato" si conta una volta per apertura del foglio, non a ogni ridisegno
+  const counted = useRef(false)
+  useEffect(() => {
+    if (!open) counted.current = false
+  }, [open])
+
   // Disegno: caratteri e mascotte prima, poi il canvas e il PNG
   useEffect(() => {
     if (!model) return
@@ -97,7 +103,10 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
         if (cancelled) return
         setRendered({ blob, url: URL.createObjectURL(blob) })
         setFailed(false)
-        recordEvent('scontrino_creato')
+        if (!counted.current) {
+          counted.current = true
+          recordEvent('scontrino_creato')
+        }
       } catch {
         if (!cancelled) setFailed(true)
       }

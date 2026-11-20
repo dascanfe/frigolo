@@ -105,8 +105,10 @@ o disinstallando l'app.
 Nelle analitiche puoi creare lo scontrino della tua lista: un'immagine con il riepilogo della
 spesa del periodo (quante spese, il prodotto preso più volte e simili). L'immagine si crea sul tuo
 telefono con i dati che l'app ha già: non passa dai nostri server e non la salviamo. La condividi
-solo se vuoi, con l'app che scegli tu, e prima puoi nascondere i nomi delle persone e della lista. Contiamo solo,
-in forma anonima, quante volte uno scontrino viene creato e condiviso.
+solo se vuoi, con l'app che scegli tu, che la tratta secondo le sue regole. Prima di condividerla
+puoi nascondere i nomi delle persone e della lista; i nomi dei prodotti invece restano, quindi
+controllali se ne hai creati con nomi personali. Contiamo solo, in forma anonima, quante volte uno
+scontrino viene creato e condiviso.
 
 **Donazioni**
 
