@@ -11,6 +11,7 @@ import { useListMutations } from '@/features/list/useToggleItem'
 import { it as t } from '@/i18n/it'
 import type { Item, ListEntryWithItem } from '@/types/domain'
 import { MESI } from './mesi'
+import { RecipeSteps } from './RecipeSteps'
 
 function tileState(entry: ListEntryWithItem | undefined): TileState {
   if (!entry) return 'idle'
@@ -19,7 +20,8 @@ function tileState(entry: ListEntryWithItem | undefined): TileState {
 
 /**
  * Ispirazioni del mese: una parola di Frigolo, cosa è di stagione e qualche
- * idea di piatto con gli ingredienti da mettere in lista con un tocco.
+ * idea di piatto con gli ingredienti da mettere in lista con un tocco e il
+ * procedimento da aprire con "Come si fa".
  * Tutto vive nell'app (mesi.ts + catalogo già in cache): funziona offline.
  */
 export function InspirationScreen() {
@@ -124,6 +126,7 @@ export function InspirationScreen() {
                 <ProductGrid label={`${t.inspiration.ingredients}: ${piatto.nome}`}>
                   {tiles(ingredienti)}
                 </ProductGrid>
+                <RecipeSteps nome={piatto.nome} passi={piatto.procedimento} />
               </section>
             )
           })}
