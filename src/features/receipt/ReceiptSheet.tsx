@@ -144,9 +144,26 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
     }
   }
 
-  function save() {
+  // Sul telefono "Salva" apre il foglio di condivisione con la sola immagine: da lì
+  // "Salva immagine" la mette in Foto (Safari non può scrivere da solo nella libreria;
+  // con un testo insieme all'immagine iOS nasconde "Salva immagine"). Altrove: download.
+  async function save() {
     if (!rendered) return
-    download(rendered.blob, receiptFileName(range))
+    const name = receiptFileName(range)
+    if (shareFiles) {
+      try {
+        const file = new File([rendered.blob], name, { type: 'image/png' })
+        await navigator.share({ files: [file] })
+        recordEvent('scontrino_condiviso')
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          download(rendered.blob, name)
+          toast('Scontrino salvato tra i download', 'success')
+        }
+      }
+      return
+    }
+    download(rendered.blob, name)
     recordEvent('scontrino_condiviso')
     toast('Scontrino salvato tra i download', 'success')
   }
@@ -233,11 +250,11 @@ export default function ReceiptSheet({ open, onClose, range }: ReceiptSheetProps
             <Button
               variant="secondary"
               className="flex-1"
-              onClick={save}
+              onClick={() => void save()}
               disabled={!rendered}
               icon={<Download size={18} aria-hidden="true" />}
             >
-              Scarica
+              {shareFiles ? 'Salva' : 'Scarica'}
             </Button>
             <Button
               className="flex-1"
