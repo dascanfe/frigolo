@@ -36,32 +36,34 @@ function chip(nome) {
 const CSS_MESE = `
 .chipP { display:inline-flex; align-items:center; gap:14px; background:var(--cream); color:var(--ink); font-weight:700; font-size:33px; padding:11px 24px 11px 16px; border-radius:999px; margin:0 12px 14px 0 }
 .chipP .ic svg { width:46px; height:46px; stroke-width:1.8; color:var(--brick); display:block }
-.grid3 { position:absolute; left:80px; right:80px; display:grid; grid-template-columns:repeat(3,1fr); gap:34px }
-.grid3 .tile { height:226px }
-.fit .riga { padding:10px 0 }
-.scontrino.fit .voce { padding:7px 0; font-size:40px }
-.scontrino.fit { padding:26px 50px 44px }
-.cop .tile { height:210px }
+.grid3 { position:absolute; left:80px; right:80px; display:grid; grid-template-columns:repeat(3,var(--S)); gap:var(--G); justify-content:center; --S:230px; --G:24px }
+.grid3.cop { --S:250px; --G:24px }
+.stretta h1 { font-size:80px !important }
+.stretta p.t { font-size:36px !important; line-height:1.25 }
+.stretta { gap:14px !important }
+.grid3.s { grid-template-columns:repeat(4,var(--S)); --S:196px; --G:20px }
+/* tessera identica a quella dell'app (ProductTile idle, tema Autunno): quadrata, raggio 18% del lato, bordo sabbia, nessuna ombra, icona ink-soft 25% del lato, nome Lato 700 al 12,6% del lato */
+.tile { width:var(--S); height:var(--S); aspect-ratio:1; box-sizing:border-box; padding:calc(var(--S)*.072); gap:calc(var(--S)*.054); border:calc(var(--S)*.0135) solid var(--sand); border-radius:calc(var(--S)*.18); background:var(--cream); box-shadow:none; color:var(--ink) }
+.tile .ic svg { width:calc(var(--S)*.252); height:calc(var(--S)*.252); stroke-width:1.75; color:var(--ink-soft) }
+.tile .nm { font-size:calc(var(--S)*.126); font-weight:700; line-height:1.15; max-height:2.3em; overflow:hidden }
 .nota { position:absolute; left:80px; right:80px; font-weight:700; font-size:38px; color:var(--soft) }
 .col { position:absolute; left:80px; right:80px; bottom:130px; display:flex; flex-direction:column; gap:24px }
 .col > h1, .col > p.t { position:static }
 /* prodotti più piccoli e leggeri (richiesta di Daniele, 19 novembre) */
-.riga { font-size:38px; font-weight:400; padding:14px 0 }
-.fit .riga { padding:9px 0 }
+.riga { font-size:38px; font-weight:400; padding:30px 0 }
+.fit .riga { padding:20px 0 }
+.carta { padding:44px 60px 40px !important }
+.scontrino { padding:44px 60px 60px !important }
+.scontrino.fit { padding:40px 60px 56px !important }
 .riga .ic svg { width:52px; height:52px }
 .riga .spunta { width:38px; height:38px; border-width:3px }
-.tile .nm { font-size:28px; font-weight:400 }
-.tile .ic svg { width:72px; height:72px }
-.scontrino .voce { font-size:38px; font-weight:400; padding:10px 0 }
-.scontrino.fit .voce { font-size:34px; padding:6px 0 }
+.scontrino .voce { font-size:38px; font-weight:400; padding:24px 0 }
+.scontrino.fit .voce { font-size:34px; padding:16px 0 }
 .chipP { font-size:28px; font-weight:400; gap:12px; padding:10px 22px 10px 14px }
 .chipP .ic svg { width:40px; height:40px }
-.fit2 .riga { padding:4px 0; font-size:35px }
+.fit2 .riga { padding:11px 0; font-size:35px }
 .fit2 .riga .ic svg { width:44px; height:44px }
 .fit2 .riga .spunta { width:32px; height:32px }
-.grid3.s { gap:22px }
-.grid3.s .tile { height:170px }
-.grid3.s .tile .ic svg { width:58px; height:58px }
 .num { position:absolute; right:80px; font-family:var(--font-display); font-style:italic; font-weight:700; font-size:150px; line-height:1; color:var(--acc); opacity:.9 }
 `
 
@@ -74,7 +76,7 @@ function slides(c) {
     `<div class="macchia" style="width:900px;height:900px;right:-300px;bottom:-330px"></div>` +
     `<div class="etichetta" style="top:92px;color:var(--cream)">La rubrica del mese</div>` +
     `<h1 style="top:150px;font-size:124px;text-align:center">${fmt('Cosa mettere|nel *carrello*|a ' + c.nome)}</h1>` +
-    `<div class="grid3 cop" style="top:640px">${c.copertina.map((n) => tile(n)).join('')}</div>` +
+    `<div class="grid3 cop" style="top:612px">${c.copertina.map((n) => tile(n)).join('')}</div>` +
     `<div class="nota" style="top:1160px;width:560px;color:var(--cream);line-height:1.25">Salvalo: ti serve alla prossima spesa.<br>Scorri ${'→'}</div>` +
     mascotte('contenta', 'width:290px;left:710px;top:1120px') })
   // 2-6 piatti
@@ -84,7 +86,8 @@ function slides(c) {
     let b = `<div class="etichetta" style="top:92px">Piatto ${i + 1} di 5</div>`
     b += `<div class="num" style="top:60px">${i + 1}</div>`
     if (L === 'A') b += `<div class="macchia" style="width:760px;height:760px;right:-260px;top:-300px"></div>`
-    b += `<div class="col" style="top:160px"><h1 style="font-size:104px;margin-right:130px">${fmt(c.titoli[i])}</h1><p class="t">${esc(p.idea)}</p>`
+    const stretta = (L === 'A' && p.ingredienti.length > 5) || L === 'B'
+    b += `<div class="col ${stretta ? 'stretta' : ''}" style="top:160px"><h1 style="font-size:104px;margin-right:130px">${fmt(c.titoli[i])}</h1><p class="t">${esc(p.idea)}</p>`
     if (L === 'A') {
       b += `<div class="carta ${p.ingredienti.length > 5 ? 'fit' : ''} ${p.ingredienti.length > 7 ? 'fit2' : ''}" style="position:static;margin-top:16px"><div style="font-family:var(--font-display);font-style:italic;font-size:40px;color:var(--brick)">Da mettere in lista</div>${p.ingredienti.map((n) => riga(n)).join('')}</div>`
     } else if (L === 'B') {
@@ -93,7 +96,7 @@ function slides(c) {
     } else {
       b += `<div class="grid3 ${p.ingredienti.length > 6 ? 's' : ''}" style="position:static;margin-top:26px">${p.ingredienti.map((n) => tile(n)).join('')}</div>`
     }
-    b += `<div class="nota" style="position:static;font-size:32px;font-weight:400;margin-top:${L === 'C' ? 18 : 4}px">Il procedimento è nell'app: "Come si fa", per 2 persone.</div>`
+    b += `<div class="nota" style="position:static;font-size:32px;font-weight:400;margin-top:${L === 'C' ? 18 : L === 'B' ? 44 : 4}px">Il procedimento è nell'app: "Come si fa", per 2 persone.</div>`
     b += `</div>` + piede(i + 2, tot)
     out.push({ nome: 'piatto-' + (i + 1), sfondo, body: b, extraCss: CSS_MESE })
   })
