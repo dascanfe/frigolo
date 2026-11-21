@@ -45,14 +45,14 @@ basta più.
 
 ### Scheda "Accedi"
 
-| Elemento          | Testo                 |
-| ----------------- | --------------------- |
-| Campo             | Email                 |
-| Segnaposto        | nome@esempio.it       |
-| Campo             | Password              |
-| Bottone           | Entra                 |
-| Secondario        | Password dimenticata? |
-| Bottone in attesa | Un attimo...          |
+| Elemento          | Testo                                     |
+| ----------------- | ----------------------------------------- |
+| Campo             | Email                                     |
+| Segnaposto        | nome@esempio.it                           |
+| Campo             | Password                                  |
+| Bottone           | Entra                                     |
+| Secondario        | Non ricordi la password? Creane una nuova |
+| Bottone in attesa | Un attimo...                              |
 
 ### Scheda "Registrati"
 
@@ -70,12 +70,21 @@ non si è per forza in due.
 
 Il captcha (Turnstile) non ha testo nostro. Se fallisce: vedi errori.
 
-### Recupero password (dalla scheda "Accedi")
+### Recupero password (schermata "Crea una nuova password")
 
-| Situazione        | Testo                                                                                      |
-| ----------------- | ------------------------------------------------------------------------------------------ |
-| Email non scritta | Scrivi prima la tua email, poi tocca "Password dimenticata?".                              |
-| Richiesta partita | Se {email} ha un account, ti arriva un'email con il link per scegliere una nuova password. |
+Si apre dal link sotto "Entra" (indirizzo `/password-dimenticata`, freccia indietro verso
+l'accesso). Testi veri in `src/i18n/it.ts` (`forgotPassword` e `newPassword`).
+
+| Situazione           | Testo                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Spiegazione          | Scrivi l'email del tuo account: ti mando un link per sceglierne una nuova.                                               |
+| Bottone              | Mandami il link                                                                                                          |
+| Richiesta partita    | Controlla la posta. Ti ho scritto a {email}. Se c'è un account Frigolo con questa email, dentro trovi il pulsante [...]. |
+| Sotto                | Il link vale 1 ora e si può usare una volta sola. Non la trovi? Guarda nella cartella spam o promozioni.                 |
+| Pagina del link      | Nuova password, Conferma password, Salva la nuova password                                                               |
+| Link scaduto o usato | Questo link non vale più. [...] Chiedine uno nuovo: ci vuole un attimo.                                                  |
+
+Il riscontro è lo stesso anche se l'email non ha un account: non si rivela chi è iscritto.
 
 ### Errori
 

@@ -11,6 +11,7 @@ import { useListMutations } from '@/features/list/useToggleItem'
 import { it as t } from '@/i18n/it'
 import type { Item, ListEntryWithItem } from '@/types/domain'
 import { MESI } from './mesi'
+import { RecipePhoto } from './RecipePhoto'
 import { RecipeSteps } from './RecipeSteps'
 
 function tileState(entry: ListEntryWithItem | undefined): TileState {
@@ -119,6 +120,7 @@ export function InspirationScreen() {
               .filter((item): item is Item => Boolean(item))
             return (
               <section key={piatto.nome} className="mb-9">
+                <RecipePhoto nome={piatto.nome} />
                 <h3 className="px-4 font-display text-lg font-bold leading-tight text-primary">
                   {piatto.nome}
                 </h3>

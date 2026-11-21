@@ -14,3 +14,9 @@ questi componenti di terze parti, ognuno con la sua licenza:
 Le altre dipendenze, con le loro licenze, sono elencate in `package.json` e nel file di blocco
 `pnpm-lock.yaml`. I testi completi delle licenze dei caratteri si trovano nei pacchetti
 `@fontsource/*` in `node_modules` e sul sito della SIL Open Font License.
+
+## Illustrazioni delle ricette
+
+Le illustrazioni dei piatti nelle Ispirazioni (`public/ricette/`) sono state create per Frigolo
+con un generatore di immagini, nello stile della mascotte. Non sono foto di terzi e non richiedono
+crediti.

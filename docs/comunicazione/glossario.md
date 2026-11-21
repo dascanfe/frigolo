@@ -47,42 +47,42 @@ persona al supermercato, e poi lo si aggiunge a questa pagina.
 
 Bottoni all'imperativo, alla seconda persona singolare, senza punto finale.
 
-| Azione                           | Testo del bottone     | Da evitare                         |
-| -------------------------------- | --------------------- | ---------------------------------- |
-| Registrazione                    | Crea l'account        | Sign up, Iscriviti ora             |
-| Accesso (scheda)                 | Accedi                | Login, Log in                      |
-| Accesso (bottone del modulo)     | Entra                 | Invia, Conferma                    |
-| Uscita dall'account              | Esci                  | Logout, Disconnetti                |
-| Andare avanti in un flusso       | Avanti                | Continua, Next, Procedi            |
-| Saltare un passaggio             | Lo faccio dopo        | Salta, Skip, Non ora               |
-| Creare una lista                 | Crea la lista         | Nuova household, Aggiungi lista    |
-| Entrare con un codice (scheda)   | Ho un codice          | Unisciti, Join                     |
-| Entrare in una lista             | Entra nella lista     | Unisciti al gruppo                 |
-| Cambiare lista                   | Cambia lista          | Switch, Seleziona workspace        |
-| Rinominare                       | Rinomina              | Modifica nome                      |
-| Lasciare una lista               | Lascia la lista       | Abbandona, Esci dal gruppo         |
-| Eliminare una lista              | Elimina la lista      | Cancella, Rimuovi                  |
-| Invitare                         | Invita qualcuno       | Invita il partner, Aggiungi membro |
-| Condividere l'invito             | Manda l'invito        | Share, Condividi link di join      |
-| Copiare                          | Copia (poi: Copiato)  | Copia negli appunti                |
-| Rinnovare codice e link d'invito | Nuovo invito          | Rigenera, Nuovo codice, Rinnova    |
-| Mettere in lista                 | Aggiungi alla lista   | Inserisci, Add                     |
-| Creare un prodotto               | Crea il prodotto      | Nuovo item                         |
-| Salvare                          | Salva                 | Conferma modifiche, OK             |
-| Annullare                        | Annulla               | Indietro (se annulla davvero)      |
-| Chiudere un foglio               | Chiudi                | X (senza etichetta accessibile)    |
-| Riprovare                        | Riprova               | Retry, Ricarica                    |
-| Archiviare un prodotto           | Archivia / Ripristina | Nascondi, Disattiva                |
-| Chiudere la spesa                | Spesa finita          | Completa spesa, Checkout           |
-| Confermare la spesa              | Conferma 12 prodotti  | OK, Fatto                          |
-| Cambiare password                | Cambia password       | Reset password                     |
-| Password dimenticata             | Password dimenticata? | Recupera credenziali               |
-| Rimandare l'email                | Mandala di nuovo      | Reinvia, Resend                    |
-| Scaricare i propri dati          | Scarica i tuoi dati   | Export, Esporta GDPR               |
-| Cancellare l'account             | Elimina l'account     | Cancella utente, Disattiva         |
-| Installare l'app                 | Installa              | Scarica, Download                  |
-| Aggiornare l'app                 | Aggiorna adesso       | Update                             |
-| Donare                           | Offrimi un caffè 💚   | Dona ora, Supporta                 |
+| Azione                           | Testo del bottone                         | Da evitare                                  |
+| -------------------------------- | ----------------------------------------- | ------------------------------------------- |
+| Registrazione                    | Crea l'account                            | Sign up, Iscriviti ora                      |
+| Accesso (scheda)                 | Accedi                                    | Login, Log in                               |
+| Accesso (bottone del modulo)     | Entra                                     | Invia, Conferma                             |
+| Uscita dall'account              | Esci                                      | Logout, Disconnetti                         |
+| Andare avanti in un flusso       | Avanti                                    | Continua, Next, Procedi                     |
+| Saltare un passaggio             | Lo faccio dopo                            | Salta, Skip, Non ora                        |
+| Creare una lista                 | Crea la lista                             | Nuova household, Aggiungi lista             |
+| Entrare con un codice (scheda)   | Ho un codice                              | Unisciti, Join                              |
+| Entrare in una lista             | Entra nella lista                         | Unisciti al gruppo                          |
+| Cambiare lista                   | Cambia lista                              | Switch, Seleziona workspace                 |
+| Rinominare                       | Rinomina                                  | Modifica nome                               |
+| Lasciare una lista               | Lascia la lista                           | Abbandona, Esci dal gruppo                  |
+| Eliminare una lista              | Elimina la lista                          | Cancella, Rimuovi                           |
+| Invitare                         | Invita qualcuno                           | Invita il partner, Aggiungi membro          |
+| Condividere l'invito             | Manda l'invito                            | Share, Condividi link di join               |
+| Copiare                          | Copia (poi: Copiato)                      | Copia negli appunti                         |
+| Rinnovare codice e link d'invito | Nuovo invito                              | Rigenera, Nuovo codice, Rinnova             |
+| Mettere in lista                 | Aggiungi alla lista                       | Inserisci, Add                              |
+| Creare un prodotto               | Crea il prodotto                          | Nuovo item                                  |
+| Salvare                          | Salva                                     | Conferma modifiche, OK                      |
+| Annullare                        | Annulla                                   | Indietro (se annulla davvero)               |
+| Chiudere un foglio               | Chiudi                                    | X (senza etichetta accessibile)             |
+| Riprovare                        | Riprova                                   | Retry, Ricarica                             |
+| Archiviare un prodotto           | Archivia / Ripristina                     | Nascondi, Disattiva                         |
+| Chiudere la spesa                | Spesa finita                              | Completa spesa, Checkout                    |
+| Confermare la spesa              | Conferma 12 prodotti                      | OK, Fatto                                   |
+| Cambiare password                | Cambia password                           | Reset password                              |
+| Password dimenticata             | Non ricordi la password? Creane una nuova | Recupera credenziali, Password dimenticata? |
+| Rimandare l'email                | Mandala di nuovo                          | Reinvia, Resend                             |
+| Scaricare i propri dati          | Scarica i tuoi dati                       | Export, Esporta GDPR                        |
+| Cancellare l'account             | Elimina l'account                         | Cancella utente, Disattiva                  |
+| Installare l'app                 | Installa                                  | Scarica, Download                           |
+| Aggiornare l'app                 | Aggiorna adesso                           | Update                                      |
+| Donare                           | Offrimi un caffè 💚                       | Dona ora, Supporta                          |
 
 ## Messaggi di attesa
 

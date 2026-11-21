@@ -70,23 +70,27 @@ seguito dal link per intero.
 
 ## 2. Recupero password
 
-Template Supabase: `recovery` ("Reset password").
+Template Supabase: `recovery` ("Reset password"). Parte dalla schermata "Crea una nuova password"
+dell'app (`/password-dimenticata`, link "Non ricordi la password? Creane una nuova" sotto
+l'accesso). Il link porta alla pagina con "Nuova password" e "Conferma password"; se è scaduto o
+già usato, l'app lo spiega e offre di chiederne uno nuovo.
 
-**Oggetto:** Scegli una nuova password
+**Oggetto:** Crea una nuova password
 
-**Anteprima:** Hai chiesto di cambiare la password di Frigolo.
+**Anteprima:** Un tocco e scegli la nuova password. Il link vale 1 ora.
 
 **Corpo:**
 
 > Ciao!
 >
-> Qualcuno, probabilmente tu, ha chiesto di cambiare la password di Frigolo per
-> {{ .Email }}.
+> Qualcuno, probabilmente tu, ha chiesto una nuova password di Frigolo per {{ .Email }}. Tocca
+> il pulsante e sceglila.
 >
-> **[Scegli la nuova password]** →
+> **[Crea una nuova password]** →
 > `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`
 >
-> Il link vale 1 ora e funziona da qualunque telefono o browser.
+> Il link vale **1 ora** e si può usare una volta sola, da qualunque telefono o browser. Se è
+> scaduto, chiedine uno nuovo da "Non ricordi la password?" nella schermata di accesso.
 >
 > Se non hai chiesto tu, ignora questa email: la password resta quella di prima.
 >
@@ -141,8 +145,8 @@ Avvisa se qualcun altro è entrato nell'account. Non ha bottone di conferma.
 >
 > Se l'hai cambiata tu, non devi fare niente.
 >
-> Se non l'hai cambiata tu, scegli subito una nuova password da "Password dimenticata?" nella
-> schermata di accesso.
+> Se non l'hai cambiata tu, crea subito una nuova password da "Non ricordi la password? Creane
+> una nuova" nella schermata di accesso.
 >
 > **[Apri Frigolo]** → `{{ .SiteURL }}`
 >
@@ -179,13 +183,13 @@ una funzione dell'app. `{nome}`, `{lista}`, `{link}` li riempie quella funzione.
 
 ## Riepilogo
 
-| Template Supabase               | Oggetto                                | Bottone                  |
-| ------------------------------- | -------------------------------------- | ------------------------ |
-| `confirmation`                  | Conferma la tua email                  | Conferma l'email         |
-| `recovery`                      | Scegli una nuova password              | Scegli la nuova password |
-| `email_change`                  | Conferma la nuova email                | Conferma il cambio       |
-| `password_changed_notification` | La password di Frigolo è cambiata      | Apri Frigolo             |
-| (funzione dell'app, futura)     | {nome} ti invita nella lista "{lista}" | Entra nella lista        |
+| Template Supabase               | Oggetto                                | Bottone                 |
+| ------------------------------- | -------------------------------------- | ----------------------- |
+| `confirmation`                  | Conferma la tua email                  | Conferma l'email        |
+| `recovery`                      | Crea una nuova password                | Crea una nuova password |
+| `email_change`                  | Conferma la nuova email                | Conferma il cambio      |
+| `password_changed_notification` | La password di Frigolo è cambiata      | Apri Frigolo            |
+| (funzione dell'app, futura)     | {nome} ti invita nella lista "{lista}" | Entra nella lista       |
 
 I primi quattro sono in `supabase/templates/` con lo stesso nome di file.
 

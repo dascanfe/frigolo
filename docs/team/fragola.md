@@ -32,6 +32,26 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-11-20 - Recupero password (branch `fragola/recupero-password`, versione 2.4.1)
+
+- Ripreso il lavoro interrotto (stash "recupero-password-annullato"; il commit `95c348f` era già
+  in `main`) e completato.
+- Accesso: sotto "Entra" il link "Non ricordi la password? Creane una nuova".
+- `ForgotPasswordScreen.tsx` su `/password-dimenticata` (`authRoute.ts`, `useSignedOutRoute.ts`:
+  indirizzo vero, tasto indietro del telefono e freccia come nel resto dell'app). Email già
+  compilata se scritta nell'accesso, Turnstile (`action="recovery"`), "Mandami il link", poi
+  "Controlla la posta" con spam e durata di 1 ora. Stesso messaggio per email non registrate;
+  rete assente e limite di invii con i messaggi di `describeAuthError`.
+- `UpdatePasswordScreen.tsx`: "Nuova password" e "Conferma password" con mostra/nascondi, regole
+  spuntate (`passwordRules.ts`, minimo 10), "Password cambiata!" e "Vai alla tua lista". Link
+  scaduto o usato: schermata "Questo link non vale più" con "Chiedi un link nuovo"; se la sessione
+  del link scade mentre si scrive, la stessa spiegazione nella pagina.
+- Mail `recovery`: oggetto e pulsante "Crea una nuova password", durata in grassetto, link di
+  riserva che va a capo solo nell'indirizzo. In produzione serve `supabase config push`.
+- Provato in locale con `giulia@frigolo.test` (Mailpit, password riportata a quella di prima).
+  Il Supabase locale legge i template dal worktree di Basilio: la mail nuova l'ho vista
+  rimandando in Mailpit il template di questo branch con il token vero.
+
 ### 2026-11-20 - Ricette nelle Ispirazioni (branch `fragola/ricette`, versione 2.4.0)
 
 - `mesi.ts`: 60 piatti rivisti (16 nuovi, scelti per stagione e varietà: primi, secondi, contorni,

@@ -1,5 +1,5 @@
-import { KeyRound } from 'lucide-react'
-import { useState } from 'react'
+import { Check, Circle, KeyRound } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Button } from '@/components/Button'
 import { PasswordField } from '@/components/PasswordField'
@@ -7,7 +7,8 @@ import { it as t } from '@/i18n/it'
 import { MIN_PASSWORD_LENGTH, describeAuthError } from '@/lib/authErrors'
 import { isStandalone } from '@/lib/pwa'
 import { supabase } from '@/lib/supabase'
-import { toast } from '@/lib/toast'
+import { FORGOT_PASSWORD_PATH } from './authRoute'
+import { checkNewPassword, isSessionGone } from './passwordRules'
 import { signOut } from './useSession'
 
 interface UpdatePasswordScreenProps {
@@ -15,16 +16,29 @@ interface UpdatePasswordScreenProps {
   onDone: () => void
 }
 
-/** Mostrata dopo aver aperto il link "password dimenticata" */
+type Step = 'form' | 'saved' | 'expired'
+
+/**
+ * Mostrata dopo aver aperto il link dell'email "Crea una nuova password"
+ * (/auth/confirm con type=recovery). Il link scaduto o già usato non arriva
+ * qui: lo spiega LoginScreen. Se invece la sessione del link scade mentre la
+ * pagina è aperta, lo si spiega qui e si offre un link nuovo.
+ */
 export function UpdatePasswordScreen({ onDone }: UpdatePasswordScreenProps) {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [saved, setSaved] = useState(false)
+  const [step, setStep] = useState<Step>('form')
+  const heading = useRef<HTMLHeadingElement>(null)
 
-  const mismatch = confirm.length > 0 && password !== confirm
-  const canSave = !busy && password.length >= MIN_PASSWORD_LENGTH && confirm.length > 0 && !mismatch
+  const checks = checkNewPassword(password, confirm, MIN_PASSWORD_LENGTH)
+  const canSave = !busy && checks.valid
+
+  // a ogni cambio di passo il focus va al titolo: il lettore di schermo lo legge
+  useEffect(() => {
+    if (step !== 'form') heading.current?.focus()
+  }, [step])
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -34,20 +48,20 @@ export function UpdatePasswordScreen({ onDone }: UpdatePasswordScreenProps) {
     const { error: updateError } = await supabase.auth.updateUser({ password })
     setBusy(false)
     if (updateError) {
-      setError(describeAuthError(updateError))
+      if (isSessionGone(updateError)) setStep('expired')
+      else setError(describeAuthError(updateError))
       return
     }
-    if (isStandalone()) {
-      // aperta dall'app installata: si entra direttamente
-      toast(t.newPassword.changedToast, 'success')
-      onDone()
-    } else {
-      // aperta dal browser: l'app installata è un'altra finestra, ci si rientra da lì
-      setSaved(true)
-    }
+    setStep('saved')
   }
 
-  if (saved) {
+  function askNewLink() {
+    // dopo l'uscita LoginScreen legge l'indirizzo e apre "Crea una nuova password"
+    window.history.replaceState(null, '', FORGOT_PASSWORD_PATH)
+    void signOut()
+  }
+
+  if (step === 'saved') {
     return (
       <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-6 px-6 pb-safe pt-safe text-center">
         <img
@@ -58,14 +72,65 @@ export function UpdatePasswordScreen({ onDone }: UpdatePasswordScreenProps) {
           className="size-36 drop-shadow-[0_8px_16px_rgb(58_44_33/0.15)]"
           draggable={false}
         />
-        <h1 className="font-display text-3xl font-bold text-primary">{t.newPassword.doneTitle}</h1>
-        <p className="text-secondary">{t.newPassword.doneMessage}</p>
-        <Button variant="ghost" onClick={onDone}>
-          {t.newPassword.continueHere}
+        <div className="flex flex-col gap-3" role="status" aria-live="polite">
+          <h1
+            ref={heading}
+            tabIndex={-1}
+            className="font-display text-3xl font-bold text-primary focus:outline-none"
+          >
+            {t.newPassword.doneTitle}
+          </h1>
+          <p className="text-secondary">{t.newPassword.doneMessage}</p>
+          {!isStandalone() && (
+            <p className="text-sm text-secondary">{t.newPassword.doneInstalled}</p>
+          )}
+        </div>
+        <Button fullWidth onClick={onDone}>
+          {t.newPassword.enter}
         </Button>
       </main>
     )
   }
+
+  if (step === 'expired') {
+    return (
+      <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6 pb-safe pt-safe">
+        <header className="flex flex-col items-center gap-3 text-center">
+          <img
+            src="/mascot-sad.webp"
+            alt=""
+            width={112}
+            height={112}
+            className="size-28 drop-shadow-[0_8px_16px_rgb(58_44_33/0.15)]"
+            draggable={false}
+          />
+          <h1
+            ref={heading}
+            tabIndex={-1}
+            className="font-display text-3xl font-bold text-primary focus:outline-none"
+          >
+            {t.newPassword.expiredTitle}
+          </h1>
+          <p className="text-secondary" role="alert">
+            {t.newPassword.expiredBody}
+          </p>
+        </header>
+        <div className="flex flex-col items-center gap-1">
+          <Button fullWidth onClick={askNewLink}>
+            {t.authLink.newRecoveryLink}
+          </Button>
+          <Button variant="ghost" onClick={() => void signOut()}>
+            {t.authLink.backToLogin}
+          </Button>
+        </div>
+      </main>
+    )
+  }
+
+  const rules = [
+    { ok: checks.longEnough, label: t.newPassword.ruleLength(MIN_PASSWORD_LENGTH) },
+    { ok: checks.matches, label: t.newPassword.ruleMatch },
+  ]
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6 pb-safe pt-safe">
@@ -76,31 +141,59 @@ export function UpdatePasswordScreen({ onDone }: UpdatePasswordScreenProps) {
         <h1 className="font-display text-3xl font-bold text-primary">{t.newPassword.title}</h1>
         <p className="text-secondary">{t.newPassword.lead}</p>
       </header>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
         <PasswordField
           label={t.newPassword.password}
-          hint={`Almeno ${MIN_PASSWORD_LENGTH} caratteri.`}
+          name="new-password"
           autoComplete="new-password"
           required
           minLength={MIN_PASSWORD_LENGTH}
           autoFocus
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value)
+            setError(null)
+          }}
         />
         <PasswordField
           label={t.newPassword.confirm}
+          name="confirm-password"
           autoComplete="new-password"
           required
           minLength={MIN_PASSWORD_LENGTH}
           value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          error={mismatch ? t.newPassword.mismatch : error}
+          onChange={(e) => {
+            setConfirm(e.target.value)
+            setError(null)
+          }}
+          error={checks.mismatch ? t.newPassword.mismatch : error}
         />
+        <ul aria-label={t.newPassword.rulesLabel} className="flex flex-col gap-1.5 text-sm">
+          {rules.map(({ ok, label }) => (
+            <li
+              key={label}
+              className={[
+                'flex items-center gap-2',
+                ok ? 'font-bold text-primary' : 'text-secondary',
+              ].join(' ')}
+            >
+              {ok ? (
+                <Check size={16} strokeWidth={3} className="text-accent" aria-hidden="true" />
+              ) : (
+                <Circle size={16} aria-hidden="true" />
+              )}
+              {label}
+              <span className="sr-only">
+                {`: ${ok ? t.newPassword.ruleDone : t.newPassword.ruleTodo}`}
+              </span>
+            </li>
+          ))}
+        </ul>
         <Button type="submit" fullWidth disabled={!canSave}>
           {busy ? t.newPassword.saving : t.newPassword.save}
         </Button>
         <div className="flex justify-center">
-          <Button variant="ghost" onClick={() => signOut()}>
+          <Button variant="ghost" onClick={() => void signOut()}>
             {t.newPassword.cancel}
           </Button>
         </div>
