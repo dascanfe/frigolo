@@ -33,6 +33,10 @@ describe('illustrazioni delle ricette', () => {
     }
   })
 
+  it('ogni piatto ha la sua illustrazione', () => {
+    for (const nome of piatti) expect(illustrazioneDelPiatto(nome), nome).not.toBeNull()
+  })
+
   it('un piatto senza illustrazione restituisce null', () => {
     expect(illustrazioneDelPiatto('Piatto che non esiste')).toBeNull()
   })
