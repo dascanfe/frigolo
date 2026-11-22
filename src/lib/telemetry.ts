@@ -10,19 +10,30 @@
  *   apertura, senza doppioni. Gli errori di render (schermata di cortesia) hanno
  *   il prefisso "[render]" e, in coda, componente e file:riga.
  *
+ * - ingressi nelle sezioni (lista, catalogo, ispirazioni, analitiche,
+ *   impostazioni, scontrino) e aperture di "Come si fa" con lo slug del piatto
+ *   (testi di Frigolo, il server accetta solo i suoi 60 slug). Con un tetto per
+ *   apertura contro i conteggi gonfiati.
+ *
  * Sessione: parte all'apertura e quando la pagina torna visibile; finisce
  * quando la pagina resta nascosta per più di 30 secondi. Se l'app viene chiusa
  * mentre è nascosta, la sessione si manda alla prossima apertura (localStorage).
  */
 import { isStandalone } from './pwa'
 import { getTheme } from './theme'
+import type * as ModuloSupabase from './supabase'
 
 const VERSIONE = __APP_VERSION__
 const PAUSA_MS = 30_000
 const MAX_ERRORI = 10
 const CHIAVE_IN_SOSPESO = 'frigolo.sessione'
 
-type Rpc = 'metrics_record_session' | 'metrics_record_error' | 'metrics_record_event'
+type Rpc =
+  | 'metrics_record_session'
+  | 'metrics_record_error'
+  | 'metrics_record_event'
+  | 'metrics_record_visit'
+  | 'metrics_record_recipe'
 
 /** Eventi dell'app: elenco chiuso, lo stesso della RPC metrics_record_event. */
 export type EventoApp =
@@ -45,12 +56,20 @@ let offline = false
 let attivo = false
 const erroriInviati = new Set<string>()
 
+// il client si carica una volta sola, anche con più invii in parallelo; se il
+// caricamento fallisce (per esempio offline) si riprova al prossimo invio
+let clienteInArrivo: Promise<typeof ModuloSupabase> | null = null
+
 async function invia(fn: Rpc, args: Record<string, unknown>) {
   try {
-    const { supabase } = await import('./supabase')
+    clienteInArrivo ??= import('./supabase').catch((e: unknown) => {
+      clienteInArrivo = null
+      throw e
+    })
+    const { supabase } = await clienteInArrivo
     const { data } = await supabase.auth.getSession()
     if (!data.session) return
-    // le due RPC non sono nei tipi generati: chiamata senza tipi
+    // le RPC delle metriche non sono nei tipi generati: chiamata senza tipi
     const rpc = supabase.rpc.bind(supabase) as unknown as (
       f: string,
       a: Record<string, unknown>,
@@ -79,6 +98,54 @@ export function recordEvent(evento: EventoApp, ancheRipetuto = false) {
   if (!ancheRipetuto && eventiInviati.has(evento)) return
   eventiInviati.add(evento)
   void invia('metrics_record_event', { p_evento: evento })
+}
+
+/** Sezioni dell'app: elenco chiuso, lo stesso della RPC metrics_record_visit. */
+export type Sezione =
+  'lista' | 'catalogo' | 'ispirazioni' | 'analitiche' | 'impostazioni' | 'scontrino'
+
+/** Ingressi contati al massimo per sezione, per apertura dell'app */
+export const MAX_VISITE_PER_SEZIONE = 20
+/** Ricette ("Come si fa") contate al massimo per apertura dell'app */
+export const MAX_RICETTE = 30
+
+const PERCORSI: Record<string, Sezione> = {
+  '/': 'lista',
+  '/catalogo': 'catalogo',
+  '/ispirazioni': 'ispirazioni',
+  '/analitiche': 'analitiche',
+  '/impostazioni': 'impostazioni',
+}
+
+/** La sezione di un percorso dell'app, o null (pagine di sviluppo, indirizzi sconosciuti) */
+export function sezioneDelPercorso(pathname: string): Sezione | null {
+  const pulito = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname
+  return PERCORSI[pulito] ?? null
+}
+
+const visite = new Map<Sezione, number>()
+/**
+ * Conta un ingresso in una sezione (solo il nome, da un elenco chiuso). Ogni
+ * ingresso conta, ma al massimo MAX_VISITE_PER_SEZIONE per sezione e apertura.
+ */
+export function recordVisit(sezione: Sezione) {
+  const n = visite.get(sezione) ?? 0
+  if (n >= MAX_VISITE_PER_SEZIONE) return
+  visite.set(sezione, n + 1)
+  void invia('metrics_record_visit', { p_sezione: sezione })
+}
+
+const ricette = new Set<string>()
+/**
+ * Conta l'apertura di "Come si fa". Lo slug è quello del piatto (testo di
+ * Frigolo, mai dell'utente). Ogni piatto una volta per apertura, al massimo
+ * MAX_RICETTE piatti.
+ */
+export function recordRecipe(slug: string) {
+  if (!/^[a-z0-9-]{1,60}$/.test(slug)) return
+  if (ricette.has(slug) || ricette.size >= MAX_RICETTE) return
+  ricette.add(slug)
+  void invia('metrics_record_recipe', { p_piatto: slug })
 }
 
 /** Toglie dal testo email, id, parametri degli indirizzi, token e numeri lunghi. */

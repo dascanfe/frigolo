@@ -6,6 +6,7 @@
 import { Receipt } from 'lucide-react'
 import { Suspense, lazy, useMemo, useState } from 'react'
 import { Button } from '@/components/Button'
+import { recordVisit } from '@/lib/telemetry'
 import { RECEIPT_PERIODS, receiptRange } from './receiptModel'
 import type { ReceiptPeriod } from './receiptModel'
 
@@ -66,6 +67,7 @@ export function ReceiptCard() {
           onPointerEnter={() => void loadSheet()}
           onPointerDown={() => void loadSheet()}
           onClick={() => {
+            recordVisit('scontrino')
             setMounted(true)
             setOpen(true)
           }}

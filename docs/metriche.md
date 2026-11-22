@@ -156,6 +156,23 @@ entrano nelle metriche della spesa.
 | Aggiornamenti            | Barra "versione nuova" mostrata e "Aggiorna ora" toccato; per ogni giorno, quota delle sessioni sull'ultima versione vista nel periodo.                                                     |
 | Orari d'uso              | Sessioni per giorno della settimana e ora di inizio (ora del telefono). Le sessioni di prima della 2.1.0 non hanno l'ora.                                                                   |
 
+### Utilizzo delle sezioni e delle ricette (migration 0033, app 2.6.0)
+
+Nomi fissi, mai testi delle persone. Contatori in `metrics.daily_counts` (`vis_<sezione>`,
+`come_si_fa`, `piatto_<slug>`) e, solo per contare le persone diverse, `metrics.event_days`
+(utente, giorno, evento): come `active_days`, tenuta 180 giorni, cancellata con l'account, mai
+esposta riga per riga.
+
+| Metrica                      | Definizione                                                                                                                                                                                     |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Visite per sezione           | Ingressi in lista, catalogo, ispirazioni, analitiche, impostazioni e scontrino (apertura del foglio). Ogni cambio di rotta conta, al massimo 20 per sezione per apertura; dal server 200 l'ora. |
+| Persone per sezione          | Persone diverse che hanno aperto la sezione nel periodo (da `event_days`).                                                                                                                      |
+| Persone nel periodo          | Chi ha aperto almeno una sezione o ha fatto un'azione (`event_days` più `active_days`): è la base delle quote.                                                                                  |
+| Come si fa                   | Tocchi che aprono il procedimento di un piatto: una volta per piatto e per apertura, al massimo 30 piatti; dal server 60 l'ora. Persone diverse che l'hanno aperto.                             |
+| Persone che guardano ricette | Persone diverse che hanno aperto Ispirazioni o un "Come si fa".                                                                                                                                 |
+| Piatti più letti             | Top 15 dei piatti aperti con "Come si fa". Lo slug si accetta solo se è fra i 60 di `metrics.piatti`, altrimenti si scarta (resta il conteggio generico).                                       |
+| Quota che apre Ispirazioni   | Persone che hanno aperto Ispirazioni diviso persone nel periodo. Le versioni prima della 2.6.0 non mandano le visite: nei primi giorni la quota è più bassa del vero.                           |
+
 Ogni riquadro del cruscotto ha una "i" con due righe: cosa misura e perché ci interessa.
 
 ## Obiettivi di lancio (proposta di Pepe, da concordare con Salvia)

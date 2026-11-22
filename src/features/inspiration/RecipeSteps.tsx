@@ -1,6 +1,8 @@
 import { ChefHat, ChevronDown } from 'lucide-react'
 import { useId, useState } from 'react'
 import { it as t } from '@/i18n/it'
+import { recordRecipe } from '@/lib/telemetry'
+import { slugPiatto } from './illustrazioni'
 
 /** Spazio unificatore tra numero e unità ("500 g", "180 °C"): non vanno a capo separati */
 function tieneUnita(testo: string) {
@@ -30,7 +32,11 @@ export function RecipeSteps({ nome, passi }: RecipeStepsProps) {
         className="-ml-3 inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-bold text-accent active:bg-sand/40"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          // metriche anonime: solo l'apertura, con lo slug del piatto
+          if (!open) recordRecipe(slugPiatto(nome))
+          setOpen(!open)
+        }}
       >
         <ChefHat size={16} strokeWidth={2.25} aria-hidden="true" />
         {t.inspiration.howTo}

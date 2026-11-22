@@ -32,6 +32,20 @@ Provato solo in locale (migration 0001-0023, utenti di `supabase/checks/seed_dev
 
 ## Diario
 
+### 2026-11-22 - Utilizzo delle sezioni e delle ricette (branch `fragola/analitiche-uso`, versione 2.6.0)
+
+- Migration 0033: `metrics_record_visit(p_sezione)` (elenco chiuso, limite 'visita' 200
+  l'ora) e `metrics_record_recipe(p_piatto)` (limite 'ricetta' 60 l'ora, piatto solo se è in
+  `metrics.piatti`, i 60 slug di `mesi.ts`); `metrics.event_days` per le persone diverse
+  (180 giorni, cascade con l'account); `metrics.utilizzo(da, a)` in `metrics_app`,
+  `periodo` e `periodo_corto`. Test che tiene allineati gli slug della migration e di `mesi.ts`.
+- Client: `recordVisit` nel layout al cambio rotta (tetto 20 per sezione per apertura),
+  scontrino all'apertura del foglio, `recordRecipe` all'apertura di "Come si fa" (un piatto
+  una volta per apertura, tetto 30). Il client Supabase in `telemetry.ts` si carica una volta.
+- Provato in locale nel browser e con le RPC (account demo): conteggi, scarto di
+  sezioni e piatti inventati, limite 200, account esclusi, cancellazione a cascata.
+- Cruscotto e informativa del sito nel pacchetto FTP `2026-11-22-utilizzo` (fuori dal repo).
+
 ### 2026-11-20 - Recupero password (branch `fragola/recupero-password`, versione 2.4.1)
 
 - Ripreso il lavoro interrotto (stash "recupero-password-annullato"; il commit `95c348f` era già
