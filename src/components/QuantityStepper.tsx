@@ -1,6 +1,7 @@
 import { Minus, Plus } from 'lucide-react'
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { UNIT_STEPS, isUnit } from '@/types/domain'
+import { formatQuantity, parseQuantity } from './quantity'
 
 interface QuantityStepperProps {
   value: number
@@ -24,8 +25,14 @@ export function QuantityStepper({
   const id = useId()
   const step = isUnit(unit) ? UNIT_STEPS[unit] : 1
   const min = step
+  // Testo che si sta scrivendo: può restare vuoto o a metà ("1,") finché il
+  // campo ha il focus, senza che il numero di prima ricompaia.
+  const [bozza, setBozza] = useState<string | null>(null)
 
-  const set = (next: number) => onChange(Math.max(min, roundTo(next, step)))
+  const set = (next: number) => {
+    setBozza(null)
+    onChange(Math.max(min, roundTo(next, step)))
+  }
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -44,14 +51,21 @@ export function QuantityStepper({
         </button>
         <input
           id={id}
-          type="number"
+          type="text"
           inputMode="decimal"
-          min={min}
-          step={step}
-          value={value}
+          autoComplete="off"
+          value={bozza ?? formatQuantity(value)}
+          onFocus={(e) => e.currentTarget.select()}
           onChange={(e) => {
-            const parsed = Number.parseFloat(e.target.value.replace(',', '.'))
-            if (Number.isFinite(parsed) && parsed > 0) onChange(parsed)
+            const testo = e.target.value
+            setBozza(testo)
+            const parsed = parseQuantity(testo)
+            if (parsed !== null) onChange(parsed)
+          }}
+          onBlur={() => {
+            // campo lasciato vuoto o non valido: torna l'ultima quantità buona
+            if (bozza !== null && parseQuantity(bozza) === null) onChange(Math.max(min, value))
+            setBozza(null)
           }}
           className="w-full min-w-0 flex-1 border-x border-subtle bg-transparent text-center text-lg font-black text-primary focus:outline-none"
         />
