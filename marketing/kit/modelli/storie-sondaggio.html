@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+  Storie leggere per i sondaggi (1080x1920). Si configura con ?d=<JSON>.
+    tipo      domanda | confessione | risultati
+    Zone sicure Instagram: fascia alta 250 px e bassa 340 px libere.
+    Il riquadro tratteggiato e' solo un segnaposto leggero per lo sticker: resta sotto lo sticker.
+  Rendering: node marketing/kit/scripts/storie-sondaggio.mjs
+-->
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Frigolo - Storie sondaggio</title>
+    <link rel="stylesheet" href="kit.css" />
+    <style>
+      :root { --w:1080px; --h:1920px; }
+      body { background:#000; }
+      .canvas { position:relative; width:1080px; height:1920px; overflow:hidden; background:var(--bg); color:var(--ink); font-family:var(--font-body); }
+      .canvas.menta { background:var(--mint); color:var(--mint-deep); --acc:#ce5f36; }
+      .canvas.crema { --acc:#ce5f36; }
+      .macchia { position:absolute; border-radius:50%; }
+      h1 { position:absolute; left:90px; right:90px; font-family:var(--font-display); font-weight:700; line-height:1.06; letter-spacing:-.01em; text-align:center; }
+      h1 em { color:var(--acc); font-style:italic; }
+      /* spazio libero per gli sticker: niente segnaposto visibile, lo sticker non copre mai esattamente un riquadro */
+      .slot { position:absolute; left:140px; width:800px; }
+      .mascotte { position:absolute; }
+      .sotto { position:absolute; left:90px; right:90px; text-align:center; font-weight:700; font-size:44px; }
+      .telefono { position:absolute; left:50%; transform:translateX(-50%); padding:12px; border-radius:62px; background:#2a1219; box-shadow:0 24px 60px rgba(40,10,20,.3); }
+      .telefono img { display:block; width:100%; height:auto; border-radius:50px; }
+    </style>
+  </head>
+  <body>
+    <div class="canvas" id="c"></div>
+    <script>
+      const d = JSON.parse(new URLSearchParams(location.search).get('d'))
+      const fmt = (s) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/\|/g,'<br>')
+      const c = document.getElementById('c')
+      let h = ''
+      if (d.tipo === 'domanda') {
+        c.className = 'canvas crema'
+        h += '<div class="macchia" style="width:900px;height:900px;left:-260px;bottom:-180px;background:var(--sand);opacity:.6"></div>'
+        h += '<h1 style="top:290px;font-size:112px">'+fmt('Come fai la|*lista della spesa*?')+'</h1>'
+        h += '<div class="slot" style="top:700px;height:520px"></div>'
+        h += '<img class="mascotte" src="../mascotte/frigolo-pensierosa.png" style="width:380px;left:350px;top:1210px" alt="">'
+      } else if (d.tipo === 'confessione') {
+        c.className = 'canvas menta'
+        h += '<div class="macchia" style="width:1000px;height:1000px;right:-300px;bottom:-260px;background:rgba(250,243,236,.5)"></div>'
+        h += '<h1 style="top:290px;font-size:112px">'+fmt('Io la tenevo in *chat*.')+'</h1>'
+        h += '<h1 style="top:620px;font-size:84px;color:var(--mint-deep)">Il latte si perdeva sempre 🥛</h1>'
+        h += '<div class="slot" style="top:900px;height:300px"></div>'
+        h += '<img class="mascotte" src="../mascotte/frigolo-dispiaciuta.png" style="width:370px;left:355px;top:1220px" alt="">'
+      } else {
+        c.className = 'canvas crema'
+        h += '<div class="macchia" style="width:1100px;height:1100px;left:-300px;top:700px;background:var(--sand);opacity:.55"></div>'
+        h += '<h1 style="top:280px;font-size:104px">'+fmt('C\'è un modo|*più comodo*')+'</h1>'
+        h += `<div class="telefono" style="top:560px;width:392px"><img src="../../../${d.schermata}" alt=""></div>`
+        h += '<img class="mascotte" src="../mascotte/frigolo-contenta.png" style="width:300px;left:700px;top:1090px" alt="">'
+        h += '<div class="slot" style="left:270px;width:540px;top:1425px;height:130px;border-radius:65px"></div>'
+      }
+      c.innerHTML = h
+    </script>
+  </body>
+</html>

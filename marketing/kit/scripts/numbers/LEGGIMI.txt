@@ -1,0 +1,4 @@
+Piano editoriale in Numbers (pacchetto-instagram/Piano editoriale Frigolo.numbers)
+  node marketing/kit/scripts/numbers/esporta.mjs "$PWD" "<pacchetto-instagram>" /tmp/dati.json
+  osascript -l JavaScript marketing/kit/scripts/numbers/crea.js /tmp/dati.json "<pacchetto-instagram>/Piano editoriale Frigolo.numbers"
+Attenzione: rigenerarlo cancella le spunte e i link inseriti a mano.

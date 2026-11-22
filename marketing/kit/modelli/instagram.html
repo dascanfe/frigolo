@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+  Modello per i contenuti Instagram (caroselli 4:5, storie 9:16, copertine dei Reel).
+  Si configura con ?d=<JSON>. Campi:
+    f        p (1080x1350) | s (1080x1920)
+    tema     chiaro | lampone | menta | inchiostro
+    tipo     cover | phone | testo
+    titolo   come nel kit: *corsivo*, | a capo
+    testo    frase sotto il titolo
+    mascotte classica | contenta | pensierosa | dispiaciuta | posta
+    schermata percorso di uno screenshot (cornice telefono, in scala uniforme, mai deformato)
+    n        contatore "2/7" in alto a destra
+    chip     etichetta
+    ty, pw   posizione dall'alto e larghezza del telefono (facoltativi)
+  Rendering: node marketing/kit/scripts/instagram.mjs
+-->
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Frigolo - Instagram</title>
+    <link rel="stylesheet" href="kit.css" />
+    <style>
+      /* Lampone: accento principale, come il tema dell'app nelle schermate */
+      .t-chiaro { --bg:#f8eef0; --fg:#3a1d27; --fg-soft:#6b4552; --accent:#b02e50; --chip-bg:#b02e50; --chip-fg:#faf3ec; --blob:#efd3da; background:var(--bg); }
+      .t-lampone { --bg:#b02e50; --fg:#faf3ec; --fg-soft:#f6dbe2; --accent:#9de0d1; --chip-bg:#faf3ec; --chip-fg:#7d1f39; --blob:rgba(250,243,236,.16); background:var(--bg); }
+      .t-menta { --bg:#9de0d1; --fg:#04342f; --fg-soft:#1e5a52; --accent:#b02e50; --chip-bg:#faf3ec; --chip-fg:#04342f; --blob:rgba(250,243,236,.5); background:var(--bg); }
+      .t-inchiostro { --bg:#3a1d27; --fg:#faf3ec; --fg-soft:#e9cfd6; --accent:#f08aa5; --chip-bg:#b02e50; --chip-fg:#faf3ec; --blob:rgba(250,243,236,.09); background:var(--bg); }
+      .f-p { --w:1080px; --h:1350px; --pad:80px; --top:72px; }
+      .f-s { --w:1080px; --h:1920px; --pad:90px; --top:262px; }
+      .top { position:absolute; left:var(--pad); right:var(--pad); top:var(--top); display:flex; justify-content:space-between; align-items:center; font-size:46px; }
+      .top .n { font-family:var(--font-body); font-weight:900; font-size:32px; color:var(--fg-soft); letter-spacing:.04em; }
+      .copy { position:absolute; left:var(--pad); right:var(--pad); }
+      .f-p .copy { top:178px; }
+      .f-s .copy { top:372px; }
+      .copy h1 { font-size:80px; }
+      .f-s .copy h1 { font-size:98px; }
+      .copy .testo { font-size:38px; margin-top:22px; max-width:880px; }
+      .f-s .copy .testo { font-size:46px; margin-top:26px; }
+      .tipo-phone .copy { text-align:center; }
+      .tipo-phone .copy .testo { margin-left:auto; margin-right:auto; }
+      .telefono { left:50%; transform:translateX(-50%); padding:14px; border-radius:68px; background:#2a1219; }
+      .telefono img { height:auto; object-fit:initial; border-radius:56px; }
+      .tipo-cover .blob { width:900px; height:900px; left:90px; bottom:-300px; }
+      .f-s.tipo-cover .blob { width:1200px; height:1200px; left:-60px; bottom:-340px; }
+      .tipo-cover .mascotte { width:720px; height:720px; left:50%; transform:translateX(-50%); bottom:10px; }
+      .f-s.tipo-cover .mascotte { width:880px; height:880px; bottom:300px; }
+      .has-chip.tipo-cover .mascotte, .has-chip.tipo-testo .mascotte { left:62%; }
+      .tipo-cover .copy h1 { font-size:104px; }
+      .f-s.tipo-cover .copy h1 { font-size:120px; }
+      .tipo-testo .copy { top:300px; }
+      .f-s.tipo-testo .copy { top:480px; }
+      .tipo-testo .copy h1 { font-size:96px; }
+      .f-s.tipo-testo .copy h1 { font-size:112px; }
+      .tipo-testo .copy .testo { font-size:42px; }
+      .tipo-testo .blob { width:820px; height:820px; right:-200px; bottom:-260px; }
+      .tipo-testo .mascotte { width:560px; height:560px; right:20px; bottom:20px; }
+      .f-s.tipo-testo .blob { width:1000px; height:1000px; right:-260px; bottom:-200px; }
+      .f-s.tipo-testo .mascotte { width:760px; height:760px; right:20px; bottom:300px; }
+      .chip { position:absolute; left:var(--pad); bottom:72px; font-size:34px; }
+      .f-s .chip { bottom:380px; font-size:40px; }
+      .tipo-phone .chip { display:none; }
+      .swipe { position:absolute; right:var(--pad); bottom:72px; font-weight:900; font-size:34px; color:var(--fg); display:flex; gap:14px; align-items:center; }
+      .swipe b { display:inline-block; width:78px; height:78px; border-radius:50%; background:var(--chip-bg); color:var(--chip-fg); text-align:center; line-height:74px; font-size:44px; }
+    </style>
+  </head>
+  <body>
+    <div class="canvas" id="c"></div>
+    <script>
+      const d = JSON.parse(new URLSearchParams(location.search).get('d'))
+      const esc = (s) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch])
+      const fmt = (s) => esc(s).replace(/\*([^*]+)\*/g, '<em>$1</em>').replace(/\|/g, '<br>')
+      const M = { classica:'../../../assets/mascot.webp', contenta:'../mascotte/frigolo-contenta.png', pensierosa:'../mascotte/frigolo-pensierosa.png', dispiaciuta:'../mascotte/frigolo-dispiaciuta.png', posta:'../mascotte/frigolo-posta.png' }
+      const tipo = d.tipo || 'cover'
+      const c = document.getElementById('c')
+      document.documentElement.className = 'f-' + d.f
+      c.className = `${d.chip ? 'has-chip ' : ''}canvas f-${d.f} t-${d.tema || 'chiaro'} tipo-${tipo}`
+      document.body.className = `t-${d.tema || 'chiaro'}`
+      let h = '<div class="blob"></div>'
+      if (tipo !== 'phone' && d.mascotte) h += `<img class="mascotte" src="${M[d.mascotte]}" alt="">`
+      h += `<div class="top"><div class="brand"><img src="../../../public/mascot-avatar.webp" alt="">Frigolo</div>${d.n ? `<span class="n">${esc(d.n)}</span>` : ''}</div>`
+      h += `<div class="copy"><h1>${fmt(d.titolo)}</h1>${d.testo ? `<p class="testo">${fmt(d.testo)}</p>` : ''}</div>`
+      if (tipo === 'phone') {
+        const s = d.f === 's'
+        const pw = d.pw || (s ? 660 : d.testo ? 540 : 580)
+        const ty = d.ty || (s ? (d.testo ? 820 : 700) : d.testo ? 470 : 380)
+        h += `<div class="telefono" style="width:${pw}px;top:${ty}px"><img src="../../../${d.schermata}" alt=""></div>`
+      }
+      if (d.chip) h += `<span class="chip">${esc(d.chip)}</span>`
+      if (d.swipe) h += `<span class="swipe">Scorri <b>&rarr;</b></span>`
+      c.innerHTML = h
+    </script>
+  </body>
+</html>
