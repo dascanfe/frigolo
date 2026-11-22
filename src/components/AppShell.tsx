@@ -1,8 +1,9 @@
-import { Fragment, useLayoutEffect } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { useHousehold } from '@/features/auth/useHousehold'
 import { useRealtimeSync } from '@/features/list/useRealtimeSync'
 import { TipBubble } from '@/features/tips/TipBubble'
+import { recordVisit, sezioneDelPercorso } from '@/lib/telemetry'
 import { useSuppressTipsForExperienced } from '@/features/tips/useSuppressTipsForExperienced'
 import { OfflineBanner } from './OfflineBanner'
 import { UpdateBar } from './UpdateBar'
@@ -18,6 +19,15 @@ export function AppShell() {
     // anche con il tasto indietro: il browser non deve riportare la vecchia posizione
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
     window.scrollTo(0, 0)
+  }, [pathname])
+  // metriche anonime: un ingresso per ogni cambio di sezione (unico punto per
+  // tutte le rotte). Il ref evita il doppio conteggio di StrictMode in sviluppo.
+  const ultimaSezione = useRef<string | null>(null)
+  useEffect(() => {
+    if (ultimaSezione.current === pathname) return
+    ultimaSezione.current = pathname
+    const sezione = sezioneDelPercorso(pathname)
+    if (sezione) recordVisit(sezione)
   }, [pathname])
   return (
     <div className="mx-auto min-h-dvh max-w-5xl pb-safe pt-safe @container/shell">
